@@ -1,0 +1,51 @@
+universe=vanilla
+log=star-$(Process).log
+output=star-$(Process).out
+error=star-$(Process).out
+
+STAR=/woldlab/castor/home/diane/proj/long-rna-seq-pipeline/star/source/STAR
+GENOME_ROOT=$$(genome_root:/woldlab/castor/home/diane/proj/genome)
+GENOME=$$(genome:mm10)
+ANNOTATION=$$(annotation:M4)
+SEX=$$(sex:male)
+GENOME_DIR=$(GENOME_ROOT)/$(GENOME)-$(ANNOTATION)-$(SEX)/
+THREADS=8
+
+READ1=$$(read1)
+CURDIR=$$(curdir)
+OUT=$(CURDIR)_anno.bam
+
+request_cpus=$(THREADS)
+request_memory=31G
+executable=$(STAR)
+transfer_executable=False
+should_transfer_files=IF_NEEDED
+
+initialdir=$(CURDIR)
+arguments="--genomeDir $(GENOME_DIR) \
+           --readFilesIn $(READ1) \
+           --readFilesCommand zcat \
+	   --runThreadN $(THREADS) \
+	   --genomeLoad NoSharedMemory \
+	   --outFilterMultimapNmax 20 \
+	   --alignSJoverhangMin 8 \
+	   --alignSJDBoverhangMin 1 \
+	   --outFilterMismatchNmax 999 \
+	   --outFilterMismatchNoverReadLmax 0.04 \
+	   --alignIntronMin 20 \
+	   --alignIntronMax 1000000 \
+	   --alignMatesGapMax 1000000 \
+	   --outSAMheaderCommentFile COfile.txt \
+	   --outSAMheaderHD @HD VN:1.4 SO:coordinate \
+	   --outSAMunmapped Within \
+	   --outFilterType BySJout \
+	   --outSAMattributes NH HI AS NM MD \
+	   --outSAMstrandField intronMotif \
+	   --outSAMtype BAM SortedByCoordinate \
+	   --quantMode TranscriptomeSAM \
+	   --sjdbScore 1 \
+	   --limitBAMsortRAM 30000000000 \
+"
+queue
++PostCmd="/usr/bin/samstats"
++PostArguments="-@ $(THREADS) sort -@ $(THREADS) -m $(BYTES) Aligned.toTranscriptome.out.bam $(OUT)

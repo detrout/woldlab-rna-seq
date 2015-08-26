@@ -1,0 +1,33 @@
+universe=vanilla
+log=rsem-$(Process).log
+output=rsem-$(Process).out
+error=rsem-$(Process).out
+
+RSEM=/woldlab/castor/home/diane/proj/long-rna-seq-pipeline/rsem/rsem-calculate-expression
+GENOME_ROOT=/woldlab/castor/home/diane/proj/genome
+GENOME=$$(genome:mm10)
+ANNOTATION=$$(annotation:M4)
+SEX=$$(sex:male)
+GENOME_DIR=$(GENOME_ROOT)/$(GENOME)-$(ANNOTATION)-$(SEX)/
+
+# dnanexus pipeline uses "star_anno_bam"
+CURDIR=$$(curdir)
+IN=$(CURDIR)_anno.bam
+OUT=$(CURDIR)_anno_rsem
+
+THREADS=8
+
+request_cpus=$(THREADS)
+request_memory=42G
+
+executable=$(RSEM)
+transfer_executable=False
+should_transfer_files=IF_NEEDED
+
+initialdir=$(CURDIR)
+arguments="--bam --estimate-rspd --calc-ci --seed ${rnd_seed} -p $(THREADS) \
+           --no-bam-output --ci-memory 30000 $(extraFlags) \
+	   $(IN) \
+	   $(GENOME_DIR) \
+	   $(OUT) \
+"
