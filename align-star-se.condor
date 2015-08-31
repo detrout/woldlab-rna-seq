@@ -14,7 +14,6 @@ THREADS=8
 
 READ1=$$(read1)
 CURDIR=$$(curdir)
-OUT=$(CURDIR)_anno.bam
 
 request_cpus=$(THREADS)
 request_memory=31G
@@ -48,5 +47,3 @@ arguments="--genomeDir $(GENOME_DIR) \
 	   --limitBAMsortRAM 30000000000 \
 "
 queue
-+PostCmd="/usr/bin/samstats"
-+PostArguments="-@ $(THREADS) sort -@ $(THREADS) -m $(BYTES) Aligned.toTranscriptome.out.bam $(OUT)
