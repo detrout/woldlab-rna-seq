@@ -16,6 +16,7 @@ GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)/rsem
 CURDIR=$$(curdir)
 IN=$(CURDIR)-$(GENOME_TRIPLET)_anno.bam
 OUT=$(CURDIR)-$(GENOME_TRIPLET)_anno_rsem
+RND_SEED=--seed 12345
 THREADS=8
 
 request_cpus=$(THREADS)
@@ -26,7 +27,7 @@ transfer_executable=False
 should_transfer_files=IF_NEEDED
 
 initialdir=$(CURDIR)
-arguments="--bam --estimate-rspd --calc-ci --seed ${rnd_seed} -p $(THREADS) \
+arguments="--bam --estimate-rspd --calc-ci $(RND_SEED) -p $(THREADS) \
            --no-bam-output --ci-memory 30000 $(extraFlags) \
 	   $(IN) \
 	   $(GENOME_DIR) \
