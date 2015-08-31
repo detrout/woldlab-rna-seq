@@ -8,7 +8,8 @@ GENOME_ROOT=$$(genome_root:/woldlab/castor/home/diane/proj/genome)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
 SEX=$$(sex:male)
-GENOME_DIR=$(GENOME_ROOT)/$(GENOME)-$(ANNOTATION)-$(SEX)/
+GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)/
 THREADS=8
 
 READ1=$$(read1)
