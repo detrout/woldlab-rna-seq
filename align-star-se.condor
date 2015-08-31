@@ -1,7 +1,7 @@
 universe=vanilla
-log=star-$(Process).log
-output=star-$(Process).out
-error=star-$(Process).out
+log=align-star-$(Process).log
+output=align-star-$(Process).out
+error=align-star-$(Process).out
 
 STAR=/woldlab/castor/home/diane/proj/long-rna-seq-pipeline/star/source/STAR
 GENOME_ROOT=$$(genome_root:/woldlab/castor/home/diane/proj/genome)
