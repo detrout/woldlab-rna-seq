@@ -9,13 +9,13 @@ GENOME_ROOT=/woldlab/castor/home/diane/proj/genome
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
 SEX=$$(sex:male)
-GENOME_DIR=$(GENOME_ROOT)/$(GENOME)-$(ANNOTATION)-$(SEX)/
+GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)/rsem
 
 # dnanexus pipeline uses "star_anno_bam"
 CURDIR=$$(curdir)
-IN=$(CURDIR)_anno.bam
-OUT=$(CURDIR)_anno_rsem
-
+IN=$(CURDIR)-$(GENOME_TRIPLET)_anno.bam
+OUT=$(CURDIR)-$(GENOME_TRIPLET)_anno_rsem
 THREADS=8
 
 request_cpus=$(THREADS)
