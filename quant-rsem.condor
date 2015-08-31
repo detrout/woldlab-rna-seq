@@ -2,6 +2,7 @@ universe=vanilla
 log=rsem-$(Process).log
 output=rsem-$(Process).out
 error=rsem-$(Process).out
+environment="PATH=/usr/local/bin:/usr/bin:/bin"
 
 RSEM=/woldlab/castor/home/diane/proj/long-rna-seq-pipeline/rsem/rsem-calculate-expression
 GENOME_ROOT=/woldlab/castor/home/diane/proj/genome
