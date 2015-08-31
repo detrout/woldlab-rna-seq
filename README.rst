@@ -3,14 +3,19 @@ Long RNA Seq Condor
 ===================
 
 Introduction
-------------
+============
 
 The official `ENCODE Long RNA-Seq pipeline`_ is designed to run on
 DNA-Nexus_. This is a conversion to use settings from the official
-pipeline for a pipeline suitable for running through HT-Condor_ DagMan.
+pipeline for a pipeline suitable for running the alignment, mapping,
+and quantification steps through HT-Condor_ DagMan.
+
+I've also added in some of our (Wold Lab) quality-control steps after
+the core RNA-Seq process.
+
 
 Installation
-------------
+============
 
 One convenient thing on the ENCODE DCC portal provides is previously built
 indexes and source files for STAR, RSEM, and Tophat.
@@ -33,6 +38,21 @@ ENCSR641UDW_: Tophat indexed reference files with ERCC spike-ins
 ENCSR314WMD_: STAR indexed reference files with ERCC spike-ins
 ENCSR219BJA_: RSEM indexed reference files with ERCC spike-ins
 
+Processing
+==========
+
+Steps for our processing pipeline:
+
+* align-star-se
+* sort-samtools
+* quant-rsem
+* index-samtools
+* qc-samstats
+* bedgraph-star
+* qc-distribution
+* qc-coverage
+* bedgraph2bigwig
+
 .. _DNA-Nexus: https://www.dnanexus.com/
 .. _HT-Condor: http://research.cs.wisc.edu/htcondor/
 .. _ENCODE Long RNA-Seq pipeline: https://github.com/ENCODE-DCC/long-rna-seq-pipeline
@@ -45,8 +65,5 @@ ENCSR219BJA_: RSEM indexed reference files with ERCC spike-ins
 .. _ENCFF268IGM: https://www.encodeproject.org/files/ENCFF268IGM/@@download/ENCFF268IGM.tar.gz
 .. _ENCFF483PAE: https://www.encodeproject.org/files/ENCFF483PAE/@@download/ENCFF483PAE.tar.gz
 .. _ENCFF064YNQ: https://www.encodeproject.org/files/ENCFF064YNQ/@@download/ENCFF064YNQ.tar.gz
-
-
-
 
 
