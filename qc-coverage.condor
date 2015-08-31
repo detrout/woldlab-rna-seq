@@ -1,0 +1,27 @@
+universe=vanilla
+
+log=coverage-$(Process).log
+output=coverage-$(Process).out
+error=coverage-$(Process).out
+
+CURDIR=$$(curdir)
+GENE_COVERAGE=/woldlab/castor/home/sau/code/transcriptome/gene_coverage_wig_gtf.py
+GENOME_ROOT=$$(genome_root:/woldlab/castor/home/diane/proj/genome)
+GENOME=$$(genome:mm10)
+ANNOTATION=$$(annotation:M4)
+SEX=$$(sex:male)
+GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)
+GTF=$(GENOME_DIR)/gencode.vM4-tRNAs-ERCC.gff
+IN=$$(in:Signal.Unique.str1.out.bg)
+OUT=$(CURDIR)-$(GENOME_TRIPLET).coverage
+
+request_cpus=1
+request_memory=4G
+
+executable=/usr/bin/python
+transfer_executable=False
+
+initialdir=$(CURDIR)
+arguments="$(GENE_COVERAGE) $(GTF) $(IN) 1000 $(OUT)"
+queue

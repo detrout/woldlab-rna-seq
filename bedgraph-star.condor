@@ -1,0 +1,24 @@
+universe=vanilla
+log=bedgraph-star-$(Process).log
+output=bedgraph-star-$(Process).out
+error=bedgraph-star-$(Process).out
+
+STAR=/woldlab/castor/home/diane/proj/long-rna-seq-pipeline/star/source/STAR
+
+CURDIR=$$(curdir)
+IN=$$(in:Aligned.sortedByCoord.out.bam)
+
+request_cpus=1
+request_memory=4G
+executable=$(STAR)
+transfer_executable=False
+should_transfer_files=IF_NEEDED
+
+initialdir=$(CURDIR)
+arguments="--runMode inputAlignmentsFromBAM \
+           --inputBAMfile $(IN) \
+           --outWigType bedGraph \
+           --outWigStrand Unstranded \
+           --outWigReferencesPrefix chr \
+"
+queue

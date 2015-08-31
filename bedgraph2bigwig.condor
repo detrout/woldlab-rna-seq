@@ -1,0 +1,31 @@
+universe=vanilla
+
+log=bedgraph2bigwig-$(Process).log
+output=bedgraph2bigwig-$(Process).out
+error=bedgraph2bigwig-$(Process).out
+
+CURDIR=$$(curdir)
+BEDGRAPH_TO_BIGWIG=/woldlab/castor/proj/programs/x86_64/bedGraphToBigWig
+GENOME_ROOT=$$(genome_root:/woldlab/castor/home/diane/proj/genome)
+GENOME=$$(genome:mm10)
+ANNOTATION=$$(annotation:M4)
+SEX=$$(sex:male)
+GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)
+GTF=$(GENOME_DIR)/gencode.vM4-tRNAs-ERCC.gff
+CHROM_INFO=$(GENOME_DIR)/chrNameLength.txt
+IN=$(in:Aligned.sortedByCoord.out.bam)
+OUT_ALL=$(CURDIR)-$(GENOME_TRIPLET)_all.bw
+OUT_UNIQ=$(CURDIR)-$(GENOME_TRIPLET)_uniq.bw
+
+request_cpus=1
+request_memory=4G
+
+executable=$(BEDGRAPH_TO_BIGWIG)
+transfer_executable=False
+
+initialdir=$(CURDIR)
+arguments="Signal.UniqueMultiple.str1.out.bg $(CHROM_INFO) $(OUT_ALL)"
+queue
+arguments="Signal.Unique.str1.out.bg $(CHROM_INFO) $(OUT_UNIQ)"
+queue

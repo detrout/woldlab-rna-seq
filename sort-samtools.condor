@@ -1,0 +1,28 @@
+universe=vanilla
+
+log=samtools-sort-$(Process).log
+output=samtools-sort-$(Process).out
+error=samtools-sort-$(Process).out
+
+CURDIR=$$(curdir)
+GENOME=$$(genome:mm10)
+ANNOTATION=$$(annotation:M4)
+SEX=$$(sex:male)
+GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+IN=$$(bam_in:Aligned.toTranscriptome.out.bam)
+OUT=$(CURDIR)-$(GENOME_TRIPLET)_anno
+
+THREADS=8
+# samstats -m looks like it wants bytes?
+# this is 30 * 1024 ^ 3 (aka 30G)
+BYTES=32212254720
+
+request_cpus=$(THREADS)
+request_memory=31G
+
+executable=/usr/bin/samtools
+transfer_executable=False
+
+initialdir=$(CURDIR)
+arguments="sort -@ $(THREADS) -m $(BYTES) $(IN) $(OUT)"
+queue
