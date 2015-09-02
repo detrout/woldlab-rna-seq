@@ -1,143 +1,129 @@
 #!/usr/bin/python3
-from __future__ import print_function
 
-from argparse import ArgumentParser
-import configparser
+import argparse
+import collections
+from glob import glob
 import os
+import pandas
 
+import make_star_rsem_dag
 
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
 
-    analysis = AnalysisDAG()
+    sep = get_seperator(args.sep)
+    libraries = load_library_tables(args.libraries, sep)
+    fastqs = list(find_fastqs(libraries))
 
-    analysis.condor_script_dir = args.condor_script_dir
-    analysis.genome_dir = args.genome_dir
-    analysis.genome = args.genome
-    analysis.annotation = args.annotation
-    analysis.sex = args.sex
-    analysis.job_id = args.library_id
-    analysis.analysis_dir = args.analysis_dir
-    analysis.fastqs = args.fastqs
-
-    if analysis.is_valid():
-        print(str(analysis))
+    dag = generate_star_rsem_analysis(args, libraries, fastqs)
+    print(dag)
+    
+    return 0
 
 def make_parser():
-    defaults = read_defaults()
+    defaults = make_star_rsem_dag.read_defaults()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--sep', choices=['TAB',','], default='TAB')
+    parser.add_argument('libraries', nargs='+')
     
-    parser = ArgumentParser()
     parser.add_argument('--condor-script-dir',
                         help="specify the directory that the condor scripts located in",
                         default=defaults['condor_script_dir'])
     parser.add_argument('--genome-dir',
                         help="specify the directory that has the genome indexes",
                         default=defaults['genome_dir'])
-    
-    parser.add_argument('-g', '--genome')
-    parser.add_argument('-a', '--annotation')
-    parser.add_argument('-s', '--sex')
-    parser.add_argument('-l', '--library-id')
-    parser.add_argument('--analysis-dir', help='target dir to store analysis')
-    parser.add_argument('fastqs', nargs='+', help='path to fastqs')
-
     return parser
 
-def read_defaults():
-    defaults = {
-        'condor_script_dir': None,
-        'genome_dir': None
-    }
-    config = configparser.ConfigParser()
-    config.read([os.path.expanduser('~/.htsworkflow.ini'), '/etc/htsworkflow.ini'])
-    if config.has_section('analysis'):
-        analysis = config['analysis']
-        defaults['condor_script_dir'] = analysis['condor_script_dir']
-        defaults['genome_dir'] =analysis['genome_dir']
-    return defaults
+def get_seperator(sep):
+    if sep.lower() == 'tab':
+        return '\t'
+    elif sep == ',':
+        return ','
+    else:
+        raise ValueError("Unrecognized seperator")
 
-class AnalysisDAG:
-    template = """JOB {job_id}_align-star-se {condor_script_dir}/align-star-se.condor
-JOB {job_id}_sort-samtools {condor_script_dir}/sort-samtools.condor
-JOB {job_id}_quant-rsem {condor_script_dir}/quant-rsem.condor
-JOB {job_id}_index-samtools {condor_script_dir}/index-samtools.condor
-JOB {job_id}_qc-samstats {condor_script_dir}/qc-samstats.condor
-JOB {job_id}_bedgraph-star {condor_script_dir}/bedgraph-star.condor
-JOB {job_id}_qc-coverage {condor_script_dir}/qc-coverage.condor
-JOB {job_id}_qc-distribution {condor_script_dir}/qc-distribution.condor
-JOB {job_id}_bedgraph2bigwig {condor_script_dir}/bedgraph2bigwig.condor
+def load_library_tables(table_filenames, sep):
+    tables = []
+    for library_file in table_filenames:
+        table = pandas.read_csv(library_file, sep)
+        required_columns_present(table)
+        tables.append(table)
 
-PARENT {job_id}_align-star-se  CHILD {job_id}_sort-samtools
-PARENT {job_id}_align-star-se  CHILD {job_id}_index-samtools
-PARENT {job_id}_align-star-se  CHILD {job_id}_bedgraph-star
-PARENT {job_id}_index-samtools CHILD {job_id}_qc-samstats
-PARENT {job_id}_index-samtools CHILD {job_id}_qc-distribution
-PARENT {job_id}_sort-samtools  CHILD {job_id}_quant-rsem
-PARENT {job_id}_bedgraph-star  CHILD {job_id}_qc-coverage
-PARENT {job_id}_bedgraph-star  CHILD {job_id}_bedgraph2bigwig
-
-VARS {job_id}_align-star-se   curdir="{analysis_dir}"
-VARS {job_id}_sort-samtools   curdir="{analysis_dir}"
-VARS {job_id}_quant-rsem      curdir="{analysis_dir}"
-VARS {job_id}_index-samtools  curdir="{analysis_dir}"
-VARS {job_id}_qc-samstats     curdir="{analysis_dir}"
-VARS {job_id}_bedgraph-star   curdir="{analysis_dir}"
-VARS {job_id}_qc-coverage     curdir="{analysis_dir}"
-VARS {job_id}_qc-distribution curdir="{analysis_dir}"
-VARS {job_id}_bedgraph2bigwig curdir="{analysis_dir}"
-
-VARS {job_id}_align-star-se   genome_root="{genome_dir}"
-VARS {job_id}_sort-samtools   genome_root="{genome_dir}"
-VARS {job_id}_quant-rsem      genome_root="{genome_dir}"
-VARS {job_id}_index-samtools  genome_root="{genome_dir}"
-VARS {job_id}_qc-samstats     genome_root="{genome_dir}"
-VARS {job_id}_bedgraph-star   genome_root="{genome_dir}"
-VARS {job_id}_qc-coverage     genome_root="{genome_dir}"
-VARS {job_id}_qc-distribution genome_root="{genome_dir}"
-VARS {job_id}_bedgraph2bigwig genome_root="{genome_dir}"
-
-VARS {job_id}_align-star-se   genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_sort-samtools   genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_quant-rsem      genome="{genome}" annotation="{annotation}" sex="{sex}"
-VARS {job_id}_index-samtools  genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_qc-samstats     genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_bedgraph-star   genome="{genome}" annotation="{annotation}" sex="{sex}"
-VARS {job_id}_qc-coverage     genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_qc-distribution genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_bedgraph2bigwig genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_align-star-se read1="{fastqs}"
-
-"""
-
-    def __init__(self):
-        self.condor_script_dir = None
-        self.genome_dir = None
-        self.job_id = None
-        self.genome = None
-        self.annotation = None
-        self.sex = None
-        self.analysis_dir = None
-        self.fastqs = None
-
-    def is_valid(self):
-        for key in self.__dict__:
-            if getattr(self, key) is None:
-                raise ValueError("{} is not set".format(key))
-        return True
+    libraries = pandas.concat(tables)
+    validate_library_ids(libraries)
+    return libraries
     
-    def __str__(self):
-        return self.template.format(
-            condor_script_dir=self.condor_script_dir,
-            genome_dir=self.genome_dir,
-            job_id=self.job_id,
-            genome=self.genome,
-            annotation=self.annotation,
-            sex=self.sex,
-            analysis_dir=self.analysis_dir,
-            fastqs=",".join(self.fastqs),
-        )
+def required_columns_present(table):
+    missing = []
+    for key in ['library_id', 'genome', 'sex', 'annotation', 'analysis_dir', 'fastqs']:
+        if key not in table.columns:
+            missing.append(key)
+    if len(missing) != 0:
+        raise ValueError("Required columns missing: {}".format(','.join(mising)))
+
+def validate_library_ids(table):
+    library_ids = collections.Counter()
+    for library_id in table['library_id']:
+        library_ids[library_id] += 1
+
+    duplicates = []
+    for library_id in library_ids:
+        if library_ids[library_id] > 1:
+            duplicates.append(library_id)
+
+    if len(duplicates) > 0:
+        raise ValueError("Duplicate library ids: {}".format(duplicates))
 
 
-if __name__ == "__main__":
+def find_fastqs(table):
+    """Find fastqs for a library from a library table
+
+    fastqs are a comma seperated glob pattern
+    """
+    if 'fastqs' in table.columns:
+        for i in table.index:
+            fastqs = find_fastqs_by_glob(table.loc[i, 'fastqs'].split(','))
+            yield (table.loc[i, 'library_id'], fastqs)
+    else:
+        # eventually look up by library ID
+        raise NotImplemented("Please specify fastq glob")
+        
+def find_fastqs_by_glob(fastq_globs):
+    for fastq in fastq_globs:
+        for filename in glob(fastq):
+            if os.path.exists(filename):
+                yield filename
+            else:
+                logger.warn("Can't find fastq {}. skipping".format(filename))
+
+
+def generate_star_rsem_analysis(args, libraries, fastqs):
+    dag = []
+    for i in libraries.index:
+        library_id = libraries.loc[i, 'library_id']
+        fastq_library_id, filenames = fastqs[i]
+        assert library_id == fastq_library_id
+
+        analysis = make_star_rsem_dag.AnalysisDAG()
+
+        analysis.condor_script_dir = args.condor_script_dir
+        analysis.genome_dir = args.genome_dir
+    
+        analysis.genome = libraries.loc[i, 'genome']
+        analysis.annotation = libraries.loc[i, 'annotation']
+        analysis.sex = libraries.loc[i, 'sex']
+        analysis.job_id = libraries.loc[i, 'library_id']
+        analysis.analysis_dir = libraries.loc[i, 'analysis_dir']
+        analysis.fastqs = filenames
+
+        if analysis.is_valid():
+            dag.append(str(analysis))
+        else:
+            raise ValueError("Unable to generate dagman script for {}".format(library_id))
+
+    return os.linesep.join(dag)
+
+if __name__ == '__main__':
     main()
+    
