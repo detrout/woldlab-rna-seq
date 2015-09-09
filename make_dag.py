@@ -7,13 +7,14 @@ import os
 import pandas
 
 import make_star_rsem_dag
+import models
 
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
 
-    sep = get_seperator(args.sep)
-    libraries = load_library_tables(args.libraries, sep)
+    sep = models.get_seperator(args.sep)
+    libraries = models.load_library_tables(args.libraries, sep)
     fastqs = list(find_fastqs(libraries))
 
     dag = generate_star_rsem_analysis(args, libraries, fastqs)
@@ -34,47 +35,6 @@ def make_parser():
                         help="specify the directory that has the genome indexes",
                         default=defaults['genome_dir'])
     return parser
-
-def get_seperator(sep):
-    if sep.lower() == 'tab':
-        return '\t'
-    elif sep == ',':
-        return ','
-    else:
-        raise ValueError("Unrecognized seperator")
-
-def load_library_tables(table_filenames, sep):
-    tables = []
-    for library_file in table_filenames:
-        table = pandas.read_csv(library_file, sep)
-        required_columns_present(table)
-        tables.append(table)
-
-    libraries = pandas.concat(tables)
-    validate_library_ids(libraries)
-    return libraries
-    
-def required_columns_present(table):
-    missing = []
-    for key in ['library_id', 'genome', 'sex', 'annotation', 'analysis_dir', 'fastqs']:
-        if key not in table.columns:
-            missing.append(key)
-    if len(missing) != 0:
-        raise ValueError("Required columns missing: {}".format(','.join(mising)))
-
-def validate_library_ids(table):
-    library_ids = collections.Counter()
-    for library_id in table['library_id']:
-        library_ids[library_id] += 1
-
-    duplicates = []
-    for library_id in library_ids:
-        if library_ids[library_id] > 1:
-            duplicates.append(library_id)
-
-    if len(duplicates) > 0:
-        raise ValueError("Duplicate library ids: {}".format(duplicates))
-
 
 def find_fastqs(table):
     """Find fastqs for a library from a library table
