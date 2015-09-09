@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <title>RNA-Seq report</title>
+  </head>
+  <body>{% for name, samstat, rafa_spearman, coverage in experiment_report %}
+    <h1><a anchor="{{name}}">{{name}}</a></h1>
+    <h2>Samstats</h2>
+    {{samstat}}
+    <h2>Rafa Filtered Spearmans</h2>
+    {{rafa_spearman}}
+    {{coverage}}
+  {% endfor %}</body>
+  {% for script in scripts %}
+  {{ script }}
+  {% endfor %}
+</html>
