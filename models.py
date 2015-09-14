@@ -129,6 +129,7 @@ def load_distribution(filename):
         for line in read_line_from_stream(instream):
             name, value = line.split(':\t')
             distribution[name] = float(value)
+    return pandas.Series(distribution, index=distribution.keys())
 
 
 def load_all_distribution(libraries):
