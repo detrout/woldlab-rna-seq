@@ -12,7 +12,7 @@ ANNOTATION=$$(annotation:M4)
 SEX=$$(sex:male)
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
 GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)
-GTF=$(GENOME_DIR)/gencode.vM4-tRNAs-ERCC.gff
+GTF=$(GENOME_DIR)/gencode.v$(ANNOTATION)-tRNAs-ERCC.gff
 IN=$$(in:Signal.Unique.str1.out.bg)
 OUT=$(CURDIR)-$(GENOME_TRIPLET).coverage
 
