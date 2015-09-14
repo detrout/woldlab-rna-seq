@@ -27,6 +27,11 @@ Required Dependencies
 * scipy.stats
 * jinja2
 * bokeh
+* Wold Lab code
+
+  * gene_coverage_wig_gtf.py
+  * SAM_reads_in_genes3_BAM.py
+  * and SAMstats.py
 
 Obtaining Indexes
 -----------------
