@@ -53,7 +53,7 @@ def find_fastqs_by_glob(fastq_globs):
     for fastq in fastq_globs:
         for filename in glob(fastq):
             if os.path.exists(filename):
-                yield filename
+                yield os.path.abspath(filename)
             else:
                 logger.warn("Can't find fastq {}. skipping".format(filename))
 
