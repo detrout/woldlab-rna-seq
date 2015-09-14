@@ -135,10 +135,19 @@ read_1
 Second, after the definition files are constructed you can generate
 the DagMan script to generate the result files with::
 
-  python3 make_dag.py <list of library.tsv files>
+  python3 make_dag.py <list of library.tsv files> > <filename>.dagman
+  condor_submit_dag <filename>.dagman
 
 **TODO** Currently the QC summary statistics and report generation are
 not integrated into the condor pipeline and need to be run manually
+
+**NOTE** If condor_submit_dag fails it will generate a rescue file
+<filename>.dagman.rescue<number>. After investigating the log files
+to find the cause of the error you can do::
+
+  condor_submit_dag -autorescue 1 <filename>.dagman
+
+to try to contine.
 
 Third, to generate the HDF5 files containing the various pairwise correlation scores one needs to do::
 
