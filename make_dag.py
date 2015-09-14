@@ -36,14 +36,15 @@ def make_parser():
                         default=defaults['genome_dir'])
     return parser
 
-def find_fastqs(table):
+def find_fastqs(table, fastq_column='read_1'):
     """Find fastqs for a library from a library table
 
     fastqs are a comma seperated glob pattern
     """
-    if 'fastqs' in table.columns:
+    if fastq_column in table.columns:
         for library_id in table.index:
-            fastqs = find_fastqs_by_glob(table.loc[library_id, 'fastqs'].split(','))
+            fastqs = find_fastqs_by_glob(
+                table.loc[library_id, fastq_column].split(','))
             yield (library_id, list(fastqs))
     else:
         # eventually look up by library ID
@@ -58,10 +59,10 @@ def find_fastqs_by_glob(fastq_globs):
                 logger.warn("Can't find fastq {}. skipping".format(filename))
 
 
-def generate_star_rsem_analysis(args, libraries, fastqs):
+def generate_star_rsem_analysis(args, libraries, read_1_fastqs):
     dag = []
     for library_id in libraries.index:
-        filenames = fastqs[library_id]
+        read_1_files = read_1_fastqs[library_id]
 
         analysis = make_star_rsem_dag.AnalysisDAG()
 
@@ -73,7 +74,7 @@ def generate_star_rsem_analysis(args, libraries, fastqs):
         analysis.sex = libraries.loc[library_id, 'sex']
         analysis.job_id = library_id
         analysis.analysis_dir = libraries.loc[library_id, 'analysis_dir']
-        analysis.fastqs = filenames
+        analysis.fastqs = read_1_files
 
         if analysis.is_valid():
             dag.append(str(analysis))

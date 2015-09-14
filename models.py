@@ -23,7 +23,7 @@ def load_library_tables(table_filenames, sep='\t'):
     Parameters:
       table_filenames - list of filenames to load
          the tables need to have a library_id, genome, sex, annotation,
-         analysis_dir and fastqs columns.
+         analysis_dir and fastq read_1 columns.
       sep - separator character to use for table defaults to TAB
 
     Returns: a pandas dataframe containing required information
@@ -50,7 +50,7 @@ def required_library_columns_present(table):
     """Verify that a table contains required columns
     """
     missing = []
-    for key in ['genome', 'sex', 'annotation', 'analysis_dir', 'fastqs']:
+    for key in ['genome', 'sex', 'annotation', 'analysis_dir', 'read_1']:
         if key not in table.columns:
             missing.append(key)
     if len(missing) != 0:
