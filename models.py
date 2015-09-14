@@ -148,7 +148,7 @@ def load_coverage(filename, library_id=None):
         coverage = []
         for line in instream:
             position, value = line.strip().split('\t')
-            coverage.append(value)
+            coverage.append(float(value))
     return pandas.DataFrame(coverage, columns=[library_id])
 
 
