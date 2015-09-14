@@ -15,7 +15,7 @@ def main(cmdline=None):
 
     sep = models.get_seperator(args.sep)
     libraries = models.load_library_tables(args.libraries, sep)
-    fastqs = list(find_fastqs(libraries))
+    fastqs = dict(find_fastqs(libraries))
 
     dag = generate_star_rsem_analysis(args, libraries, fastqs)
     print(dag)
@@ -42,9 +42,9 @@ def find_fastqs(table):
     fastqs are a comma seperated glob pattern
     """
     if 'fastqs' in table.columns:
-        for i in table.index:
-            fastqs = find_fastqs_by_glob(table.loc[i, 'fastqs'].split(','))
-            yield (table.loc[i, 'library_id'], fastqs)
+        for library_id in table.index:
+            fastqs = find_fastqs_by_glob(table.loc[library_id, 'fastqs'].split(','))
+            yield (library_id, list(fastqs))
     else:
         # eventually look up by library ID
         raise NotImplemented("Please specify fastq glob")
@@ -60,21 +60,19 @@ def find_fastqs_by_glob(fastq_globs):
 
 def generate_star_rsem_analysis(args, libraries, fastqs):
     dag = []
-    for i in libraries.index:
-        library_id = libraries.loc[i, 'library_id']
-        fastq_library_id, filenames = fastqs[i]
-        assert library_id == fastq_library_id
+    for library_id in libraries.index:
+        filenames = fastqs[library_id]
 
         analysis = make_star_rsem_dag.AnalysisDAG()
 
         analysis.condor_script_dir = args.condor_script_dir
         analysis.genome_dir = args.genome_dir
     
-        analysis.genome = libraries.loc[i, 'genome']
-        analysis.annotation = libraries.loc[i, 'annotation']
-        analysis.sex = libraries.loc[i, 'sex']
-        analysis.job_id = libraries.loc[i, 'library_id']
-        analysis.analysis_dir = libraries.loc[i, 'analysis_dir']
+        analysis.genome = libraries.loc[library_id, 'genome']
+        analysis.annotation = libraries.loc[library_id, 'annotation']
+        analysis.sex = libraries.loc[library_id, 'sex']
+        analysis.job_id = library_id
+        analysis.analysis_dir = libraries.loc[library_id, 'analysis_dir']
         analysis.fastqs = filenames
 
         if analysis.is_valid():
