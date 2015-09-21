@@ -18,7 +18,7 @@ IN=$$(in:Aligned.sortedByCoord.out.bam)
 OUT=$(CURDIR)-$(GENOME_TRIPLET).sam_reads_genes
 
 request_cpus=1
-request_memory=4G
+request_memory=12G
 
 executable=/usr/bin/python2
 transfer_executable=False

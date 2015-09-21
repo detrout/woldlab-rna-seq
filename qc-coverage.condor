@@ -17,7 +17,7 @@ IN=$$(in:Signal.Unique.str1.out.bg)
 OUT=$(CURDIR)-$(GENOME_TRIPLET).coverage
 
 request_cpus=1
-request_memory=4G
+request_memory=14G
 
 executable=/usr/bin/python
 transfer_executable=False
