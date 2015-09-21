@@ -85,7 +85,7 @@ def load_experiments(experiment_filenames, sep='\t'):
     """
     tables = []
     for experiment_filename in experiment_filenames:
-        table = pandas.read_csv(experiment_filename, sep)
+        table = pandas.read_csv(experiment_filename, sep=sep)
         tables.append(table)
 
     experiments = {}
