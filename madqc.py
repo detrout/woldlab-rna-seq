@@ -112,7 +112,7 @@ def load_replicates(replicates, libraries, column='FPKM'):
     for library_id in replicates:
         library_ids.append(library_id)
         library = libraries.loc[library_id]
-        analysis_dir = str(library['analysis_dir'])
+        analysis_dir = library['analysis_dir']
         pattern = os.path.join(analysis_dir, extension)
         result = glob(pattern)
         if len(result) != 1:

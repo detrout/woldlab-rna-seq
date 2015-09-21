@@ -36,7 +36,8 @@ def load_library_tables(table_filenames, sep='\t'):
     for library_file in table_filenames:
         table = pandas.read_csv(library_file, sep=sep,
                                 index_col='library_id',
-                                dtype={'library_id':str})
+                                dtype={'library_id':str,
+                                       'analysis_dir': str})
         required_library_columns_present(table)
         table.index = [str(x) for x in table.index]
         table.index.name = 'library id'
