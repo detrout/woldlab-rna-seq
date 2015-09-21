@@ -16,9 +16,12 @@ def load_rsem_quantifications(experiment_files, index=None, column='FPKM'):
     
     Columns will be library accession identifiers.
     """
+    COUNT_COL = 4
     TPM_COL = 5
     FPKM_COL = 6
-    if column == 'FPKM':
+    if column == 'expected_count':
+        score_column = COUNT_COL
+    elif column == 'FPKM':
         score_column = FPKM_COL
     elif column == 'TPM':
         score_column = TPM_COL
