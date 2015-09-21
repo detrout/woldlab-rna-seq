@@ -139,7 +139,9 @@ def main(cmdline=None):
     if args.experiment is None:
         parser.error("Please provide an experiment name. (Used as filename)")
     else:
-        score_name = models.make_correlation_filename(experiment)
+        score_name = models.make_correlation_filename(args.experiment)
+        quant_name = models.make_quantification_filename(args.experiment,
+                                                         args.quantification)
     
     sep = models.get_seperator(args.sep)    
     libraries = models.load_library_tables([args.library], sep=sep)
