@@ -164,30 +164,47 @@ def find_library_analysis_file(libraries, extension):
     for library_id in libraries.index:
         analysis_dir = libraries.loc[library_id, 'analysis_dir']
         filenames = glob(os.path.join(analysis_dir, extension))
-        if len(filenames) != 1:
-            raise ("To many files {}".format(filenames))
+        if len(filenames) == 0:
+            raise RuntimeError("No files found in {} for {}".format(
+                analysis_dir, extension))
+        elif len(filenames) > 1:
+            raise RuntimeError("To many files {}".format(filenames))
         else:
             yield AnalysisFile(library_id, filenames[0])
 
 
-def load_all_correlations(experiments):
+def load_correlations(experiment):
+    """Load correlation panel for an experiment
+    """
     correlations = collections.OrderedDict()
-    for name in experiments:
-        replicates = experiments[name]
-        correlation_filename = make_correlation_filename(name)
-        if not os.path.exists(correlation_filename):
-            raise RuntimeError(
-                "Unable to open expected score file {}".format(
-                    correlation_filename))
-        store = pandas.HDFStore(correlation_filename)
-        scores = {}
-        for key in store.keys():
-            key_name = key.replace('/','')
-            scores[key_name] = store[key]
-        store.close()
-        correlations[name] = pandas.Panel(scores)
-    return correlations
+    correlation_filename = make_correlation_filename(experiment)
+    if not os.path.exists(correlation_filename):
+        raise RuntimeError(
+            "Unable to open expected score file {}".format(
+                correlation_filename))
+    store = pandas.HDFStore(correlation_filename)
+    scores = {}
+    for key in store.keys():
+        key_name = normalize_hdf_key(key)
+        scores[key_name] = store[key]
+    store.close()
+    return pandas.Panel(scores)
 
+def load_quantifications(experiment, quantification_name='FPKM'):
+    """Load quantifications for an experiment
+    """
+    quantification_filename = make_quantification_filename(
+        experiment,
+        quantification_name)
+    store = pandas.HDFStore(quantification_filename)
+    for key in store.keys():
+        quantifications =  store[key]
+    store.close()
+    return quantifications
+
+
+def normalize_hdf_key(key):
+    return key.replace('/', '')
 
 # really doesn't belong here
 def get_seperator(sep):
@@ -201,3 +218,7 @@ def get_seperator(sep):
 
 def make_correlation_filename(experiment):
     return experiment + '_correlation.h5'
+
+
+def make_quantification_filename(experiment, quantification='FPKM'):
+    return experiment + '_' + quantification + '.h5'
