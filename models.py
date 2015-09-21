@@ -71,7 +71,7 @@ def validate_library_ids(table):
     if len(duplicates) > 0:
         raise ValueError("Duplicate library ids: {}".format(duplicates))
 
-def load_experiments(experiment_filenames, libraries, sep='\t'):
+def load_experiments(experiment_filenames, sep='\t'):
     """Load table describing experiments
 
     Parameters:
