@@ -105,27 +105,30 @@ def compute_all_vs_all_scores(fpkms, Acutoff=0):
     return pandas.Panel(all_scores)
 
 
-def load_replicates(replicates, libraries, quantification):
+def load_replicates(replicates, libraries, column='FPKM'):
     extension = '*_rsem.genes.results'
     analysis_files = []
     library_ids = []
     for library_id in replicates:
         library_ids.append(library_id)
-        library = libraries[libraries['library_id'] == library_id]
-        analysis_dir = library['analysis_dir'].values[0]
+        library = libraries.loc[library_id]
+        analysis_dir = library['analysis_dir']
         pattern = os.path.join(analysis_dir, extension)
         result = glob(pattern)
         if len(result) != 1:
             raise RuntimeError(
-                "Unexpected number of rsem gene result files {}".format(
-                    len(result)
+                "Unexpected number of rsem gene result files {} using '{}'".format(
+                    len(result),
+                    pattern,
                 )
             )
         elif not os.path.exists(result[0]):
             raise RuntimeError("{} doesn't exist".format(result[0]))
         else:
             analysis_files.append(result[0])
-    quantifications = load_rsem_quantifications(analysis_files, index=library_ids)
+    quantifications = load_rsem_quantifications(
+        analysis_files, index=library_ids, column=column
+    )
     return quantifications
 
 
