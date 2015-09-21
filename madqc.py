@@ -148,7 +148,17 @@ def main(cmdline=None):
     quantifications = load_replicates(args.replicates,
                                       libraries,
                                       args.quantification)
+    if os.path.exists(quant_name):
+        os.unlink(quant_name)
+
+    store = pandas.HDFStore(quant_name, complevel=9, complib='blosc')
+    store.append('quantifications', quantifications)
+    store.close()
+
     scores = compute_all_vs_all_scores(quantifications)
+    if os.path.exists(score_name):
+        os.unlink(score_name)
+
     store = pandas.HDFStore(score_name)
     for key in scores:
         store.append(key, scores[key])
