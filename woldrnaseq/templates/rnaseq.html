@@ -1,17 +1,32 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8"/>
     <title>RNA-Seq report</title>
+    <link
+       href="/~diane/bokeh/static/css/bokeh.css"
+       rel="stylesheet" type="text/css"/>
+    <script src="/~diane/bokeh/static/js/bokeh.js"></script>
+    {{ bokeh_script }}
   </head>
-  <body>{% for name, samstat, rafa_spearman, coverage in experiment_report %}
+  <body>{% for name in experiments %}
     <h1><a anchor="{{name}}">{{name}}</a></h1>
     <h2>Samstats</h2>
-    {{samstat}}
+    {{experiment_report[name]['samstats']}}
     <h2>Rafa Filtered Spearmans</h2>
-    {{rafa_spearman}}
-    {{coverage}}
-  {% endfor %}</body>
-  {% for script in scripts %}
-  {{ script }}
-  {% endfor %}
+    {{experiment_report[name]['spearman']}}
+    <h3>coverage</h3>
+    {{plot_divs[experiment_report[name]['coverage']]}}
+    <h3>distribution</h3>
+    {{plot_divs[experiment_report[name]['distribution']]}}
+    <h3>Correlations plot</h3>
+    <img src="{{experiment_report[name]['spearman_plot']}}"/>
+    <h3>spike-in variance</h3>
+    {{plot_divs[experiment_report[name]['spike_variance']]}}
+    {% endfor %}
+    <h1>Per library reports</h1>
+    {% for library in transcript_library_plots %}
+    {{plot_divs[library]}}
+    {% endfor %}
+  </body>
 </html>
