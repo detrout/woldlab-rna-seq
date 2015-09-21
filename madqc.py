@@ -84,7 +84,10 @@ def compute_all_vs_all_scores(fpkms, Acutoff=0):
     all_scores = collections.OrderedDict()
     shape = (len(fpkms.columns),len(fpkms.columns))
     for i in range(0, len(fpkms.columns)):
-        for j in range(i + 1, len(fpkms.columns)):
+        for j in range(0, len(fpkms.columns)):
+            if i == j:
+                continue
+
             rep1 = fpkms.columns[i]
             rep2 = fpkms.columns[j]
             scores = replicate_scores(fpkms, rep1, rep2, Acutoff)
