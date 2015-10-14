@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import argparse
 import itertools
+import logging
+
 from jinja2 import Environment, PackageLoader
 import matplotlib
 matplotlib.use('Agg')
@@ -16,6 +18,8 @@ from bokeh.embed import components
 
 import models
 import madqc
+
+logger = logging.getLogger('QC Report')
 
 def main(cmdline=None):
     parser = make_parser()
