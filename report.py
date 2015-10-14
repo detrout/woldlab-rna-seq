@@ -34,8 +34,8 @@ def main(cmdline=None):
     distribution = models.load_all_distribution(libraries)
     coverage = models.load_all_coverage(libraries)
 
-    spare_libraries = set(libraries.index).difference(set(experiments))
 
+    seen_libraries = set()
     experiment_report = {}
     transcript_library_plots = []
     plots = {}
@@ -48,11 +48,12 @@ def main(cmdline=None):
         plots[coverage_handle] = make_coverage_plot(coverage, experiments, experiment)
         distribution_handle = str(next(plot_handle))
         plots[distribution_handle] = make_distribution_plot(distribution, experiments, experiment)
-        library_ids = experiments[experiment]
         spearman_filename = make_correlation_heatmap(scores, 'rafa_spearman', experiment)
         spike_variance_handle = str(next(plot_handle))
         plots[spike_variance_handle] = make_spikein_variance_plot(quantifications, experiments, experiment)
 
+        library_ids = experiments[experiment]
+        seen_libraries.update(set(library_ids))
         for library_id in library_ids:
             transcript_handle = str(next(plot_handle))
             plots[transcript_handle] = make_spikein_per_transcript_plot(
@@ -67,6 +68,11 @@ def main(cmdline=None):
             'spearman_plot': spearman_filename,
             'spike_variance': spike_variance_handle,
         }
+
+    spare_libraries = set(libraries.index).difference(seen_libraries)
+    print(libraries.index)
+    print(seen_libraries)
+    print(spare_libraries)
 
     script, plot_divs = components(plots)
 
