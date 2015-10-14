@@ -18,7 +18,7 @@ THREADS=8
 BYTES=32212254720
 
 request_cpus=$(THREADS)
-request_memory=31G
+request_memory=60G
 
 executable=/usr/bin/samtools
 transfer_executable=False
