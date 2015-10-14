@@ -77,13 +77,15 @@ def main(cmdline=None):
     script, plot_divs = components(plots)
 
     template = env.get_template('rnaseq.html')
-    print(template.render(
+    page = template.render(
         experiments=experiments,
         experiment_report=experiment_report,
         transcript_library_plots=transcript_library_plots,
         plot_divs=plot_divs,
         bokeh_script=script,
-        ))
+        )
+    with open(args.output, 'wt') as outstream:
+        outstream.write(page)
 
 
 def make_parser():
@@ -94,6 +96,8 @@ def make_parser():
     parser.add_argument('-l', '--libraries', help='library information table')
     parser.add_argument('-e', '--experiments', help='experiment information table')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
+    parser.add_argument('-o', '--output', default='report.html',
+                        help='output html filename')
 
     return parser
 
