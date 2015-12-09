@@ -6,7 +6,9 @@ from __future__ import print_function
 from argparse import ArgumentParser
 import configparser
 import os
+import logging
 
+logger = logging.getLogger(__name__)
 
 def main(cmdline=None):
     parser = make_parser()
@@ -68,6 +70,37 @@ def add_default_path_arguments(parser):
     parser.add_argument('--georgi-dir',
                         default=defaults['georgi_dir'],
                         help='Specify the directory where georgi scripts are installed')
+    return parser
+
+def validate_args(args):
+    """Warn if path arguments aren't set
+    """
+    can_continue = True
+    if args.genome_dir is None:
+        logger.error("Need path to genome indexes")
+        can_continue = False
+
+    if args.condor_script_dir is None:
+        logger.error("Need path to condor templates")
+        can_continue = False
+
+    if args.star_dir is None:
+        logger.warning("Path to STAR not provided, assuming its on the PATH")
+
+    if args.rsem_dir is None:
+        logger.warning("Path to rsem-calculate-expression not provided, assuming its on the PATH")
+
+    if args.georgi_dir is None:
+        logger.error('Path to "GeorgiScripts" python scripts not provided.')
+        can_continue = False
+
+    return can_continue
+
+def add_debug_arguments(parser):
+    """Add arguments for tuning logging
+    """
+    parser.add_argument('-v', '--verbose', default=False, action='store_true')
+    parser.add_argument('-d', '--debug', default=False, action='store_true')
     return parser
 
 def read_defaults():

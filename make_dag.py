@@ -7,13 +7,26 @@ and some quality control metrics.
 import argparse
 from glob import glob
 import os
+import logging
 
 import make_star_rsem_dag
 import models
 
+logger = logging.getLogger(__name__)
+
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    elif args.verbose:
+        logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.WARNING)
+
+    if not make_star_rsem_dag.validate_args(args):
+        parser.error("Please set required parameters")
 
     sep = models.get_seperator(args.sep)
     libraries = models.load_library_tables(args.libraries, sep)
@@ -29,6 +42,7 @@ def make_parser():
     parser.add_argument('-s', '--sep', choices=['TAB',','], default='TAB')
     parser.add_argument('libraries', nargs='+')
     make_star_rsem_dag.add_default_path_arguments(parser)
+    make_star_rsem_dag.add_debug_arguments(parser)
     
     return parser
 
@@ -58,6 +72,7 @@ def find_fastqs_by_glob(fastq_globs):
 def generate_star_rsem_analysis(args, libraries, read_1_fastqs):
     dag = []
     for library_id in libraries.index:
+        logger.debug("Creating script for %s", library_id)
         read_1_files = read_1_fastqs[library_id]
 
         analysis = make_star_rsem_dag.AnalysisDAG()
