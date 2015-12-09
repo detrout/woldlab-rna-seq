@@ -3,7 +3,7 @@ log=bedgraph-star-$(Process).log
 output=bedgraph-star-$(Process).out
 error=bedgraph-star-$(Process).out
 
-STAR=/woldlab/castor/home/diane/proj/long-rna-seq-pipeline/star/source/STAR
+STAR=$$(star_dir)STAR
 
 CURDIR=$$(curdir)
 IN=$$(in:Aligned.sortedByCoord.out.bam)
