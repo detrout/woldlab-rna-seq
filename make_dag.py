@@ -1,5 +1,9 @@
 #!/usr/bin/python3
+"""Master DAG generator.
 
+This is the script for automating generating the mapping, quantification,
+and some quality control metrics.
+"""
 import argparse
 import collections
 from glob import glob
