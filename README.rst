@@ -201,4 +201,4 @@ Steps for our processing pipeline:
 .. _ENCFF515BAC: https://www.encodeproject.org/files/ENCFF515BAC/@@download/ENCFF515BAC.tar.gz
 .. _ENCFF746IZL: https://www.encodeproject.org/files/ENCFF746IZL/@@download/ENCFF746IZL.tar.gz
 .. _ENCFF826ONU: https://www.encodeproject.org/files/ENCFF826ONU/@@download/ENCFF826ONU.tar.gz
-.. _GeorgiScripts: https://github.com/georgimarinov/GeorgiScripts
+.. _GeorgisScripts: https://github.com/georgimarinov/GeorgiScripts
