@@ -5,10 +5,8 @@ This is the script for automating generating the mapping, quantification,
 and some quality control metrics.
 """
 import argparse
-import collections
 from glob import glob
 import os
-import pandas
 
 import make_star_rsem_dag
 import models
