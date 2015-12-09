@@ -6,7 +6,7 @@ error=distribution-$(Process).out
 
 CURDIR=$$(curdir)
 DISTRIBUTION=/woldlab/castor/home/sau/code/transcriptome/SAM_reads_in_genes3_BAM.py
-GENOME_ROOT=$$(genome_root:/woldlab/castor/home/diane/proj/genome)
+GENOME_ROOT=$$(genome_root:~/proj/genome)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
 SEX=$$(sex:male)

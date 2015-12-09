@@ -5,7 +5,7 @@ output=samstats-$(Process).out
 error=samstats-$(Process).out
 
 CURDIR=$$(curdir)
-GENOME_ROOT=/woldlab/castor/home/diane/proj/genome
+GENOME_ROOT=$$(genome_root:~/proj/genome)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
 SEX=$$(sex:male)

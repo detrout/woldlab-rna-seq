@@ -6,7 +6,7 @@ error=coverage-$(Process).out
 
 CURDIR=$$(curdir)
 GENE_COVERAGE=/woldlab/castor/home/sau/code/transcriptome/gene_coverage_wig_gtf.py
-GENOME_ROOT=$$(genome_root:/woldlab/castor/home/diane/proj/genome)
+GENOME_ROOT=$$(genome_root:~/proj/genome)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
 SEX=$$(sex:male)
