@@ -64,6 +64,9 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs):
 
         analysis.condor_script_dir = args.condor_script_dir
         analysis.genome_dir = args.genome_dir
+        analysis.star_dir = args.star_dir
+        analysis.rsem_dir = args.rsem_dir
+        analysis.georgi_dir = args.georgi_dir
     
         analysis.genome = libraries.loc[library_id, 'genome']
         analysis.annotation = libraries.loc[library_id, 'annotation']
