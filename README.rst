@@ -27,7 +27,7 @@ Required Dependencies
 * scipy.stats
 * jinja2
 * bokeh
-* `GeorgisScripts`_
+* GeorgisScripts_
 
   * gene_coverage_wig_gtf.py
   * SAM_reads_in_genes3_BAM.py
