@@ -86,9 +86,9 @@ def read_defaults():
         analysis = config['analysis']
         defaults['condor_script_dir'] = analysis['condor_script_dir']
         defaults['genome_dir'] = analysis['genome_dir']
-        defaults['star_dir'] = analysis.get('star_dir')
-        defaults['rsem_dir'] = analysis.get('rsem_dir')
-        defaults['georgi_dir'] = analysis.get('georgi_dir')
+        defaults['star_dir'] = analysis['star_dir']
+        defaults['rsem_dir'] = analysis['rsem_dir']
+        defaults['georgi_dir'] = analysis['georgi_dir']
     return defaults
 
 class AnalysisDAG:
