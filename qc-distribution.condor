@@ -5,7 +5,8 @@ output=distribution-$(Process).out
 error=distribution-$(Process).out
 
 CURDIR=$$(curdir)
-DISTRIBUTION=$$(georgi_dir:~/proj/GeorgiScripts)/SAM_reads_in_genes3_BAM.py
+GEORGI_DIR=$$(georgi_dir:~/proj/GeorgiScripts)
+DISTRIBUTION=$(GEORGI_DIR)/SAM_reads_in_genes3_BAM.py
 GENOME_ROOT=$$(genome_root:~/proj/genome)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)

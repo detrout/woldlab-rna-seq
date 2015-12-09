@@ -4,7 +4,7 @@ output=rsem-$(Process).out
 error=rsem-$(Process).out
 environment="PATH=/usr/local/bin:/usr/bin:/bin"
 
-RSEM=$$(rsem_dir)rsem-calculate-expression
+RSEM_DIR=$$(rsem_dir)
 GENOME_ROOT=$$(genome_root:~/proj/genome)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
@@ -22,7 +22,7 @@ THREADS=8
 request_cpus=$(THREADS)
 request_memory=42G
 
-executable=$(RSEM)
+executable=$(RSEM_DIR)rsem-calculate-expression
 transfer_executable=False
 should_transfer_files=IF_NEEDED
 

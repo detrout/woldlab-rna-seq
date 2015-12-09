@@ -3,7 +3,7 @@ log=align-star-$(Process).log
 output=align-star-$(Process).out
 error=align-star-$(Process).out
 
-STAR=$$(star_dir)STAR
+STAR_DIR=$$(star_dir)
 GENOME_ROOT=$$(genome_root:/woldlab/castor/home/diane/proj/genome)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
@@ -17,7 +17,7 @@ CURDIR=$$(curdir)
 
 request_cpus=$(THREADS)
 request_memory=31G
-executable=$(STAR)
+executable=$(STAR_DIR)STAR
 transfer_executable=False
 should_transfer_files=IF_NEEDED
 
