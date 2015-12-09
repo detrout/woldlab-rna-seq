@@ -27,11 +27,11 @@ Required Dependencies
 * scipy.stats
 * jinja2
 * bokeh
-* Wold Lab code
+* `GeorgisScripts`_
 
   * gene_coverage_wig_gtf.py
   * SAM_reads_in_genes3_BAM.py
-  * and SAMstats.py
+  * SAMstats.py
 
 Obtaining Indexes
 -----------------
@@ -180,7 +180,6 @@ Steps for our processing pipeline:
 * qc-coverage
 * bedgraph2bigwig
 
-
 .. references
 
 .. _DNA-Nexus: https://www.dnanexus.com/
@@ -200,3 +199,4 @@ Steps for our processing pipeline:
 .. _ENCFF515BAC: https://www.encodeproject.org/files/ENCFF515BAC/@@download/ENCFF515BAC.tar.gz
 .. _ENCFF746IZL: https://www.encodeproject.org/files/ENCFF746IZL/@@download/ENCFF746IZL.tar.gz
 .. _ENCFF826ONU: https://www.encodeproject.org/files/ENCFF826ONU/@@download/ENCFF826ONU.tar.gz
+.. _GeorgiScripts: https://github.com/georgimarinov/GeorgiScripts
