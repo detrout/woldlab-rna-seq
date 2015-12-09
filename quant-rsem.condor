@@ -4,7 +4,7 @@ output=rsem-$(Process).out
 error=rsem-$(Process).out
 environment="PATH=/usr/local/bin:/usr/bin:/bin"
 
-RSEM=/woldlab/castor/home/diane/proj/long-rna-seq-pipeline/rsem/rsem-calculate-expression
+RSEM=$$(rsem_dir)rsem-calculate-expression
 GENOME_ROOT=$$(genome_root:~/proj/genome)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
