@@ -25,17 +25,11 @@ def main(cmdline=None):
     return 0
 
 def make_parser():
-    defaults = make_star_rsem_dag.read_defaults()
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--sep', choices=['TAB',','], default='TAB')
     parser.add_argument('libraries', nargs='+')
+    make_star_rsem_dag.add_default_path_arguments(parser)
     
-    parser.add_argument('--condor-script-dir',
-                        help="specify the directory that the condor scripts located in",
-                        default=defaults['condor_script_dir'])
-    parser.add_argument('--genome-dir',
-                        help="specify the directory that has the genome indexes",
-                        default=defaults['genome_dir'])
     return parser
 
 def find_fastqs(table, fastq_column='read_1'):

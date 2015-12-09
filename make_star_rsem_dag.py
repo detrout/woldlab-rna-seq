@@ -16,6 +16,9 @@ def main(cmdline=None):
 
     analysis.condor_script_dir = args.condor_script_dir
     analysis.genome_dir = args.genome_dir
+    analysis.star_dir = args.star_dir
+    analysis.rsem_dir = args.rsem_dir
+    analysis.georgi_dir = args.georgi_dir
     analysis.genome = args.genome
     analysis.annotation = args.annotation
     analysis.sex = args.sex
@@ -46,17 +49,46 @@ def make_parser():
 
     return parser
 
+def add_default_path_arguments(parser):
+    """Add arguments to allow overriding location of dependencies
+    """
+    defaults = read_defaults()
+    parser.add_argument('--condor-script-dir',
+                        help="specify the directory that the condor scripts located in",
+                        default=defaults['condor_script_dir'])
+    parser.add_argument('--genome-dir',
+                        help="specify the directory that has the genome indexes",
+                        default=defaults['genome_dir'])
+    parser.add_argument('--star-dir',
+                        default=defaults['star_dir'],
+                        help='Specify the directory where STAR is installed')
+    parser.add_argument('--rsem-dir',
+                        default=defaults['rsem_dir'],
+                        help='Specify the directory where rsem is installed')
+    parser.add_argument('--georgi-dir',
+                        default=defaults['georgi_dir'],
+                        help='Specify the directory where georgi scripts are installed')
+    return parser
+
 def read_defaults():
     defaults = {
         'condor_script_dir': None,
-        'genome_dir': None
+        'genome_dir': None,
+        'star_dir': None,
+        'rsem_dir': None,
+        'georgi_dir': None,
     }
     config = configparser.ConfigParser()
-    config.read([os.path.expanduser('~/.htsworkflow.ini'), '/etc/htsworkflow.ini'])
+    config.read([os.path.expanduser('~/.htsworkflow.ini'),
+                 '/etc/htsworkflow.ini'])
+
     if config.has_section('analysis'):
         analysis = config['analysis']
         defaults['condor_script_dir'] = analysis['condor_script_dir']
-        defaults['genome_dir'] =analysis['genome_dir']
+        defaults['genome_dir'] = analysis['genome_dir']
+        defaults['star_dir'] = analysis.get('star_dir')
+        defaults['rsem_dir'] = analysis.get('rsem_dir')
+        defaults['georgi_dir'] = analysis.get('georgi_dir')
     return defaults
 
 class AnalysisDAG:
@@ -99,6 +131,15 @@ VARS {job_id}_qc-coverage     genome_root="{genome_dir}"
 VARS {job_id}_qc-distribution genome_root="{genome_dir}"
 VARS {job_id}_bedgraph2bigwig genome_root="{genome_dir}"
 
+VARS {job_id}_align-star-se   star_dir="{star_dir}"
+VARS {job_id}_bedgraph-star   star_dir="{star_dir}"
+
+VARS {job_id}_quant-rsem      rsem_dir="{rsem_dir}"
+
+VARS {job_id}_qc-samstats     georgi_dir="{georgi_dir}"
+VARS {job_id}_qc-coverage     georgi_dir="{georgi_dir}"
+VARS {job_id}_qc-distribution georgi_dir="{georgi_dir}"
+
 VARS {job_id}_align-star-se   genome="{genome}" annotation="{annotation}" sex="{sex}" 
 VARS {job_id}_sort-samtools   genome="{genome}" annotation="{annotation}" sex="{sex}" 
 VARS {job_id}_quant-rsem      genome="{genome}" annotation="{annotation}" sex="{sex}"
@@ -115,6 +156,9 @@ VARS {job_id}_align-star-se read1="{fastqs}"
     def __init__(self):
         self.condor_script_dir = None
         self.genome_dir = None
+        self.star_dir = None
+        self.rsem_dir = None
+        self.georgi_dir = None
         self.job_id = None
         self.genome = None
         self.annotation = None
@@ -132,6 +176,9 @@ VARS {job_id}_align-star-se read1="{fastqs}"
         return self.template.format(
             condor_script_dir=self.condor_script_dir,
             genome_dir=self.genome_dir,
+            star_dir=self.star_dir,
+            rsem_dir=self.rsem_dir,
+            georgi_dir=self.georgi_dir,
             job_id=self.job_id,
             genome=self.genome,
             annotation=self.annotation,
