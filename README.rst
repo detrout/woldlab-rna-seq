@@ -91,7 +91,9 @@ called .htsworkflow.ini with the contents::
   [analysis]
   condor_script_dir=<path to long-rna-seq-condor repository>
   genome_dir=<path to where the root of where the indexes are extracted>
-
+  star_dir=<directory containing STAR executable>
+  rsem_dir=<directory containing rsem-calculate-expression>
+  georgi_dir=<directory containing "GeorgiScripts" python files>
 
 Processing
 ==========
