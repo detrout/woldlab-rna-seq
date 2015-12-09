@@ -84,23 +84,30 @@ def read_defaults():
 
     if config.has_section('analysis'):
         analysis = config['analysis']
-        defaults['condor_script_dir'] = analysis['condor_script_dir']
-        defaults['genome_dir'] = analysis['genome_dir']
-        defaults['star_dir'] = analysis['star_dir']
-        defaults['rsem_dir'] = analysis['rsem_dir']
-        defaults['georgi_dir'] = analysis['georgi_dir']
+        for name in ['condor_script_dir', 'genome_dir',
+                     'star_dir', 'rsem_dir', 'georgi_dir']:
+            defaults[name] = normalize_path(analysis.get(name))
+
     return defaults
 
+def normalize_path(path):
+    if path is None:
+        return None
+    elif len(path) == 0:
+        return path
+    else:
+        return os.path.join(path, '')
+
 class AnalysisDAG:
-    template = """JOB {job_id}_align-star-se {condor_script_dir}/align-star-se.condor
-JOB {job_id}_sort-samtools {condor_script_dir}/sort-samtools.condor
-JOB {job_id}_quant-rsem {condor_script_dir}/quant-rsem.condor
-JOB {job_id}_index-samtools {condor_script_dir}/index-samtools.condor
-JOB {job_id}_qc-samstats {condor_script_dir}/qc-samstats.condor
-JOB {job_id}_bedgraph-star {condor_script_dir}/bedgraph-star.condor
-JOB {job_id}_qc-coverage {condor_script_dir}/qc-coverage.condor
-JOB {job_id}_qc-distribution {condor_script_dir}/qc-distribution.condor
-JOB {job_id}_bedgraph2bigwig {condor_script_dir}/bedgraph2bigwig.condor
+    template = """JOB {job_id}_align-star-se {condor_script_dir}align-star-se.condor
+JOB {job_id}_sort-samtools {condor_script_dir}sort-samtools.condor
+JOB {job_id}_quant-rsem {condor_script_dir}quant-rsem.condor
+JOB {job_id}_index-samtools {condor_script_dir}index-samtools.condor
+JOB {job_id}_qc-samstats {condor_script_dir}qc-samstats.condor
+JOB {job_id}_bedgraph-star {condor_script_dir}bedgraph-star.condor
+JOB {job_id}_qc-coverage {condor_script_dir}qc-coverage.condor
+JOB {job_id}_qc-distribution {condor_script_dir}qc-distribution.condor
+JOB {job_id}_bedgraph2bigwig {condor_script_dir}bedgraph2bigwig.condor
 
 PARENT {job_id}_align-star-se  CHILD {job_id}_sort-samtools
 PARENT {job_id}_align-star-se  CHILD {job_id}_index-samtools
