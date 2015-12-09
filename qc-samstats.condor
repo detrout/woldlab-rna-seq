@@ -14,7 +14,7 @@ GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)/
 CHROM_INFO=$(GENOME_DIR)/chrNameLength.txt
 IN=$$(in:Aligned.sortedByCoord.out.bam)
 OUT=$$(out:Aligned.sortedByCoord.out.samstats)
-SAMSTATS=/woldlab/castor/home/sau/code/SAMstats.py
+SAMSTATS=$$(georgi_dir:~/proj/GeorgiScripts)/SAMstats.py
 
 request_cpus=1
 request_memory=4G

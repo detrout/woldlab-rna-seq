@@ -5,7 +5,7 @@ output=coverage-$(Process).out
 error=coverage-$(Process).out
 
 CURDIR=$$(curdir)
-GENE_COVERAGE=/woldlab/castor/home/sau/code/transcriptome/gene_coverage_wig_gtf.py
+GENE_COVERAGE=$$(georgi_dir:~/proj/GeorgiScripts)/gene_coverage_wig_gtf.py
 GENOME_ROOT=$$(genome_root:~/proj/genome)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)

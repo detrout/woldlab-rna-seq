@@ -5,7 +5,7 @@ output=distribution-$(Process).out
 error=distribution-$(Process).out
 
 CURDIR=$$(curdir)
-DISTRIBUTION=/woldlab/castor/home/sau/code/transcriptome/SAM_reads_in_genes3_BAM.py
+DISTRIBUTION=$$(georgi_dir:~/proj/GeorgiScripts)/SAM_reads_in_genes3_BAM.py
 GENOME_ROOT=$$(genome_root:~/proj/genome)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
