@@ -91,10 +91,10 @@ def load_experiments(experiment_filenames, sep='\t'):
 
     experiments = {}
     all_tables = pandas.concat(tables)
-    for i in all_tables.index:
-        experiment = all_tables.loc[i, 'experiment']
-        replicates = all_tables.loc[i, 'replicates'].split(',')
-        experiments[experiment] = replicates
+
+    for i, row in all_tables.iterrows():
+        replicates = row.replicates.split(',')
+        experiments[row.experiment] = replicates
     return experiments
 
 
