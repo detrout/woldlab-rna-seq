@@ -1,6 +1,16 @@
 Changelog
 =========
 
+Release 0.3
+-----------
+
+Adjust madqc.py script to take different arguments.
+madqc.py -e now specifies an experiment table like
+some of the other scripts. To get the old early
+behavior (or if you don't have an experiment table),
+you can use -n or --experiment-name to specify
+a name for an experiment along with a list of replicates.
+
 Release 0.2
 -----------
 

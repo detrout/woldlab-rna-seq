@@ -132,37 +132,62 @@ def load_replicates(replicates, libraries, column='FPKM'):
     return quantifications
 
 
-def main(cmdline=None):
-    parser = make_parser()
-    args = parser.parse_args(cmdline)
-
-    if args.experiment is None:
-        parser.error("Please provide an experiment name. (Used as filename)")
-    else:
-        score_name = models.make_correlation_filename(args.experiment)
-        quant_name = models.make_quantification_filename(args.experiment,
-                                                         args.quantification)
+def create_quantification_cache(
+        library_table, experiment_name, replicates, quantification_name,
+        sep='\t'):
+    score_filename = models.make_correlation_filename(experiment_name)
+    quant_filename = models.make_quantification_filename(experiment_name,
+                                                         quantification_name)
     
-    sep = models.get_seperator(args.sep)    
-    libraries = models.load_library_tables([args.library], sep=sep)
-    quantifications = load_replicates(args.replicates,
+    libraries = models.load_library_tables([library_table], sep=sep)
+    quantifications = load_replicates(replicates,
                                       libraries,
-                                      args.quantification)
-    if os.path.exists(quant_name):
-        os.unlink(quant_name)
+                                      quantification_name)
+    if os.path.exists(quant_filename):
+        os.unlink(quant_filename)
 
-    store = pandas.HDFStore(quant_name, complevel=9, complib='blosc')
+    store = pandas.HDFStore(quant_filename, complevel=9, complib='blosc')
     store.append('quantifications', quantifications)
     store.close()
 
     scores = compute_all_vs_all_scores(quantifications)
-    if os.path.exists(score_name):
-        os.unlink(score_name)
+    if os.path.exists(score_filename):
+        os.unlink(score_filename)
 
-    store = pandas.HDFStore(score_name)
+    store = pandas.HDFStore(score_filename)
     for key in scores:
         store.append(key, scores[key])
     store.close()
+
+
+def main(cmdline=None):
+    parser = make_parser()
+    args = parser.parse_args(cmdline)
+
+    sep = models.get_seperator(args.sep)
+    if args.experiments:
+        experiments = models.load_experiments([args.experiments], sep=sep)
+    else:
+        if args.experiment_name is None:
+            parser.error(
+                "Please provide an experiment name. (Used as filename)")
+        if len(args.replicates) == 0:
+            parser.error(
+                "Please provide list of replicates or experiment table")
+        experiments = {args.experiment_name: args.replicates}
+
+    if args.library is None:
+        parser.error("Please provide library information tables")
+
+    for experiment_name in experiments:
+        replicates = experiments[experiment_name]
+        logging.info('Processing:', experiment_name, ','.join(replicates))
+        create_quantification_cache(
+            args.library,
+            experiment_name,
+            replicates,
+            args.quantification,
+            sep)
 
 
 def make_parser():
@@ -174,9 +199,11 @@ def make_parser():
     #                     default='gene',
     #                     help="Quantify on genes or transcripts")
 
-    parser.add_argument('-l', '--library', help='library information table')
-    parser.add_argument('-e', '--experiment', help='experiment name')
-    parser.add_argument('replicates', nargs='+',
+    parser.add_argument('-l', '--library',
+                        help='library information table')
+    parser.add_argument('-e', '--experiments', help='experiments tables')
+    parser.add_argument('-n', '--experiment-name', help='experiment name')
+    parser.add_argument('replicates', nargs='*',
                         help='list of replicates for this experiment')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     return parser
