@@ -16,16 +16,16 @@ def load_rsem_quantifications(experiment_files, index=None, column='FPKM'):
     
     Columns will be library accession identifiers.
     """
-    COUNT_COL = 4
-    TPM_COL = 5
-    FPKM_COL = 6
-    if column == 'expected_count':
-        score_column = COUNT_COL
-    elif column == 'FPKM':
-        score_column = FPKM_COL
-    elif column == 'TPM':
-        score_column = TPM_COL
-    else:
+    scores = {
+        'length': 2,
+        'effective_length': 3,
+        'expected_count': 4,
+        'TPM': 5,
+        'FPKM': 6,
+        }
+
+    score_column = scores.get(column)
+    if score_column is None:
         raise ValueError("Unrecognized column name")
 
     quantifications = []
