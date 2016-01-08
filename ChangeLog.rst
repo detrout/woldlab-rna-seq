@@ -11,6 +11,10 @@ behavior (or if you don't have an experiment table),
 you can use -n or --experiment-name to specify
 a name for an experiment along with a list of replicates.
 
+Add makersemcsv.py script to read rsem files and
+write out a csv file for some column of interest
+in various libraries.
+
 Release 0.2
 -----------
 
