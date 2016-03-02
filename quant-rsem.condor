@@ -5,12 +5,12 @@ error=rsem-$(Process).out
 environment="PATH=/usr/local/bin:/usr/bin:/bin"
 
 RSEM_DIR=$$(rsem_dir)
-GENOME_ROOT=$$(genome_root:~/proj/genome)
+GENOME_ROOT=$$(genome_root:~/proj/genome/)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
 SEX=$$(sex:male)
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)/rsem
+GENOME_DIR=$(GENOME_ROOT)$(GENOME_TRIPLET)/rsem
 
 # dnanexus pipeline uses "star_anno_bam"
 CURDIR=$$(curdir)
