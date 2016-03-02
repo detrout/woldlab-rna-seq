@@ -5,17 +5,17 @@ output=samstats-$(Process).out
 error=samstats-$(Process).out
 
 CURDIR=$$(curdir)
-GENOME_ROOT=$$(genome_root:~/proj/genome)
+GENOME_ROOT=$$(genome_root:~/proj/genome/)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
 SEX=$$(sex:male)
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)/
-CHROM_INFO=$(GENOME_DIR)/chrNameLength.txt
+GENOME_DIR=$(GENOME_ROOT)$(GENOME_TRIPLET)/
+CHROM_INFO=$(GENOME_DIR)chrNameLength.txt
 IN=$$(in:Aligned.sortedByCoord.out.bam)
 OUT=$$(out:Aligned.sortedByCoord.out.samstats)
-GEORGI_DIR=$$(georgi_dir:~/proj/GeorgiScripts)
-SAMSTATS=$(GEORGI_DIR)/SAMstats.py
+GEORGI_DIR=$$(georgi_dir:~/proj/GeorgiScripts/)
+SAMSTATS=$(GEORGI_DIR)SAMstats.py
 
 request_cpus=1
 request_memory=4G
