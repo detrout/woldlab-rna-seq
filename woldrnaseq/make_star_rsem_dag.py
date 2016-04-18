@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 """STAR & RSEM based RNA-Seq pipeline.
 """
 from __future__ import print_function
