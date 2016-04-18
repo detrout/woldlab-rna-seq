@@ -1,0 +1,5 @@
+library_id	analysis_dir	genome	annotation	sex	read_1
+12310	lib_12310	hg38	V38	male	lib_12310/*.fastq.gz
+12311	lib_12311	hg38	V38	male	lib_12311/*.fastq.gz
+12312	lib_12312	hg38	V38	male	lib_12312/*.fastq.gz
+12313	lib_12313	hg38	V38	male	lib_12313/*.fastq.gz
