@@ -87,6 +87,7 @@ def load_experiments(experiment_filenames, sep='\t'):
     tables = []
     for experiment_filename in experiment_filenames:
         table = pandas.read_csv(experiment_filename, sep=sep)
+        required_experiment_columns_present(table)
         tables.append(table)
 
     experiments = {}
@@ -96,6 +97,17 @@ def load_experiments(experiment_filenames, sep='\t'):
         replicates = row.replicates.split(',')
         experiments[row.experiment] = replicates
     return experiments
+
+
+def required_experiment_columns_present(table):
+    """Verify that a experiment table contains required columns
+    """
+    missing = []
+    for key in ['experiment', 'replicates']:
+        if key not in table.columns:
+            missing.append(key)
+    if len(missing) != 0:
+        raise ValueError("Required columns missing: {}".format(','.join(missing)))
 
 
 def load_samstats(filename):
