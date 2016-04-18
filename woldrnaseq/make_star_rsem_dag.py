@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 import configparser
 import os
 import logging
+from pkg_resources import resource_filename
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,6 @@ def main(cmdline=None):
 
     analysis = AnalysisDAG()
 
-    analysis.condor_script_dir = args.condor_script_dir
     analysis.genome_dir = args.genome_dir
     analysis.star_dir = args.star_dir
     analysis.rsem_dir = args.rsem_dir
@@ -32,16 +32,7 @@ def main(cmdline=None):
         print(str(analysis))
 
 def make_parser():
-    defaults = read_defaults()
-    
     parser = ArgumentParser()
-    parser.add_argument('--condor-script-dir',
-                        help="specify the directory that the condor scripts located in",
-                        default=defaults['condor_script_dir'])
-    parser.add_argument('--genome-dir',
-                        help="specify the directory that has the genome indexes",
-                        default=defaults['genome_dir'])
-    
     parser.add_argument('-g', '--genome')
     parser.add_argument('-a', '--annotation')
     parser.add_argument('-s', '--sex')
@@ -49,15 +40,15 @@ def make_parser():
     parser.add_argument('--analysis-dir', help='target dir to store analysis')
     parser.add_argument('fastqs', nargs='+', help='path to fastqs')
 
+    add_default_path_arguments(parser)
+    add_debug_arguments(parser)
+
     return parser
 
 def add_default_path_arguments(parser):
     """Add arguments to allow overriding location of dependencies
     """
     defaults = read_defaults()
-    parser.add_argument('--condor-script-dir',
-                        help="specify the directory that the condor scripts located in",
-                        default=defaults['condor_script_dir'])
     parser.add_argument('--genome-dir',
                         help="specify the directory that has the genome indexes",
                         default=defaults['genome_dir'])
@@ -78,10 +69,6 @@ def validate_args(args):
     can_continue = True
     if args.genome_dir is None:
         logger.error("Need path to genome indexes")
-        can_continue = False
-
-    if args.condor_script_dir is None:
-        logger.error("Need path to condor templates")
         can_continue = False
 
     if args.star_dir is None:
@@ -105,7 +92,6 @@ def add_debug_arguments(parser):
 
 def read_defaults():
     defaults = {
-        'condor_script_dir': None,
         'genome_dir': None,
         'star_dir': None,
         'rsem_dir': None,
@@ -117,8 +103,7 @@ def read_defaults():
 
     if config.has_section('analysis'):
         analysis = config['analysis']
-        for name in ['condor_script_dir', 'genome_dir',
-                     'star_dir', 'rsem_dir', 'georgi_dir']:
+        for name in ['genome_dir', 'star_dir', 'rsem_dir', 'georgi_dir']:
             defaults[name] = normalize_path(analysis.get(name))
 
     return defaults
@@ -132,15 +117,15 @@ def normalize_path(path):
         return os.path.join(path, '')
 
 class AnalysisDAG:
-    template = """JOB {job_id}_align-star-se {condor_script_dir}align-star-se.condor
-JOB {job_id}_sort-samtools {condor_script_dir}sort-samtools.condor
-JOB {job_id}_quant-rsem {condor_script_dir}quant-rsem.condor
-JOB {job_id}_index-samtools {condor_script_dir}index-samtools.condor
-JOB {job_id}_qc-samstats {condor_script_dir}qc-samstats.condor
-JOB {job_id}_bedgraph-star {condor_script_dir}bedgraph-star.condor
-JOB {job_id}_qc-coverage {condor_script_dir}qc-coverage.condor
-JOB {job_id}_qc-distribution {condor_script_dir}qc-distribution.condor
-JOB {job_id}_bedgraph2bigwig {condor_script_dir}bedgraph2bigwig.condor
+    template = """JOB {job_id}_align-star-se {align_star_se}
+JOB {job_id}_sort-samtools {sort_samtools}
+JOB {job_id}_quant-rsem {quant_rsem}
+JOB {job_id}_index-samtools {index_samtools}
+JOB {job_id}_qc-samstats {qc_samstats}
+JOB {job_id}_bedgraph-star {bedgraph_star}
+JOB {job_id}_qc-coverage {qc_coverage}
+JOB {job_id}_qc-distribution {qc_distribution}
+JOB {job_id}_bedgraph2bigwig {bedgraph2bigwig}
 
 PARENT {job_id}_align-star-se  CHILD {job_id}_sort-samtools
 PARENT {job_id}_align-star-se  CHILD {job_id}_index-samtools
@@ -194,7 +179,6 @@ VARS {job_id}_align-star-se read1="{fastqs}"
 """
 
     def __init__(self):
-        self.condor_script_dir = None
         self.genome_dir = None
         self.star_dir = None
         self.rsem_dir = None
@@ -214,7 +198,15 @@ VARS {job_id}_align-star-se read1="{fastqs}"
     
     def __str__(self):
         return self.template.format(
-            condor_script_dir=self.condor_script_dir,
+            align_star_se=resource_filename(__name__, 'align-star-se.condor'),
+            sort_samtools=resource_filename(__name__, 'sort-samtools.condor'),
+            quant_rsem=resource_filename(__name__, 'quant-rsem.condor'),
+            index_samtools=resource_filename(__name__, 'index-samtools.condor'),
+            qc_samstats=resource_filename(__name__, 'qc_samstats.condor'),
+            bedgraph_star=resource_filename(__name__, 'bedgraph-star.condor'),
+            qc_coverage=resource_filename(__name__, 'qc-coverage.condor'),
+            qc_distribution=resource_filename(__name__, 'qc-distribution.condor'),
+            bedgraph2bigwig=resource_filename(__name__, 'bedgraph2bigwig.condor'),
             genome_dir=self.genome_dir,
             star_dir=self.star_dir,
             rsem_dir=self.rsem_dir,
