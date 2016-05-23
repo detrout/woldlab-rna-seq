@@ -39,7 +39,7 @@ def main(cmdline=None):
     transcript_library_plots = []
     plots = {}
     plot_handle = itertools.count()
-    for experiment in experiments:
+    for experiment in sorted(experiments):
         quantifications = models.load_quantifications(experiment, args.quantification)
         coverage_handle = str(next(plot_handle))
         plots[coverage_handle] = make_coverage_plot(coverage, experiments, experiment)
