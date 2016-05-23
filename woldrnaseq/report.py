@@ -13,7 +13,7 @@ import pandas
 from bokeh import mpl
 from bokeh.models import HoverTool
 from bokeh.plotting import figure, ColumnDataSource
-from bokeh.charts import Line, Bar, Dot, HeatMap, BoxPlot
+from bokeh.charts import Line, Bar, Dot, HeatMap, BoxPlot, Histogram
 from bokeh.embed import components
 
 import models
@@ -40,13 +40,12 @@ def main(cmdline=None):
     plots = {}
     plot_handle = itertools.count()
     for experiment in experiments:
-        scores = models.load_correlations(experiment)
         quantifications = models.load_quantifications(experiment, args.quantification)
         coverage_handle = str(next(plot_handle))
         plots[coverage_handle] = make_coverage_plot(coverage, experiments, experiment)
         distribution_handle = str(next(plot_handle))
         plots[distribution_handle] = make_distribution_plot(distribution, experiments, experiment)
-        spearman_filename = make_correlation_heatmap(scores, 'rafa_spearman', experiment)
+
         spike_variance_handle = str(next(plot_handle))
         plots[spike_variance_handle] = make_spikein_variance_plot(quantifications, experiments, experiment)
 
@@ -60,12 +59,11 @@ def main(cmdline=None):
 
         experiment_report[experiment] = {
             'samstats': samstats.select(lambda x: x in library_ids).to_html(),
-            'spearman': scores.rafa_spearman.to_html(),
             'coverage': coverage_handle,
             'distribution': distribution_handle,
-            'spearman_plot': spearman_filename,
             'spike_variance': spike_variance_handle,
         }
+        experiment_report[experiment].update(generate_correlation_plots(experiment, plots, plot_handle))
 
     spare_libraries = set(libraries.index).difference(seen_libraries)
 
@@ -81,6 +79,24 @@ def main(cmdline=None):
         )
     with open(args.output, 'wt') as outstream:
         outstream.write(page)
+
+
+def generate_correlation_plots(experiment, plots, plot_handle):
+    report = {}
+    scores = models.load_correlations(experiment)
+    print('scores', scores.shape)
+    if scores.shape[0] > 0:
+        print('scores passed')
+        report['spearman_plot'] = make_correlation_heatmap(scores, 'rafa_spearman', experiment)
+        correlation_histogram_handle = str(next(plot_handle))
+        plots[correlation_histogram_handle] = make_correlation_histogram(
+            scores, 'rafa_spearman', experiment)
+        report['spearman'] = scores.rafa_spearman.to_html()
+        report['correlation_histogram'] = correlation_histogram_handle
+    else:
+        print('scores failed')
+
+    return report
 
 
 def make_parser():
@@ -189,6 +205,25 @@ def make_correlation_heatmap(scores, score_name, experiment_name, vmin=None, vma
     figure.savefig(filename)
 
     return filename
+
+
+def make_correlation_histogram(scores, score_name, experiment_name):
+    scores = score_upper_triangular(scores[score_name])
+    print(scores)
+    plot = Histogram(scores, bins=min(10, len(scores)),
+                     title='{} scores for {}'.format(
+                         score_name, experiment_name))
+    return plot
+
+
+def score_upper_triangular(df):
+    """Return the cells from the upper triangular indicies of a data frame.
+    """
+    scores = []
+    for i,j in zip(*numpy.triu_indices(len(df), k=1)):
+        scores.append(df.ix[i,j])
+    return scores
+
 
 if __name__ == "__main__":
     main()
