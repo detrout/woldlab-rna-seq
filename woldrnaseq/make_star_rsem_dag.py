@@ -7,6 +7,7 @@ import configparser
 import os
 import logging
 from pkg_resources import resource_filename
+from jinja2 import Environment, PackageLoader
 
 logger = logging.getLogger(__name__)
 
@@ -116,67 +117,6 @@ def normalize_path(path):
         return os.path.join(path, '')
 
 class AnalysisDAG:
-    template = """JOB {job_id}_align-star-se {align_star_se}
-JOB {job_id}_sort-samtools {sort_samtools}
-JOB {job_id}_quant-rsem {quant_rsem}
-JOB {job_id}_index-samtools {index_samtools}
-JOB {job_id}_qc-samstats {qc_samstats}
-JOB {job_id}_bedgraph-star {bedgraph_star}
-JOB {job_id}_qc-coverage {qc_coverage}
-JOB {job_id}_qc-distribution {qc_distribution}
-JOB {job_id}_bedgraph2bigwig {bedgraph2bigwig}
-
-PARENT {job_id}_align-star-se  CHILD {job_id}_sort-samtools
-PARENT {job_id}_align-star-se  CHILD {job_id}_index-samtools
-PARENT {job_id}_align-star-se  CHILD {job_id}_bedgraph-star
-PARENT {job_id}_index-samtools CHILD {job_id}_qc-samstats
-PARENT {job_id}_index-samtools CHILD {job_id}_qc-distribution
-PARENT {job_id}_sort-samtools  CHILD {job_id}_quant-rsem
-PARENT {job_id}_bedgraph-star  CHILD {job_id}_qc-coverage
-PARENT {job_id}_bedgraph-star  CHILD {job_id}_bedgraph2bigwig
-
-VARS {job_id}_align-star-se   curdir="{analysis_dir}"
-VARS {job_id}_sort-samtools   curdir="{analysis_dir}"
-VARS {job_id}_quant-rsem      curdir="{analysis_dir}"
-VARS {job_id}_index-samtools  curdir="{analysis_dir}"
-VARS {job_id}_qc-samstats     curdir="{analysis_dir}"
-VARS {job_id}_bedgraph-star   curdir="{analysis_dir}"
-VARS {job_id}_qc-coverage     curdir="{analysis_dir}"
-VARS {job_id}_qc-distribution curdir="{analysis_dir}"
-VARS {job_id}_bedgraph2bigwig curdir="{analysis_dir}"
-
-VARS {job_id}_align-star-se   genome_root="{genome_dir}"
-VARS {job_id}_sort-samtools   genome_root="{genome_dir}"
-VARS {job_id}_quant-rsem      genome_root="{genome_dir}"
-VARS {job_id}_index-samtools  genome_root="{genome_dir}"
-VARS {job_id}_qc-samstats     genome_root="{genome_dir}"
-VARS {job_id}_bedgraph-star   genome_root="{genome_dir}"
-VARS {job_id}_qc-coverage     genome_root="{genome_dir}"
-VARS {job_id}_qc-distribution genome_root="{genome_dir}"
-VARS {job_id}_bedgraph2bigwig genome_root="{genome_dir}"
-
-VARS {job_id}_align-star-se   star_dir="{star_dir}"
-VARS {job_id}_bedgraph-star   star_dir="{star_dir}"
-
-VARS {job_id}_quant-rsem      rsem_dir="{rsem_dir}"
-
-VARS {job_id}_qc-samstats     georgi_dir="{georgi_dir}"
-VARS {job_id}_qc-coverage     georgi_dir="{georgi_dir}"
-VARS {job_id}_qc-distribution georgi_dir="{georgi_dir}"
-
-VARS {job_id}_align-star-se   genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_sort-samtools   genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_quant-rsem      genome="{genome}" annotation="{annotation}" sex="{sex}"
-VARS {job_id}_index-samtools  genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_qc-samstats     genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_bedgraph-star   genome="{genome}" annotation="{annotation}" sex="{sex}"
-VARS {job_id}_qc-coverage     genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_qc-distribution genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_bedgraph2bigwig genome="{genome}" annotation="{annotation}" sex="{sex}" 
-VARS {job_id}_align-star-se read1="{fastqs}"
-
-"""
-
     def __init__(self):
         self.genome_dir = None
         self.star_dir = None
@@ -191,13 +131,18 @@ VARS {job_id}_align-star-se read1="{fastqs}"
 
     def is_valid(self):
         for key in self.__dict__:
-            if getattr(self, key) is None:
+            if key == 'read_1_fastqs' and len(self.read_1_fastqs) == 0:
+                raise ValueError("Read 1 fastqs are required")
+            elif getattr(self, key) is None:
                 raise ValueError("{} is not set".format(key))
         return True
     
     def __str__(self):
-        return self.template.format(
-            align_star_se=resource_filename(__name__, 'align-star-se.condor'),
+        env = Environment(loader=PackageLoader('woldrnaseq', 'templates'))
+        template = env.get_template('star_rsem.dagman')
+
+        return template.render(
+            align_star=resource_filename(__name__, 'align-star.condor'),
             sort_samtools=resource_filename(__name__, 'sort-samtools.condor'),
             quant_rsem=resource_filename(__name__, 'quant-rsem.condor'),
             index_samtools=resource_filename(__name__, 'index-samtools.condor'),
