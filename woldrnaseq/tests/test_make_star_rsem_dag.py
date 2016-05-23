@@ -1,10 +1,22 @@
 from unittest import TestCase, main
 import logging
 import os
+import tempfile
 from pkg_resources import resource_filename
 from woldrnaseq import make_star_rsem_dag
 
 class TestMakeDag(TestCase):
+    def setUp(self):
+        self.home_fd, self.home_pathname = tempfile.mkstemp(
+            suffix='wold-rna-seq-home')
+        self.old_home_variable = os.environ['HOME']
+        os.environ['HOME'] = self.home_pathname
+
+    def tearDown(self):
+        if os.path.isdir(self.home_pathname):
+            os.rmdir(self.home_pathname)
+        os.environ['HOME'] = self.old_home_variable
+        
     def test_arguments(self):
         parser = make_star_rsem_dag.make_parser()
 
