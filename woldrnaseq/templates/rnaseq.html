@@ -9,7 +9,11 @@
     <script src="/~diane/bokeh/0.10.0/bokehjs/static/js/bokeh.js"></script>
     {{ bokeh_script }}
   </head>
-  <body>{% for name in experiments %}
+  <body>
+    <h1>Table of Contents</h1><ul>{% for name in experiments %}
+      <li><a href="#{{ name }}">{{ name }}</a></li>
+      {% endfor %}
+      <li><a href="#Per_library_reports">Per library reports</a></li></ul>{% for name in experiments %}
     <h1><a name="{{name}}" href="#{{name}}">{{name}}</a></h1>
     <h2>{{ name }} Samstats</h2>
     {{experiment_report[name]['samstats']}}
