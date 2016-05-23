@@ -10,21 +10,24 @@
     {{ bokeh_script }}
   </head>
   <body>{% for name in experiments %}
-    <h1><a anchor="{{name}}">{{name}}</a></h1>
-    <h2>Samstats</h2>
+    <h1><a name="{{name}}" href="#{{name}}">{{name}}</a></h1>
+    <h2>{{ name }} Samstats</h2>
     {{experiment_report[name]['samstats']}}
-    <h2>Rafa Filtered Spearmans</h2>
+    <h2>{{ name }} Rafa Filtered Spearmans</h2>
     {{experiment_report[name]['spearman']}}
-    <h3>coverage</h3>
+    <h2>{{ name }} coverage</h2>
     {{plot_divs[experiment_report[name]['coverage']]}}
-    <h3>distribution</h3>
+    <h2>{{ name }} distribution</h2>
     {{plot_divs[experiment_report[name]['distribution']]}}
-    <h3>Correlations plot</h3>
+    <h2>{{ name }} Pairwise Correlation Heatmap</h2>
     <img src="{{experiment_report[name]['spearman_plot']}}"/>
-    <h3>spike-in variance</h3>
+    <h2>{{ name }} Correlation Histogram</h2>
+    {{plot_divs[experiment_report[name]['correlation_histogram']]}}
+    <h2>{{ name }} spike-in variance</h2>
     {{plot_divs[experiment_report[name]['spike_variance']]}}
     {% endfor %}
-    <h1>Per library reports</h1>
+    <h1><a name ="Per_library_reports"
+           href="#Per_library_reports">Per library reports</a></h1>
     {% for library in transcript_library_plots %}
     {{plot_divs[library]}}
     {% endfor %}
