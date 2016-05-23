@@ -34,7 +34,6 @@ def main(cmdline=None):
     distribution = models.load_all_distribution(libraries)
     coverage = models.load_all_coverage(libraries)
 
-
     seen_libraries = set()
     experiment_report = {}
     transcript_library_plots = []
@@ -43,7 +42,6 @@ def main(cmdline=None):
     for experiment in experiments:
         scores = models.load_correlations(experiment)
         quantifications = models.load_quantifications(experiment, args.quantification)
-
         coverage_handle = str(next(plot_handle))
         plots[coverage_handle] = make_coverage_plot(coverage, experiments, experiment)
         distribution_handle = str(next(plot_handle))
@@ -124,7 +122,6 @@ def make_distribution_plot(distribution, experiments, experiment):
                title="Distribution for {}".format(experiment),
                legend=True,
                stacked=True)
-
 
 def make_spikein_per_transcript_plot(quantifications, library_id, quantification='FPKM'):
     spikein_cpc = pandas.DataFrame(models.get_single_spike_cpc(), columns=['copies'])
