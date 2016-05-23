@@ -68,9 +68,6 @@ def main(cmdline=None):
         }
 
     spare_libraries = set(libraries.index).difference(seen_libraries)
-    print(libraries.index)
-    print(seen_libraries)
-    print(spare_libraries)
 
     script, plot_divs = components(plots)
 
