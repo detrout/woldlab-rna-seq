@@ -103,6 +103,8 @@ def make_parser():
 
 
 def make_coverage_plot(coverage, experiments, experiment):
+    """Show read depth coverage over normalized gene regions.
+    """
     library_ids = experiments[experiment]
     subset = coverage[library_ids]
     plot = Line(subset,
@@ -114,6 +116,8 @@ def make_coverage_plot(coverage, experiments, experiment):
 
 
 def make_distribution_plot(distribution, experiments, experiment):
+    """Show fraction of reads landing in exon, intron, and intergenic regions.
+    """
     library_ids = experiments[experiment]
     subset = distribution.select(lambda x: x in library_ids)
     return Bar(subset,
