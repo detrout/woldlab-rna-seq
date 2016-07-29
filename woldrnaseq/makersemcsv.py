@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 import argparse
-import models
-import madqc
 import logging
+
+from woldrnaseq import models
+from woldrnaseq import madqc
 
 logger = logging.getLogger('RSEM CSV')
 

@@ -9,8 +9,8 @@ from glob import glob
 import os
 import logging
 
-import make_star_rsem_dag
-import models
+from woldrnaseq import make_star_rsem_dag
+from woldrnaseq import models
 
 logger = logging.getLogger(__name__)
 

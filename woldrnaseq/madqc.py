@@ -7,7 +7,7 @@ import os
 import scipy.stats
 import logging
 
-import models
+from woldrnaseq import models
 
 logger = logging.getLogger('madQC')
 
