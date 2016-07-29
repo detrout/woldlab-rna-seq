@@ -22,6 +22,7 @@ PARENT {{job_id}}_bedgraph-star  CHILD {{job_id}}_bedgraph2bigwig
 
 VARS {{job_id}}_align-star      curdir="{{analysis_dir}}"
 VARS {{job_id}}_sort-samtools   curdir="{{analysis_dir}}"
+VARS {{job_id}}_sort-samtools   sort_samtools="{{sort_samtools_sh}}"
 VARS {{job_id}}_quant-rsem      curdir="{{analysis_dir}}"
 VARS {{job_id}}_index-samtools  curdir="{{analysis_dir}}"
 VARS {{job_id}}_qc-samstats     curdir="{{analysis_dir}}"

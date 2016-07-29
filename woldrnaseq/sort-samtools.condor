@@ -12,17 +12,15 @@ GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
 IN=$$(bam_in:Aligned.toTranscriptome.out.bam)
 OUT=$(CURDIR)-$(GENOME_TRIPLET)_anno
 
-THREADS=8
-# samstats -m looks like it wants bytes?
-# this is 30 * 1024 ^ 3 (aka 30G)
-BYTES=32212254720
+THREADS=4
+MEMORY=60G
 
 request_cpus=$(THREADS)
-request_memory=60G
-
-executable=/usr/bin/samtools
-transfer_executable=False
+request_memory=$(MEMORY)
 
 initialdir=$(CURDIR)
-arguments="sort -@ $(THREADS) -m $(BYTES) $(IN) $(OUT)"
+
+transfer_executable=false
+executable=/bin/bash
+arguments="$(sort_samtools) $(IN) $(OUT) $(MEMORY) $(THREADS) $(paired_end)"
 queue
