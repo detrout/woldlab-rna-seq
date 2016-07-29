@@ -150,7 +150,7 @@ class AnalysisDAG:
             sort_samtools=resource_filename(__name__, 'sort-samtools.condor'),
             quant_rsem=resource_filename(__name__, 'quant-rsem.condor'),
             index_samtools=resource_filename(__name__, 'index-samtools.condor'),
-            qc_samstats=resource_filename(__name__, 'qc_samstats.condor'),
+            qc_samstats=resource_filename(__name__, 'qc-samstats.condor'),
             bedgraph_star=resource_filename(__name__, 'bedgraph-star.condor'),
             qc_coverage=resource_filename(__name__, 'qc-coverage.condor'),
             qc_distribution=resource_filename(__name__, 'qc-distribution.condor'),
