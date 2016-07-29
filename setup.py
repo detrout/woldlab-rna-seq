@@ -6,9 +6,11 @@ setup(
     packages = find_packages(),
     entry_points={
         'console_scripts': [
-            'madqc = woldrnaseq.madqc.py:main',
-            'make_dag = woldrnaseq.make_dag.py:main',
-            'makersemcsv = woldrnaseq.makersemcsv.py:main'],
+            'madqc = woldrnaseq.madqc:main',
+            'make_dag = woldrnaseq.make_dag:main',
+            'makersemcsv = woldrnaseq.makersemcsv:main',
+            'qcreport = woldrnaseq.report:main',
+        ],
     },
     install_requires=[
         'bokeh>=0.9.3',
