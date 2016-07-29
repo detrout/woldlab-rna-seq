@@ -4,9 +4,13 @@
 import collections
 from glob import glob
 import os
+from functools import partial
 import pandas
 
 AnalysisFile = collections.namedtuple('AnalysisFile', ['library_id', 'filename'])
+
+def prepend_path(path, file_name):
+    return os.path.join(path, file_name)
 
 def read_line_from_stream(stream):
     """Read a line filtering out blank lines and comments.
@@ -34,6 +38,9 @@ def load_library_tables(table_filenames, sep='\t'):
     """
     tables = []
     for library_file in table_filenames:
+        library_file = os.path.abspath(library_file)
+        print('library_file', library_file)
+        path, name = os.path.split(library_file)
         table = pandas.read_csv(library_file, sep=sep,
                                 index_col='library_id',
                                 dtype={'library_id':str,
@@ -41,6 +48,7 @@ def load_library_tables(table_filenames, sep='\t'):
         required_library_columns_present(table)
         table.index = [str(x) for x in table.index]
         table.index.name = 'library id'
+        table['analysis_dir'] = table['analysis_dir'].apply(partial(prepend_path, path))
         tables.append(table)
 
     libraries = pandas.concat(tables)
@@ -86,6 +94,7 @@ def load_experiments(experiment_filenames, sep='\t'):
     """
     tables = []
     for experiment_filename in experiment_filenames:
+        experiment_filename = os.path.abspath(experiment_filename)
         table = pandas.read_csv(experiment_filename, sep=sep)
         tables.append(table)
 
