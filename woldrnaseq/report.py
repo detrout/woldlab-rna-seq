@@ -16,8 +16,8 @@ from bokeh.plotting import figure, ColumnDataSource
 from bokeh.charts import Line, Bar, Dot, HeatMap, BoxPlot, Histogram
 from bokeh.embed import components
 
-import models
-import madqc
+from woldrnaseq import models
+from woldrnaseq import madqc
 
 logger = logging.getLogger('QC Report')
 
