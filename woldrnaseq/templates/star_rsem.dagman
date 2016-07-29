@@ -60,6 +60,9 @@ VARS {{job_id}}_qc-coverage     genome="{{genome}}" annotation="{{annotation}}" 
 VARS {{job_id}}_qc-distribution genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}" 
 VARS {{job_id}}_bedgraph2bigwig genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
 
-VARS {{job_id}}_align-star read1="{{read_1_fastqs}}"
+VARS {{job_id}}_align-star read1="{{read_1_fastqs}}"{% if read_2_fastqs %}
 VARS {{job_id}}_align-star read2="{{read_2_fastqs}}"
+VARS {{job_id}}_sort-samtools paired_end="1"
+VARS {{job_id}}_quant-rsem paired_end="1"
+{% endif %}
 
