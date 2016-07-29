@@ -32,8 +32,8 @@
     {% endfor %}
     <h1><a name ="Per_library_reports"
            href="#Per_library_reports">Per library reports</a></h1>
-    {% for library in transcript_library_plots %}
-    {{plot_divs[library]}}
+    {% for handle in transcript_library_plots %}
+    {{plot_divs[handle]}}
     {% endfor %}
   </body>
 </html>
