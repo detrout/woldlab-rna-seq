@@ -20,7 +20,6 @@ def read_line_from_stream(stream):
         if len(line) > 0 and not line.startswith('#'):
             yield line
 
-
 def load_library_tables(table_filenames, sep='\t'):
     """Load table describing libraries to be analyized
 
@@ -211,6 +210,7 @@ def load_correlations(experiment):
         scores[key_name] = store[key]
     store.close()
     return pandas.Panel(scores)
+
 
 def load_quantifications(experiment, quantification_name='FPKM'):
     """Load quantifications for an experiment
