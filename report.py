@@ -115,11 +115,16 @@ def make_coverage_plot(coverage, experiments, experiment):
 
 def make_distribution_plot(distribution, experiments, experiment):
     library_ids = experiments[experiment]
-    subset = distribution.select(lambda x: x in library_ids)
+    subset = distribution.select(lambda x: x in library_ids).unstack()
+    subset.index.names = ['class', 'library_id']
+    subset.name = 'fraction'
+    subset = subset.reset_index()
     return Bar(subset,
+               label='library_id',
+               values='fraction',
+               stack='class',
                title="Distribution for {}".format(experiment),
-               legend=True,
-               stacked=True)
+               legend=True)
 
 
 def make_spikein_per_transcript_plot(quantifications, library_id, quantification='FPKM'):
