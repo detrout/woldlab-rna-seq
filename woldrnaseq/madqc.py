@@ -59,6 +59,14 @@ def replicate_scores(table, rep1_name, rep2_name, Acutoff=0):
     M = replz1 - replz2
     A = (replz1 + replz2) / 2.0
 
+    replz1_gt_Acutoff = replz1[A > Acutoff]
+    replz2_gt_Acutoff = replz2[A > Acutoff]
+
+    if len(replz1_gt_Acutoff) == 0:
+        logger.warning("No data survived Acutoff filter in %s", rep1_name)
+    if len(replz2_gt_Acutoff) == 0:
+        logger.warning("No data survived Acutoff filter in %s", rep2_name)
+
     scores = pandas.Series({
         'total_rows': len(table),
         'passed_filter': len(replz1[A > Acutoff]),
@@ -66,8 +74,10 @@ def replicate_scores(table, rep1_name, rep2_name, Acutoff=0):
         'naive_pearson': scipy.stats.pearsonr(rep1, rep2)[0],
         'naive_spearman': scipy.stats.spearmanr(rep1, rep2)[0],
             
-        'rafa_pearson': scipy.stats.pearsonr(replz1[A > Acutoff], replz2[A > Acutoff])[0],
-        'rafa_spearman': scipy.stats.spearmanr(replz1[A > Acutoff], replz2[A > Acutoff])[0],
+        'rafa_pearson': scipy.stats.pearsonr(replz1_gt_Acutoff,
+                                             replz2_gt_Acutoff)[0],
+        'rafa_spearman': scipy.stats.spearmanr(replz1_gt_Acutoff,
+                                             replz2_gt_Acutoff)[0],
         'MAD': numpy.round(numpy.median(numpy.abs(M)[A > Acutoff]) * 1.4826, 3),
         'SD': numpy.round(numpy.sqrt(numpy.mean(M[A > Acutoff] ** 2)), 3)
     },
