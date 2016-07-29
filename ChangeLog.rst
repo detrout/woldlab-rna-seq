@@ -1,6 +1,17 @@
 Changelog
 =========
 
+Release 0.9
+-----------
+
+This introduces several backwards incompatible changes.
+
+wold-rna-seq-condor now
+
+  * has a setup.py script
+  * requires samtools >= 1.3
+  * components were moved into a package
+
 Release 0.3
 -----------
 
