@@ -7,6 +7,7 @@ STAR_DIR=$$(star_dir)
 
 CURDIR=$$(curdir)
 IN=$$(in:Aligned.sortedByCoord.out.bam)
+REFERENCE_PREFIX=$$(reference_prefix:chr)
 
 request_cpus=1
 request_memory=4G
@@ -19,6 +20,6 @@ arguments="--runMode inputAlignmentsFromBAM \
            --inputBAMfile $(IN) \
            --outWigType bedGraph \
            --outWigStrand Unstranded \
-           --outWigReferencesPrefix chr \
+           --outWigReferencesPrefix $(REFERENCE_PREFIX) \
 "
 queue
