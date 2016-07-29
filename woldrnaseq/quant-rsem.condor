@@ -14,6 +14,7 @@ GENOME_DIR=$(GENOME_ROOT)$(GENOME_TRIPLET)/rsem
 PAIRED_END=$$(paired_end)
 # dnanexus pipeline uses "star_anno_bam"
 CURDIR=$$(curdir)
+#IN=$$(IN:$(CURDIR)-$(GENOME_TRIPLET)_anno.bam)
 IN=$(CURDIR)-$(GENOME_TRIPLET)_anno.bam
 OUT=$(CURDIR)-$(GENOME_TRIPLET)_anno_rsem
 RND_SEED=--seed 12345

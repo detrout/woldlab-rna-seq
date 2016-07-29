@@ -1,16 +1,13 @@
 universe=vanilla
 
-log=samtools-sort-$(Process).log
-output=samtools-sort-$(Process).out
-error=samtools-sort-$(Process).out
+log=sort-samtools-$(Process).log
+output=sort-samtools-$(Process).out
+error=sort-samtools-$(Process).out
+environment="PATH=/usr/bin:/bin"
 
-CURDIR=$$(curdir)
-GENOME=$$(genome:mm10)
-ANNOTATION=$$(annotation:M4)
-SEX=$$(sex:male)
+IN=$$($(bam_in):Aligned.toTranscriptome.out.bam)
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-IN=$$(bam_in:Aligned.toTranscriptome.out.bam)
-OUT=$(CURDIR)-$(GENOME_TRIPLET)_anno
+OUT=$(CURDIR)-$(GENOME_TRIPLET)_anno.bam
 
 THREADS=4
 MEMORY=60G
