@@ -219,6 +219,7 @@ def load_quantifications(experiment, quantification_name='FPKM'):
         experiment,
         quantification_name)
     store = pandas.HDFStore(quantification_filename)
+    quantifications = None
     for key in store.keys():
         quantifications =  store[key]
     store.close()
