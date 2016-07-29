@@ -30,9 +30,13 @@ def main(cmdline=None):
 
     sep = models.get_seperator(args.sep)
     libraries = models.load_library_tables(args.libraries, sep)
-    fastqs = dict(find_fastqs(libraries))
+    read1 = dict(find_fastqs(libraries, 'read_1'))
+    if 'read_2' in libraries.columns:
+        read2 = dict(find_fastqs(libraries, 'read_2'))
+    else:
+        read2 = []
 
-    dag = generate_star_rsem_analysis(args, libraries, fastqs)
+    dag = generate_star_rsem_analysis(args, libraries, read1, read2)
     print(dag)
     
     return 0
@@ -46,7 +50,7 @@ def make_parser():
     
     return parser
 
-def find_fastqs(table, fastq_column='read_1'):
+def find_fastqs(table, fastq_column):
     """Find fastqs for a library from a library table
 
     fastqs are a comma seperated glob pattern
@@ -69,15 +73,12 @@ def find_fastqs_by_glob(fastq_globs):
                 logger.warn("Can't find fastq {}. skipping".format(filename))
 
 
-def generate_star_rsem_analysis(args, libraries, read_1_fastqs):
+def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
     dag = []
     for library_id in libraries.index:
         logger.debug("Creating script for %s", library_id)
-        read_1_files = read_1_fastqs[library_id]
-
         analysis = make_star_rsem_dag.AnalysisDAG()
 
-        analysis.condor_script_dir = args.condor_script_dir
         analysis.genome_dir = args.genome_dir
         analysis.star_dir = args.star_dir
         analysis.rsem_dir = args.rsem_dir
@@ -88,7 +89,8 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs):
         analysis.sex = libraries.loc[library_id, 'sex']
         analysis.job_id = library_id
         analysis.analysis_dir = libraries.loc[library_id, 'analysis_dir']
-        analysis.fastqs = read_1_files
+        analysis.read_1_fastqs = read_1_fastqs[library_id]
+        analysis.read_2_fastqs = read_2_fastqs[library_id]
 
         if analysis.is_valid():
             dag.append(str(analysis))

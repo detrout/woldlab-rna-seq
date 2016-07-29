@@ -26,7 +26,8 @@ def main(cmdline=None):
     analysis.sex = args.sex
     analysis.job_id = args.library_id
     analysis.analysis_dir = args.analysis_dir
-    analysis.fastqs = args.fastqs
+    analysis.read_1_fastqs = args.read1
+    analysis.read_2_fastqs = args.read2
 
     if analysis.is_valid():
         print(str(analysis))
@@ -38,7 +39,9 @@ def make_parser():
     parser.add_argument('-s', '--sex')
     parser.add_argument('-l', '--library-id')
     parser.add_argument('--analysis-dir', help='target dir to store analysis')
-    parser.add_argument('fastqs', nargs='+', help='path to fastqs')
+    parser.add_argument('--read1', nargs='+', help='path to read 1 fastqs')
+    parser.add_argument('--read2', nargs='*', default=[],
+                        help='path to read 2 fastqs')
 
     add_default_path_arguments(parser)
     add_debug_arguments(parser)
@@ -127,7 +130,8 @@ class AnalysisDAG:
         self.annotation = None
         self.sex = None
         self.analysis_dir = None
-        self.fastqs = None
+        self.read_1_fastqs = []
+        self.read_2_fastqs = []
 
     def is_valid(self):
         for key in self.__dict__:
@@ -160,7 +164,8 @@ class AnalysisDAG:
             annotation=self.annotation,
             sex=self.sex,
             analysis_dir=self.analysis_dir,
-            fastqs=",".join(self.fastqs),
+            read_1_fastqs=",".join(self.read_1_fastqs),
+            read_2_fastqs=",".join(self.read_2_fastqs),
         )
 
 

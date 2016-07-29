@@ -134,6 +134,10 @@ read_1
   Comma seperated list of unix filename globs specifying where to find
   the first read fastq files.
 
+read_2
+  (optional) Comma seperated list of unix filename glbos specifying where
+  to find the second read (mate pairs) fastq files.
+
 Second, after the definition files are constructed you can generate
 the DagMan script to generate the result files with::
 

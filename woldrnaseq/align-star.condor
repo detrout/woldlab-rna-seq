@@ -13,7 +13,15 @@ GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)/
 THREADS=8
 
 READ1=$$(read1)
+READ2=$$(read2)
 CURDIR=$$(curdir)
+
+if defined READ2
+  EXTRA_ARGS=
+else
+  # this argument is not used for paired end reads
+  EXTRA_ARGS=--outSAMstrandField intronMotif
+endif
 
 request_cpus=$(THREADS)
 request_memory=31G
@@ -23,7 +31,7 @@ should_transfer_files=IF_NEEDED
 
 initialdir=$(CURDIR)
 arguments="--genomeDir $(GENOME_DIR) \
-           --readFilesIn $(READ1) \
+           --readFilesIn $(READ1) $(READ2) \
            --readFilesCommand zcat \
 	   --runThreadN $(THREADS) \
 	   --genomeLoad NoSharedMemory \
@@ -40,10 +48,10 @@ arguments="--genomeDir $(GENOME_DIR) \
 	   --outSAMunmapped Within \
 	   --outFilterType BySJout \
 	   --outSAMattributes NH HI AS NM MD \
-	   --outSAMstrandField intronMotif \
 	   --outSAMtype BAM SortedByCoordinate \
 	   --quantMode TranscriptomeSAM \
 	   --sjdbScore 1 \
 	   --limitBAMsortRAM 30000000000 \
+           $(EXTRA_ARGS) \
 "
 queue
