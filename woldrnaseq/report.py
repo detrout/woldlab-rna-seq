@@ -24,80 +24,28 @@ logger = logging.getLogger('QC Report')
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
-    env = Environment(loader=PackageLoader('woldrnaseq', 'templates'))
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    elif args.verbose:
+        logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.WARNING)
+
     sep = models.get_seperator(args.sep)
 
-    experiments = models.load_experiments([args.experiments], sep)
-    libraries = models.load_library_tables([args.libraries], sep)
+    if not args.experiments:
+        parser.error("Please provide experiment table filename")
 
-    samstats = models.load_all_samstats(libraries)
-    distribution = models.load_all_distribution(libraries)
-    coverage = models.load_all_coverage(libraries)
+    if not args.libraries:
+        parser.error("Please provide library table filename")
 
-    seen_libraries = set()
-    experiment_report = {}
-    transcript_library_plots = []
-    plots = {}
-    plot_handle = itertools.count()
-    for experiment in sorted(experiments):
-        quantifications = models.load_quantifications(experiment, args.quantification)
-        coverage_handle = str(next(plot_handle))
-        plots[coverage_handle] = make_coverage_plot(coverage, experiments, experiment)
-        distribution_handle = str(next(plot_handle))
-        plots[distribution_handle] = make_distribution_plot(distribution, experiments, experiment)
+    report = QCReport([args.experiments], [args.libraries],
+                      quantification=args.quantification,
+                      sep=sep)
 
-        spike_variance_handle = str(next(plot_handle))
-        plots[spike_variance_handle] = make_spikein_variance_plot(quantifications, experiments, experiment)
-
-        library_ids = experiments[experiment]
-        seen_libraries.update(set(library_ids))
-        for library_id in library_ids:
-            transcript_handle = str(next(plot_handle))
-            plots[transcript_handle] = make_spikein_per_transcript_plot(
-                quantifications, library_id, args.quantification)
-            transcript_library_plots.append(transcript_handle)
-
-        experiment_report[experiment] = {
-            'samstats': samstats.select(lambda x: x in library_ids).to_html(),
-            'coverage': coverage_handle,
-            'distribution': distribution_handle,
-            'spike_variance': spike_variance_handle,
-        }
-        experiment_report[experiment].update(generate_correlation_plots(experiment, plots, plot_handle))
-
-    spare_libraries = set(libraries.index).difference(seen_libraries)
-
-    script, plot_divs = components(plots)
-
-    template = env.get_template('rnaseq.html')
-    page = template.render(
-        experiments=experiments,
-        experiment_report=experiment_report,
-        transcript_library_plots=transcript_library_plots,
-        plot_divs=plot_divs,
-        bokeh_script=script,
-        )
     with open(args.output, 'wt') as outstream:
-        outstream.write(page)
-
-
-def generate_correlation_plots(experiment, plots, plot_handle):
-    report = {}
-    scores = models.load_correlations(experiment)
-    print('scores', scores.shape)
-    if scores.shape[0] > 0:
-        print('scores passed')
-        report['spearman_plot'] = make_correlation_heatmap(scores, 'rafa_spearman', experiment)
-        correlation_histogram_handle = str(next(plot_handle))
-        plots[correlation_histogram_handle] = make_correlation_histogram(
-            scores, 'rafa_spearman', experiment)
-        report['spearman'] = scores.rafa_spearman.to_html()
-        report['correlation_histogram'] = correlation_histogram_handle
-    else:
-        print('scores failed')
-
-    return report
-
+        outstream.write(report.render())
 
 def make_parser():
     parser = argparse.ArgumentParser()
@@ -109,79 +57,209 @@ def make_parser():
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('-o', '--output', default='report.html',
                         help='output html filename')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='Verbose log messages')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='Debug log messages')
 
     return parser
 
 
-def make_coverage_plot(coverage, experiments, experiment):
-    """Show read depth coverage over normalized gene regions.
-    """
-    library_ids = experiments[experiment]
-    subset = coverage[library_ids]
-    plot = Line(subset,
-                title="Coverage for {}".format(experiment),
-                xlabel="position quantile (5' to 3')",
-                ylabel="Read depth",
-                legend=True)
-    return plot
+class QCReport:
+    def __init__(self, experiments, libraries, quantification, sep="\t"):
+        # user set parameters
+        self.experiments = models.load_experiments(experiments, sep)
+        self.libraries = models.load_library_tables(libraries, sep)
+        self.quantification_name = quantification
 
+        # cached values
+        self._samstats = models.load_all_samstats(self.libraries)
+        self._distribution = models.load_all_distribution(self.libraries)
+        self._coverage = models.load_all_coverage(self.libraries)
 
-def make_distribution_plot(distribution, experiments, experiment):
-    """Show fraction of reads landing in exon, intron, and intergenic regions.
-    """
-    library_ids = experiments[experiment]
-    subset = distribution.select(lambda x: x in library_ids)
-    return Bar(subset,
-               title="Distribution for {}".format(experiment),
-               legend=True,
-               stacked=True)
+        # working space for generating report
+        self._plot_handle = itertools.count()
+        self._plots = {}
+        self._experiment_report = {}
+        self._transcript_library_plots = []
 
-def make_spikein_per_transcript_plot(quantifications, library_id, quantification='FPKM'):
-    spikein_cpc = pandas.DataFrame(models.get_single_spike_cpc(), columns=['copies'])
-    library = quantifications[library_id]
-    spikes = library[library.index.isin(spikein_cpc.index)]
-    copies_vs_quant = pandas.concat([spikein_cpc, spikes], axis=1)
+    @property
+    def next_plot_handle(self):
+        return str(next(self._plot_handle))
 
-    source = ColumnDataSource(
-        data=dict(
-            x = copies_vs_quant['copies'],
-            y = copies_vs_quant[library_id],
-            desc = copies_vs_quant.index,
+    def render(self):
+        env = Environment(loader=PackageLoader('woldrnaseq', 'templates'))
+
+        self.generate_report()
+        print('plots', len(self._plots), self._plots)
+        print('transcript', len(self._transcript_library_plots), self._transcript_library_plots)
+        script, plot_divs = components(self._plots)
+        print(plot_divs)
+        template = env.get_template('rnaseq.html')
+        page = template.render(
+            experiments=self.experiments,
+            experiment_report=self._experiment_report,
+            transcript_library_plots=self._transcript_library_plots,
+            plot_divs=plot_divs,
+            bokeh_script=script,
+            )
+        return page
+
+    def generate_report(self):
+        seen_libraries = set()
+        for experiment in sorted(self.experiments):
+            quantifications = models.load_quantifications(
+                experiment,
+                self.quantification_name)
+
+            library_ids = self.experiments[experiment]
+            seen_libraries.update(set(library_ids))
+            for library_id in library_ids:
+                transcript_handle = self.make_spikein_per_transcript_plot(
+                    quantifications,
+                    library_id)
+                self._transcript_library_plots.append(transcript_handle)
+
+            cur_experiment = {
+                'samstats': self.make_samstats_html(library_ids),
+                'coverage': self.make_coverage_plot(experiment),
+                'distribution': self.make_distribution_plot(experiment),
+            }
+
+            #handle = self.make_spikein_variance_plot(quantifications, experiment)
+            #if handle:
+            #    cur_experiment['spike_variance'] = handle
+            #else:
+            #    print("Didn't generate spike report for:", experiment)
+
+            cur_experiment.update(self.make_correlation_plots(experiment))
+            self._experiment_report[experiment] = cur_experiment
+
+        spare_libraries = set(self.libraries.index).difference(seen_libraries)
+
+    def make_correlation_plots(self, experiment):
+        report = {}
+        scores = models.load_correlations(experiment)
+        print('scores', scores.shape)
+        if scores.shape[0] > 0:
+            print('scores passed')
+            report['spearman_plot'] = make_correlation_heatmap(
+                scores, 'rafa_spearman', experiment)
+            report['spearman'] = scores.rafa_spearman.to_html()
+            if scores.shape[1] > 2:
+                handle = self.next_plot_handle
+                self._plots[handle] = make_correlation_histogram(
+                    scores, 'rafa_spearman', experiment)
+                report['correlation_histogram'] = handle
+        else:
+            print('scores failed')
+
+        return report
+
+    def make_coverage_plot(self, experiment):
+        """Show read depth coverage over normalized gene regions.
+        """
+        library_ids = self.experiments[experiment]
+        subset = self._coverage[library_ids]
+        plot = Line(subset,
+                    title="Coverage for {}".format(experiment),
+                    xlabel="position quantile (5' to 3')",
+                    ylabel="Read depth",
+                    legend=True)
+        handle = self.next_plot_handle
+        logger.debug('coverage plot handle for %s: %s', experiment, handle)
+        self._plots[handle] = plot
+        return handle
+
+    def make_distribution_plot(self, experiment):
+        """Show fraction of reads landing in exon, intron, and intergenic regions.
+        """
+        library_ids = self.experiments[experiment]
+        subset = self._distribution.select(lambda x: x in library_ids).unstack()
+        subset.index.names = ['class', 'library_id']
+        subset.name = 'fraction'
+        subset = subset.reset_index()
+        print(subset)
+        plot = Bar(subset,
+                   label='library_id',
+                   values='fraction',
+                   stack='class',
+                   title="Distribution for {}".format(experiment),
+                   legend=True,
         )
-    )
-    hover = HoverTool(
-        tooltips=[
-            ('index', '$index'),
-            ('transcripts', '$x'),
-            ('fpkms', '$y'),
-            ('desc', '@desc'),
-        ]
-    )
-    plot = figure(
-        title="Spike-in for library {}".format(library_id),
-        tools=["pan","wheel_zoom","reset","resize",hover]
-    )
-    plot.xaxis.axis_label = "transcripts spiked in"
-    plot.yaxis.axis_label = "RNA-Seq RSEM ({})".format(quantification)
-    plot.circle('x', 'y', source=source)
-    return plot
+        handle = self.next_plot_handle
+        logger.debug('distribution plot handle for %s: %s', experiment, handle)
+        self._plots[handle] = plot
+        return handle
 
-def make_spikein_variance_plot(quantifications, experiments, experiment, quantification='FPKM'):
-    spikein_cpc = models.get_single_spike_cpc().sort(inplace=False)
-    library_ids = experiments[experiment]
-    libraries = quantifications[library_ids]
-    spikes = libraries[libraries.index.isin(spikein_cpc.index)]
-    spikes_sorted = spikes.reindex(spikein_cpc.index)
+    def make_samstats_html(self, library_ids):
+        return self._samstats.select(lambda x: x in library_ids).to_html()
 
-    plot = BoxPlot(
-        spikes_sorted.T,
-        title="Spike-in variance for experiment {}".format(experiment),
-        outliers=True,
-        xlabel="spike-in",
-        ylabel="RNA-Seq RSEM ({})".format(quantification),
-        width=900,
-    )
-    return plot
+    def make_spikein_per_transcript_plot(self, quantifications, library_id):
+        spikein_cpc = pandas.DataFrame(models.get_single_spike_cpc(),
+                                       columns=['copies'])
+        library = quantifications[library_id]
+        spikes = library[library.index.isin(spikein_cpc.index)]
+        if len(spikes) == 0:
+            logger.warning("No spike-ins detected for %s", library_id)
+            return None
+
+        copies_vs_quant = pandas.concat([spikein_cpc, spikes], axis=1)
+
+        source = ColumnDataSource(
+            data=dict(
+                copies = copies_vs_quant['copies'],
+                fpkms = copies_vs_quant[library_id],
+                desc = copies_vs_quant.index,
+            )
+        )
+        hover = HoverTool(
+            tooltips=[
+                ('index', '$index'),
+                ('transcripts', '@copies'),
+                ('fpkms', '@fpkms'),
+                ('desc', '@desc'),
+            ]
+        )
+        plot = figure(
+            title="Spike-in for library {}".format(library_id),
+            tools=["pan","wheel_zoom","reset","resize",hover]
+        )
+        plot.xaxis.axis_label = "transcripts spiked in"
+        plot.yaxis.axis_label = "RNA-Seq RSEM ({})".format(self.quantification_name)
+        #plot.circle('copies', 'fpkms', source=source)
+        plot.circle(x=copies_vs_quant['copies'], y=copies_vs_quant[library_id])
+
+        handle = self.next_plot_handle
+        logger.debug('spikein per transcript plot handle for %s: %s',
+                     library_id,
+                     handle)
+        self._plots[handle] = plot
+        return handle
+
+    def make_spikein_variance_plot(self, quantifications, experiment):
+        spikein_cpc = models.get_single_spike_cpc().sort_values(inplace=False)
+        library_ids = self.experiments[experiment]
+        libraries = quantifications[library_ids]
+        spikes = libraries[libraries.index.isin(spikein_cpc.index)]
+        if len(spikes) == 0:
+            logger.warning("No spikes detected for %s", str(experiment))
+            return None
+
+        spikes_sorted = spikes.reindex(spikein_cpc.index)
+
+        plot = BoxPlot(
+            spikes_sorted.T,
+            title="Spike-in variance for experiment {}".format(experiment),
+            outliers=True,
+            xlabel="spike-in",
+            ylabel="RNA-Seq RSEM ({})".format(self.quantification_name),
+            width=900,
+        )
+
+        handle = self.next_plot_handle
+        self._plots[handle] = plot
+        return handle
 
 
 def make_correlation_heatmap(scores, score_name, experiment_name, vmin=None, vmax=None, cmap="coolwarm"):
@@ -209,10 +287,9 @@ def make_correlation_heatmap(scores, score_name, experiment_name, vmin=None, vma
 
 def make_correlation_histogram(scores, score_name, experiment_name):
     scores = score_upper_triangular(scores[score_name])
-    print(scores)
     plot = Histogram(scores, bins=min(10, len(scores)),
                      title='{} scores for {}'.format(
-                         score_name, experiment_name))
+                     score_name, experiment_name))
     return plot
 
 
