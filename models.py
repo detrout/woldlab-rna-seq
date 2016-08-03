@@ -336,4 +336,7 @@ def get_bulk_spike_cpc():
         ('gSpikein_ERCC-00061',        7,),
         ('gSpikein_ERCC-00048',        2,),
     ]
-    return pandas.Series(collections.OrderedDict(cpc), dtype=float)
+    s = pandas.Series(collections.OrderedDict(cpc), dtype=float)
+    s.index.name = 'spike-in'
+    s.name = 'cpc'
+    return s
