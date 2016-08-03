@@ -158,7 +158,7 @@ def make_spikein_per_transcript_plot(quantifications, library_id, quantification
     return plot
 
 def make_spikein_variance_plot(quantifications, experiments, experiment, quantification='FPKM'):
-    spikein_cpc = models.get_single_spike_cpc().sort(inplace=False)
+    spikein_cpc = models.get_single_spike_cpc().sort_values(inplace=False)
     library_ids = experiments[experiment]
     libraries = quantifications[library_ids]
     spikes = libraries[libraries.index.isin(spikein_cpc.index)]
