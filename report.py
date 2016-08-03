@@ -14,6 +14,7 @@ from bokeh import mpl
 from bokeh.models import HoverTool
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.charts import Line, Bar, Dot, HeatMap, BoxPlot
+from bokeh.charts.attributes import CatAttr
 from bokeh.embed import components
 
 import models
@@ -162,12 +163,22 @@ def make_spikein_variance_plot(quantifications, experiments, experiment, quantif
     library_ids = experiments[experiment]
     libraries = quantifications[library_ids]
     spikes = libraries[libraries.index.isin(spikein_cpc.index)]
-    spikes_sorted = spikes.reindex(spikein_cpc.index)
+    spikes = spikes.join(spikein_cpc)
+    spikes_sorted = spikes.sort_values('cpc')
+    spikes_sorted.index.name = 'spike-ins'
 
+    spikes_sorted = spikes_sorted.reset_index()
+    spikes_sorted.columns = ['spike-ins', 'library', quantification, 'cpc']
+
+    # Thanks to
+    # https://github.com/bokeh/bokeh/issues/2924#issuecomment-166969014
+    # for how to get around the auto sorting of the category with bokeh 0.10+
     plot = BoxPlot(
-        spikes_sorted.T,
+        spikes_sorted,
+        values=quantification,
+        label=CatAttr(columns=['spike-ins'], sort=False),
+        color = 'cpc',
         title="Spike-in variance for experiment {}".format(experiment),
-        outliers=True,
         xlabel="spike-in",
         ylabel="RNA-Seq RSEM ({})".format(quantification),
         width=900,
