@@ -14,6 +14,7 @@ from bokeh import mpl
 from bokeh.models import HoverTool
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.charts import Line, Bar, Dot, HeatMap, BoxPlot, Histogram
+from bokeh.charts.attributes import CatAttr
 from bokeh.embed import components
 
 from woldrnaseq import models
@@ -91,10 +92,7 @@ class QCReport:
         env = Environment(loader=PackageLoader('woldrnaseq', 'templates'))
 
         self.generate_report()
-        print('plots', len(self._plots), self._plots)
-        print('transcript', len(self._transcript_library_plots), self._transcript_library_plots)
         script, plot_divs = components(self._plots)
-        print(plot_divs)
         template = env.get_template('rnaseq.html')
         page = template.render(
             experiments=self.experiments,
@@ -126,11 +124,11 @@ class QCReport:
                 'distribution': self.make_distribution_plot(experiment),
             }
 
-            #handle = self.make_spikein_variance_plot(quantifications, experiment)
-            #if handle:
-            #    cur_experiment['spike_variance'] = handle
-            #else:
-            #    print("Didn't generate spike report for:", experiment)
+            handle = self.make_spikein_variance_plot(quantifications, experiment)
+            if handle:
+                cur_experiment['spike_variance'] = handle
+            else:
+                print("Didn't generate spike report for:", experiment)
 
             cur_experiment.update(self.make_correlation_plots(experiment))
             self._experiment_report[experiment] = cur_experiment
@@ -140,9 +138,7 @@ class QCReport:
     def make_correlation_plots(self, experiment):
         report = {}
         scores = models.load_correlations(experiment)
-        print('scores', scores.shape)
         if scores.shape[0] > 0:
-            print('scores passed')
             report['spearman_plot'] = make_correlation_heatmap(
                 scores, 'rafa_spearman', experiment)
             report['spearman'] = scores.rafa_spearman.to_html()
@@ -179,7 +175,6 @@ class QCReport:
         subset.index.names = ['class', 'library_id']
         subset.name = 'fraction'
         subset = subset.reset_index()
-        print(subset)
         plot = Bar(subset,
                    label='library_id',
                    values='fraction',
@@ -246,12 +241,24 @@ class QCReport:
             logger.warning("No spikes detected for %s", str(experiment))
             return None
 
-        spikes_sorted = spikes.reindex(spikein_cpc.index)
+        spikes = spikes.stack()
+        spikes.name = self.quantification_name
+        spikes.index.names = ['spike-ins', 'library']
+        spikes = spikes.reset_index(level=1)
+        spikes = spikes.join(spikein_cpc)
+        spikes_sorted = spikes.sort_values('cpc')
+        spikes_sorted.index.name = 'spike-ins'
+        spikes_sorted = spikes_sorted.reset_index()
 
+        # Thanks to
+        # https://github.com/bokeh/bokeh/issues/2924#issuecomment-166969014
+        # for how to get around the auto sorting of the category with bokeh 0.10+
         plot = BoxPlot(
-            spikes_sorted.T,
+            spikes_sorted,
+            values=self.quantification_name,
+            label=CatAttr(columns=['spike-ins'], sort=False),
+            color = 'cpc',
             title="Spike-in variance for experiment {}".format(experiment),
-            outliers=True,
             xlabel="spike-in",
             ylabel="RNA-Seq RSEM ({})".format(self.quantification_name),
             width=900,
