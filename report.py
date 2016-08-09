@@ -163,12 +163,14 @@ def make_spikein_variance_plot(quantifications, experiments, experiment, quantif
     library_ids = experiments[experiment]
     libraries = quantifications[library_ids]
     spikes = libraries[libraries.index.isin(spikein_cpc.index)]
+    spikes = spikes.stack()
+    spikes.name = quantification
+    spikes.index.names = ['spike-ins', 'library']
+    spikes = spikes.reset_index(level=1)
     spikes = spikes.join(spikein_cpc)
     spikes_sorted = spikes.sort_values('cpc')
     spikes_sorted.index.name = 'spike-ins'
-
     spikes_sorted = spikes_sorted.reset_index()
-    spikes_sorted.columns = ['spike-ins', 'library', quantification, 'cpc']
 
     # Thanks to
     # https://github.com/bokeh/bokeh/issues/2924#issuecomment-166969014
