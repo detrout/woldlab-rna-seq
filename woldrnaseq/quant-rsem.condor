@@ -36,6 +36,7 @@ should_transfer_files=IF_NEEDED
 initialdir=$(CURDIR)
 arguments="--bam --estimate-rspd --calc-ci $(RND_SEED) -p $(THREADS) \
            --no-bam-output --ci-memory 30000 $(EXTRA_FLAGS) \
+           --temporary-folder /tmp/$(OUT).temp \
 	   $(IN) \
 	   $(GENOME_DIR) \
 	   $(OUT) \
