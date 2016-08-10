@@ -11,7 +11,7 @@ ANNOTATION=$$(annotation:M4)
 SEX=$$(sex:male)
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
 IN=$$(bam_in:Aligned.toTranscriptome.out.bam)
-OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno
+OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno.bam
 
 THREADS=8
 # samstats -m looks like it wants bytes?
