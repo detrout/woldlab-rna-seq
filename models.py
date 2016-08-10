@@ -39,7 +39,6 @@ def load_library_tables(table_filenames, sep='\t'):
     tables = []
     for library_file in table_filenames:
         library_file = os.path.abspath(library_file)
-        print('library_file', library_file)
         path, name = os.path.split(library_file)
         table = pandas.read_csv(library_file, sep=sep,
                                 index_col='library_id',
