@@ -5,6 +5,7 @@ error=rsem-$(Process).out
 environment="PATH=/usr/local/bin:/usr/bin:/bin"
 
 RSEM_DIR=$$(rsem_dir)
+ANALYSIS_NAME=$$(analysis_name:Analysis)
 GENOME_ROOT=$$(genome_root:~/proj/genome/)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
@@ -14,8 +15,8 @@ GENOME_DIR=$(GENOME_ROOT)$(GENOME_TRIPLET)/rsem
 
 # dnanexus pipeline uses "star_anno_bam"
 CURDIR=$$(curdir)
-IN=$(CURDIR)-$(GENOME_TRIPLET)_anno.bam
-OUT=$(CURDIR)-$(GENOME_TRIPLET)_anno_rsem
+IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno.bam
+OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno_rsem
 RND_SEED=--seed 12345
 THREADS=8
 

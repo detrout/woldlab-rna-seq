@@ -5,6 +5,7 @@ output=distribution-$(Process).out
 error=distribution-$(Process).out
 
 CURDIR=$$(curdir)
+ANALYSIS_NAME=$$(analysis_name:Analysis)
 GEORGI_DIR=$$(georgi_dir:~/proj/GeorgiScripts)
 DISTRIBUTION=$(GEORGI_DIR)/SAM_reads_in_genes3_BAM.py
 GENOME_ROOT=$$(genome_root:~/proj/genome/)
@@ -16,7 +17,7 @@ GENOME_DIR=$(GENOME_ROOT)$(GENOME_TRIPLET)/
 GTF=$(GENOME_DIR)gencode.v$(ANNOTATION)-tRNAs-ERCC.gff
 CHROM_INFO=$(GENOME_DIR)chrNameLength.txt
 IN=$$(in:Aligned.sortedByCoord.out.bam)
-OUT=$(CURDIR)-$(GENOME_TRIPLET).sam_reads_genes
+OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET).sam_reads_genes
 
 request_cpus=1
 request_memory=12G

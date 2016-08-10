@@ -48,6 +48,7 @@ def load_library_tables(table_filenames, sep='\t'):
         table.index = [str(x) for x in table.index]
         table.index.name = 'library id'
         table['analysis_dir'] = table['analysis_dir'].apply(partial(prepend_path, path))
+        table['analysis_name'] = table['analysis_dir'].apply(os.path.basename)
         tables.append(table)
 
     libraries = pandas.concat(tables)

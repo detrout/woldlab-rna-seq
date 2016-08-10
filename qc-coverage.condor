@@ -5,6 +5,7 @@ output=coverage-$(Process).out
 error=coverage-$(Process).out
 
 CURDIR=$$(curdir)
+ANALYSIS_NAME=$$(analysis_name:Analysis)
 GEORGI_DIR=$$(georgi_dir:~/proj/GeorgiScripts)
 GENE_COVERAGE=$(GEORGI_DIR)/gene_coverage_wig_gtf.py
 GENOME_ROOT=$$(genome_root:~/proj/genome/)
@@ -15,7 +16,7 @@ GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
 GENOME_DIR=$(GENOME_ROOT)$(GENOME_TRIPLET)/
 GTF=$(GENOME_DIR)gencode.v$(ANNOTATION)-tRNAs-ERCC.gff
 IN=$$(in:Signal.Unique.str1.out.bg)
-OUT=$(CURDIR)-$(GENOME_TRIPLET).coverage
+OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET).coverage
 
 request_cpus=1
 request_memory=14G

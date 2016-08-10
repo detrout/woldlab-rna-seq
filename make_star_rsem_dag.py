@@ -26,6 +26,8 @@ def main(cmdline=None):
     analysis.sex = args.sex
     analysis.job_id = args.library_id
     analysis.analysis_dir = args.analysis_dir
+    if args.analysis_name is None:
+        analysis.analysis_name = os.path.basename(args.analysis_dir)
     analysis.fastqs = args.fastqs
 
     if analysis.is_valid():
@@ -47,6 +49,7 @@ def make_parser():
     parser.add_argument('-s', '--sex')
     parser.add_argument('-l', '--library-id')
     parser.add_argument('--analysis-dir', help='target dir to store analysis')
+    parser.add_argument('--analysis-name', help='name to store analysis')
     parser.add_argument('fastqs', nargs='+', help='path to fastqs')
 
     return parser
@@ -151,6 +154,16 @@ PARENT {job_id}_sort-samtools  CHILD {job_id}_quant-rsem
 PARENT {job_id}_bedgraph-star  CHILD {job_id}_qc-coverage
 PARENT {job_id}_bedgraph-star  CHILD {job_id}_bedgraph2bigwig
 
+# VARS {job_id}_align-star-se   analysis_name="{analysis_name}"
+VARS {job_id}_sort-samtools   analysis_name="{analysis_name}"
+VARS {job_id}_quant-rsem      analysis_name="{analysis_name}"
+# VARS {job_id}_index-samtools  analysis_name="{analysis_name}"
+VARS {job_id}_qc-samstats     analysis_name="{analysis_name}"
+VARS {job_id}_bedgraph-star   analysis_name="{analysis_name}"
+VARS {job_id}_qc-coverage     analysis_name="{analysis_name}"
+VARS {job_id}_qc-distribution analysis_name="{analysis_name}"
+VARS {job_id}_bedgraph2bigwig analysis_name="{analysis_name}"
+
 VARS {job_id}_align-star-se   curdir="{analysis_dir}"
 VARS {job_id}_sort-samtools   curdir="{analysis_dir}"
 VARS {job_id}_quant-rsem      curdir="{analysis_dir}"
@@ -224,6 +237,7 @@ VARS {job_id}_align-star-se read1="{fastqs}"
             annotation=self.annotation,
             sex=self.sex,
             analysis_dir=self.analysis_dir,
+            analysis_name=self.analysis_name,
             fastqs=",".join(self.fastqs),
         )
 
