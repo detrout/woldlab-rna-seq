@@ -13,7 +13,7 @@ GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)/
 THREADS=8
 
 READ1=$$(read1)
-READ2=$$(read2)
+READ2=$$(read2:)
 CURDIR=$$(curdir)
 
 if defined READ2
