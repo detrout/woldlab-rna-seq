@@ -34,7 +34,7 @@ def main(cmdline=None):
     if 'read_2' in libraries.columns:
         read2 = dict(find_fastqs(libraries, 'read_2'))
     else:
-        read2 = []
+        read2 = {}
 
     dag = generate_star_rsem_analysis(args, libraries, read1, read2)
     print(dag)
@@ -90,7 +90,7 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
         analysis.job_id = library_id
         analysis.analysis_dir = libraries.loc[library_id, 'analysis_dir']
         analysis.read_1_fastqs = read_1_fastqs[library_id]
-        analysis.read_2_fastqs = read_2_fastqs[library_id]
+        analysis.read_2_fastqs = read_2_fastqs.get(library_id, [])
 
         if analysis.is_valid():
             dag.append(str(analysis))

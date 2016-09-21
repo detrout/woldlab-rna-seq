@@ -7,13 +7,13 @@ export THREADS=$4
 export PAIRED=$5
 
 if [ -z ${PAIRED} ]; then
-    echo "single"
+    echo "sort single end to ${OUT}"
   cat <( samtools view -H ${IN} ) \
       <( samtools view ${IN}  | \
          sort -S ${MEMORY} -T ./ ) | \
       samtools view -@ ${THREADS} -bS - -o ${OUT}
 else
-    echo "paired"
+    echo "sort paired end to ${OUT}"
   cat <( samtools view -H ${IN} ) \
       <( samtools view ${IN}  | \
          paste -d "|" - - | \

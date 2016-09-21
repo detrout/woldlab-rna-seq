@@ -17,10 +17,10 @@ class TestMakeDag(TestCase):
             os.rmdir(self.home_pathname)
         os.environ['HOME'] = self.old_home_variable
         
-    def test_arguments(self):
+    def test_arguments_se(self):
         parser = make_star_rsem_dag.make_parser()
 
-        args = parser.parse_args(['-g', 'genome', '-a', 'annotation','a.fastq.gz','b.fastq.gz'])
+        args = parser.parse_args(['-g', 'genome', '-a', 'annotation','--read1', 'a.fastq.gz','b.fastq.gz'])
         with self.assertLogs(make_star_rsem_dag.logger, logging.INFO) as log:
             make_star_rsem_dag.validate_args(args)
         self.assertEqual(len(log.output), 4)
@@ -28,7 +28,25 @@ class TestMakeDag(TestCase):
         args = parser.parse_args(['-g', 'genome', '-a', 'annotation',
                                   '--georgi-dir', '~/scripts',
                                   '--genome-dir', '~/genome',
-                                  'a.fastq.gz'])
+                                  '--read1', 'a.fastq.gz'])
+        with self.assertLogs(make_star_rsem_dag.logger, logging.INFO) as log:
+            make_star_rsem_dag.validate_args(args)
+        self.assertEqual(len(log.output), 2)
+
+    def test_arguments_pe(self):
+        parser = make_star_rsem_dag.make_parser()
+
+        args = parser.parse_args(['-g', 'genome', '-a', 'annotation','--read1', 'a.fastq.gz','b.fastq.gz', '--read2', 'a2.fastq.gz','b2.fastq.gz'])
+        with self.assertLogs(make_star_rsem_dag.logger, logging.INFO) as log:
+            make_star_rsem_dag.validate_args(args)
+        self.assertEqual(len(log.output), 4)
+
+        args = parser.parse_args(['-g', 'genome', '-a', 'annotation',
+                                  '--georgi-dir', '~/scripts',
+                                  '--genome-dir', '~/genome',
+                                  '--read1', 'a.fastq.gz',
+                                  '--read2', 'b.fastq.gz',
+        ])
         with self.assertLogs(make_star_rsem_dag.logger, logging.INFO) as log:
             make_star_rsem_dag.validate_args(args)
         self.assertEqual(len(log.output), 2)
@@ -45,7 +63,7 @@ class TestMakeDag(TestCase):
         analysis.sex = 'male'
         analysis.job_id = '12345'
         analysis.analysis_dir = '/tmp/12345'
-        analysis.fastqs = ['*.fastqs']
+        analysis.read_1_fastqs = ['*.fastqs']
 
         self.assertTrue(analysis.is_valid())
 
