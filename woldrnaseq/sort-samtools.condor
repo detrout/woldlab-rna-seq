@@ -7,7 +7,7 @@ environment="PATH=/usr/bin:/bin"
 
 IN=$$($(bam_in):Aligned.toTranscriptome.out.bam)
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-OUT=$(CURDIR)-$(GENOME_TRIPLET)_anno.bam
+OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno.bam
 
 THREADS=4
 MEMORY=60G

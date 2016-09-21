@@ -5,6 +5,7 @@ output=bedgraph2bigwig-$(Process).out
 error=bedgraph2bigwig-$(Process).out
 
 CURDIR=$$(curdir)
+ANALYSIS_NAME=$$(analysis_name:Analysis)
 BEDGRAPH_TO_BIGWIG=/woldlab/castor/proj/programs/x86_64/bedGraphToBigWig
 GENOME_ROOT=$$(genome_root:/woldlab/castor/home/diane/proj/genome)
 GENOME=$$(genome:mm10)
@@ -15,8 +16,8 @@ GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)
 GTF=$(GENOME_DIR)/gencode.v$(ANNOTATION)-tRNAs-ERCC.gff
 CHROM_INFO=$(GENOME_DIR)/chrNameLength.txt
 IN=$$(in:Aligned.sortedByCoord.out.bam)
-OUT_ALL=$(CURDIR)-$(GENOME_TRIPLET)_all.bw
-OUT_UNIQ=$(CURDIR)-$(GENOME_TRIPLET)_uniq.bw
+OUT_ALL=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_all.bw
+OUT_UNIQ=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_uniq.bw
 
 request_cpus=1
 request_memory=4G

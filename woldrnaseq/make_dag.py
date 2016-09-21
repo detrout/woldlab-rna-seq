@@ -89,6 +89,7 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
         analysis.sex = libraries.loc[library_id, 'sex']
         analysis.job_id = library_id
         analysis.analysis_dir = libraries.loc[library_id, 'analysis_dir']
+        analysis.analysis_name = libraries.loc[library_id, 'analysis_name']
         analysis.read_1_fastqs = read_1_fastqs[library_id]
         analysis.read_2_fastqs = read_2_fastqs.get(library_id, [])
 

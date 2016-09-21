@@ -5,6 +5,7 @@ output=samstats-$(Process).out
 error=samstats-$(Process).out
 
 CURDIR=$$(curdir)
+ANALYSIS_NAME=$$(analysis_name:Analysis)
 GENOME_ROOT=$$(genome_root:~/proj/genome/)
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
