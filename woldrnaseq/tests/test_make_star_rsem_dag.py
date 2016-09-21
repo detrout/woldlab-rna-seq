@@ -75,6 +75,7 @@ class TestMakeDag(TestCase):
             if line.startswith("JOB"):
                 self.assertIn(condor_dir, line)
         print(dag)
-        
+
+
 if __name__ == '__main__':
     main()
