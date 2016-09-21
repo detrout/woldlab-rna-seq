@@ -135,6 +135,7 @@ class AnalysisDAG:
         self._analysis_name = None
         self.read_1_fastqs = []
         self.read_2_fastqs = []
+        self.reference_prefix = 'chr'
 
     def is_valid(self):
         for key in self.__dict__:
@@ -188,6 +189,7 @@ class AnalysisDAG:
             analysis_name=self.analysis_name,
             read_1_fastqs=",".join(self.read_1_fastqs),
             read_2_fastqs=",".join(self.read_2_fastqs),
+            reference_prefix=self.reference_prefix,
         )
 
 

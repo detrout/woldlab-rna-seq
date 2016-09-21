@@ -8,6 +8,7 @@ import argparse
 from glob import glob
 import os
 import logging
+import pandas
 
 from woldrnaseq import make_star_rsem_dag
 from woldrnaseq import models
@@ -73,6 +74,22 @@ def find_fastqs_by_glob(fastq_globs):
                 logger.warn("Can't find fastq {}. skipping".format(filename))
 
 
+def get_reference_prefix(libraries, library_id):
+    """Get optional reference_prefix from model.
+
+    Defaults to 'chr' if not present
+    """
+    prefix_name = 'reference_prefix'
+    prefix_default = 'chr'
+    if prefix_name not in libraries.columns:
+        return prefix_default
+
+    prefix = libraries.loc[library_id, prefix_name]
+    if pandas.isnull(prefix):
+        return prefix_default
+
+    return prefix
+
 def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
     dag = []
     for library_id in libraries.index:
@@ -92,6 +109,8 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
         analysis.analysis_name = libraries.loc[library_id, 'analysis_name']
         analysis.read_1_fastqs = read_1_fastqs[library_id]
         analysis.read_2_fastqs = read_2_fastqs.get(library_id, [])
+
+        analysis.reference_prefix = get_reference_prefix(libraries, library_id)
 
         if analysis.is_valid():
             dag.append(str(analysis))

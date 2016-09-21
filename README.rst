@@ -130,6 +130,12 @@ analysis_dir
   Directory relative to the library table where the analysis files
   should be generated. It must exist before the script is run.
 
+reference_prefix
+  (Optional) you can use this to override the reference prefix for bedgraph
+  bigwig file generation. It defaults to 'chr' but you might want all
+  of the references '-' or you may have a genome that uses 'Scaffold'
+  for as its referece prefix.
+
 read_1
   Comma seperated list of unix filename globs specifying where to find
   the first read fastq files.

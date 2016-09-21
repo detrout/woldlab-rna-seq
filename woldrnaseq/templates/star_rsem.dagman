@@ -57,6 +57,8 @@ VARS {{job_id}}_qc-samstats     georgi_dir="{{georgi_dir}}"
 VARS {{job_id}}_qc-coverage     georgi_dir="{{georgi_dir}}"
 VARS {{job_id}}_qc-distribution georgi_dir="{{georgi_dir}}"
 
+VARS {{job_id}}_bedgraph-star   reference_prefix="{{reference_prefix}}"
+
 VARS {{job_id}}_align-star      genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
 VARS {{job_id}}_sort-samtools   genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
 VARS {{job_id}}_quant-rsem      genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
