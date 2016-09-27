@@ -2,6 +2,7 @@
 from __future__ import print_function, unicode_literals, division
 
 import argparse
+from collections import OrderedDict
 import pandas
 import numpy
 import os
@@ -9,6 +10,7 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot
 
+from woldrnaseq.common import save_fixed_height
 
 def main(cmdline=None):
     parser = make_parser()
@@ -16,7 +18,8 @@ def main(cmdline=None):
 
     annotation = load_gtf_cache(args.gtf_cache)
     protein_coding = protein_coding_gene_ids(annotation)
-    
+
+    toplot = OrderedDict()
     for filename in args.filenames:
         all_quantifications = pandas.read_csv(filename, header=0, index_col=0)
         protein_quantifications = all_quantifications.loc[protein_coding]
@@ -28,15 +31,12 @@ def main(cmdline=None):
 
         binned_quantifications = bin_library_quantification(protein_quantifications, 'FPKM')
         binned_quantifications.to_csv(csv_name)
-        with pyplot.style.context('seaborn-dark-palette'):
-            width = max(len(all_quantifications.columns) * 0.5, 6)
-            print(width, len(all_quantifications.columns))
-            f = pyplot.figure(figsize=(width, 6), dpi=100)
-            ax = f.add_subplot(1,1,1)
-            gene_detection_histogram(ax, binned_quantifications)
-            ax.set_title(basename)
-            
-            f.savefig(png_name, bbox_inches='tight')
+
+        f = plot_gene_detection_histogram(binned_quantifications, basename)
+        toplot[png_name] = f
+
+    save_fixed_height(toplot)
+
 
 def make_parser():
     parser = argparse.ArgumentParser()
@@ -76,7 +76,22 @@ def bin_library_quantification(quantification, quantification_name, bins=None):
         columns=quantification.columns,
         index=['{} {}'.format(x, quantification_name) for x in bins[:-1]])
 
-    return histogram.reindex(histogram.index[::-1]).T    
+    return histogram.reindex(histogram.index[::-1]).T
+
+
+def plot_gene_detection_histogram(binned_quantifications, basename):
+    """Apply formatting to gene detction histogram
+    """
+    with pyplot.style.context('seaborn-dark-palette'):
+        width = max(len(binned_quantifications.index) * 0.5, 6)
+        print(width, len(binned_quantifications.index))
+        f = pyplot.figure(figsize=(width, 6), dpi=100)
+        ax = f.add_subplot(1,1,1)
+        gene_detection_histogram(ax, binned_quantifications)
+        ax.set_title(basename)
+
+    return f
+
 
 def gene_detection_histogram(ax, binned, cm=pyplot.cm.OrRd_r):
     ax.set_ylabel('Number of genes')
