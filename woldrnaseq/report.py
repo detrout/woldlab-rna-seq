@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+from __future__ import absolute_import, print_function
+
 import argparse
 import itertools
 import logging
@@ -18,7 +20,27 @@ from bokeh.charts.attributes import CatAttr
 from bokeh.embed import components
 
 from woldrnaseq import models
+from .models import (load_experiments,
+                     load_library_tables,
+                     load_correlations,
+                     load_all_coverage,
+                     load_all_distribution,
+                     load_all_samstats,
+                     load_quantifications,
+                     get_single_spike_cpc,
+                     genome_name_from_library,
+)
 from woldrnaseq import madqc
+from .common import (add_default_path_arguments,
+                     add_debug_arguments,
+                     configure_logging,
+                     get_seperator,
+)
+from .plot_genes_detected import (load_gtf_cache,
+                                  bin_library_quantification,
+                                  protein_coding_gene_ids,
+                                  plot_gene_detection_histogram,
+)
 
 logger = logging.getLogger('QC Report')
 
@@ -26,14 +48,9 @@ def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
 
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
-    elif args.verbose:
-        logging.basicConfig(level=logging.INFO)
-    else:
-        logging.basicConfig(level=logging.WARNING)
+    configure_logging(args)
 
-    sep = models.get_seperator(args.sep)
+    sep = get_seperator(args.sep)
 
     if not args.experiments:
         parser.error("Please provide experiment table filename")
@@ -58,10 +75,8 @@ def make_parser():
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('-o', '--output', default='report.html',
                         help='output html filename')
-    parser.add_argument('-v', '--verbose', action='store_true',
-                        help='Verbose log messages')
-    parser.add_argument('-d', '--debug', action='store_true',
-                        help='Debug log messages')
+    add_default_path_arguments(parser)
+    add_debug_arguments(parser)
 
     return parser
 
@@ -69,14 +84,14 @@ def make_parser():
 class QCReport:
     def __init__(self, experiments, libraries, quantification, sep="\t"):
         # user set parameters
-        self.experiments = models.load_experiments(experiments, sep)
-        self.libraries = models.load_library_tables(libraries, sep)
+        self.experiments = load_experiments(experiments, sep)
+        self.libraries = load_library_tables(libraries, sep)
         self.quantification_name = quantification
 
         # cached values
-        self._samstats = models.load_all_samstats(self.libraries)
-        self._distribution = models.load_all_distribution(self.libraries)
-        self._coverage = models.load_all_coverage(self.libraries)
+        self._samstats = load_all_samstats(self.libraries)
+        self._distribution = load_all_distribution(self.libraries)
+        self._coverage = load_all_coverage(self.libraries)
 
         # working space for generating report
         self._plot_handle = itertools.count()
@@ -106,7 +121,7 @@ class QCReport:
     def generate_report(self):
         seen_libraries = set()
         for experiment in sorted(self.experiments):
-            quantifications = models.load_quantifications(
+            quantifications = load_quantifications(
                 experiment,
                 self.quantification_name)
 
@@ -137,7 +152,7 @@ class QCReport:
 
     def make_correlation_plots(self, experiment):
         report = {}
-        scores = models.load_correlations(experiment)
+        scores = load_correlations(experiment)
         if scores.shape[0] > 0:
             report['spearman_plot'] = make_correlation_heatmap(
                 scores, 'rafa_spearman', experiment)
@@ -191,7 +206,7 @@ class QCReport:
         return self._samstats.select(lambda x: x in library_ids).to_html()
 
     def make_spikein_per_transcript_plot(self, quantifications, library_id):
-        spikein_cpc = pandas.DataFrame(models.get_single_spike_cpc(),
+        spikein_cpc = pandas.DataFrame(get_single_spike_cpc(),
                                        columns=['copies'])
         library = quantifications[library_id]
         spikes = library[library.index.isin(spikein_cpc.index)]

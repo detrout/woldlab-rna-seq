@@ -5,19 +5,24 @@ import logging
 from woldrnaseq import models
 from woldrnaseq import madqc
 
+from .common import (add_debug_arguments,
+                     configure_logging,
+                     get_seperator,
+)
+
 logger = logging.getLogger('RSEM CSV')
 
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
 
-    logging.basicConfig(level=logging.INFO)
+    configure_logging(args)
 
-    sep = models.get_seperator(args.sep)
+    sep = get_seperator(args.sep)
     experiments = models.load_experiments([args.experiments], sep=sep)
     libraries = models.load_library_tables([args.libraries], sep=sep)
 
-    output_sep = models.get_seperator(args.output_format)
+    output_sep = get_seperator(args.output_format)
     output_extension = {
         'TAB': '.tsv',
         ',': '.csv',
@@ -44,6 +49,7 @@ def make_parser():
     parser.add_argument('-e', '--experiments', help='experiment information table')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('--output-format', choices=['TAB', ','], default=',')
+    add_debug_arguments(parser)
     return parser
 
 if __name__ == '__main__':

@@ -1,19 +1,23 @@
 """STAR & RSEM based RNA-Seq pipeline.
 """
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 
 from argparse import ArgumentParser
-import configparser
 import os
 import logging
 from pkg_resources import resource_filename
 from jinja2 import Environment, PackageLoader
+
+from .common import (add_default_path_arguments,
+                     add_debug_arguments)
 
 logger = logging.getLogger(__name__)
 
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
+
+    configure_logging(args)
 
     analysis = AnalysisDAG()
 
@@ -49,77 +53,6 @@ def make_parser():
     add_debug_arguments(parser)
 
     return parser
-
-def add_default_path_arguments(parser):
-    """Add arguments to allow overriding location of dependencies
-    """
-    defaults = read_defaults()
-    parser.add_argument('--genome-dir',
-                        help="specify the directory that has the genome indexes",
-                        default=defaults['genome_dir'])
-    parser.add_argument('--star-dir',
-                        default=defaults['star_dir'],
-                        help='Specify the directory where STAR is installed')
-    parser.add_argument('--rsem-dir',
-                        default=defaults['rsem_dir'],
-                        help='Specify the directory where rsem is installed')
-    parser.add_argument('--georgi-dir',
-                        default=defaults['georgi_dir'],
-                        help='Specify the directory where georgi scripts are installed')
-    return parser
-
-def validate_args(args):
-    """Warn if path arguments aren't set
-    """
-    can_continue = True
-    if args.genome_dir is None:
-        logger.error("Need path to genome indexes")
-        can_continue = False
-
-    if args.star_dir is None:
-        logger.warning("Path to STAR not provided, assuming its on the PATH")
-
-    if args.rsem_dir is None:
-        logger.warning("Path to rsem-calculate-expression not provided, assuming its on the PATH")
-
-    if args.georgi_dir is None:
-        logger.error('Path to "GeorgiScripts" python scripts not provided.')
-        can_continue = False
-
-    return can_continue
-
-def add_debug_arguments(parser):
-    """Add arguments for tuning logging
-    """
-    parser.add_argument('-v', '--verbose', default=False, action='store_true')
-    parser.add_argument('-d', '--debug', default=False, action='store_true')
-    return parser
-
-def read_defaults():
-    defaults = {
-        'genome_dir': None,
-        'star_dir': None,
-        'rsem_dir': None,
-        'georgi_dir': None,
-    }
-    config = configparser.ConfigParser()
-    config.read([os.path.expanduser('~/.htsworkflow.ini'),
-                 '/etc/htsworkflow.ini'])
-
-    if config.has_section('analysis'):
-        analysis = config['analysis']
-        for name in ['genome_dir', 'star_dir', 'rsem_dir', 'georgi_dir']:
-            defaults[name] = normalize_path(analysis.get(name))
-
-    return defaults
-
-def normalize_path(path):
-    if path is None:
-        return None
-    elif len(path) == 0:
-        return path
-    else:
-        return os.path.join(path, '')
 
 class AnalysisDAG:
     def __init__(self):

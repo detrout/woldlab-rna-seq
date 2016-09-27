@@ -4,6 +4,8 @@
 This is the script for automating generating the mapping, quantification,
 and some quality control metrics.
 """
+from __future__ import absolute_import
+
 import argparse
 from glob import glob
 import os
@@ -13,23 +15,24 @@ import pandas
 from woldrnaseq import make_star_rsem_dag
 from woldrnaseq import models
 
+from .common import (add_default_path_arguments,
+                     add_debug_arguments,
+                     configure_logging,
+                     get_seperator,
+                     validate_args)
+
 logger = logging.getLogger(__name__)
 
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
 
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
-    elif args.verbose:
-        logging.basicConfig(level=logging.INFO)
-    else:
-        logging.basicConfig(level=logging.WARNING)
+    configure_logging(args)
 
     if not make_star_rsem_dag.validate_args(args):
         parser.error("Please set required parameters")
 
-    sep = models.get_seperator(args.sep)
+    sep = get_seperator(args.sep)
     libraries = models.load_library_tables(args.libraries, sep)
     read1 = dict(find_fastqs(libraries, 'read_1'))
     if 'read_2' in libraries.columns:

@@ -229,15 +229,6 @@ def load_quantifications(experiment, quantification_name='FPKM'):
 def normalize_hdf_key(key):
     return key.replace('/', '')
 
-# really doesn't belong here
-def get_seperator(sep):
-    if sep.lower() == 'tab':
-        return '\t'
-    elif sep == ',':
-        return ','
-    else:
-        raise ValueError("Unrecognized seperator")
-
 
 def make_correlation_filename(experiment):
     return experiment + '_correlation.h5'
