@@ -58,7 +58,7 @@ def main(cmdline=None):
     if not args.libraries:
         parser.error("Please provide library table filename")
 
-    report = QCReport([args.experiments], [args.libraries],
+    report = QCReport(args.experiments, args.libraries,
                       quantification=args.quantification,
                       sep=sep)
 
@@ -70,8 +70,10 @@ def make_parser():
     parser.add_argument('--quantification', choices=['FPKM', 'TPM'],
                         default='FPKM',
                         help='which quantification value to use')
-    parser.add_argument('-l', '--libraries', help='library information table')
-    parser.add_argument('-e', '--experiments', help='experiment information table')
+    parser.add_argument('-l', '--libraries', action='append',
+                        help='library information table')
+    parser.add_argument('-e', '--experiments', action='append',
+                        help='experiment information table')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('-o', '--output', default='report.html',
                         help='output html filename')
