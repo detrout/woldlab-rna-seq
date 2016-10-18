@@ -16,25 +16,14 @@ def load_rsem_quantifications(experiment_files, index=None, column='FPKM'):
     
     Columns will be library accession identifiers.
     """
-    scores = {
-        'length': 2,
-        'effective_length': 3,
-        'expected_count': 4,
-        'TPM': 5,
-        'FPKM': 6,
-        }
-
-    score_column = scores.get(column)
-    if score_column is None:
-        raise ValueError("Unrecognized column name")
-
     quantifications = []
     filenames = []
     for filename in experiment_files:
         table = pandas.read_csv(filename,
                                 sep='\t',
-                                index_col=0,
-                                usecols=[0, score_column])
+                                index_col=0)
+        table = table[[column]]
+
         quantifications.append(table[column])
         _, name = os.path.split(filename)
         filenames.append(name)
