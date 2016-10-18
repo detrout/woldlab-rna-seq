@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function
 import argparse
 import itertools
 import logging
+import os
 
 from jinja2 import Environment, PackageLoader
 import matplotlib
@@ -60,6 +61,7 @@ def main(cmdline=None):
 
     report = QCReport(args.experiments, args.libraries,
                       quantification=args.quantification,
+                      genome_dir=args.genome_dir,
                       sep=sep)
 
     with open(args.output, 'wt') as outstream:
@@ -84,22 +86,34 @@ def make_parser():
 
 
 class QCReport:
-    def __init__(self, experiments, libraries, quantification, sep="\t"):
+    def __init__(self, experiments, libraries, quantification, genome_dir, sep="\t"):
         # user set parameters
         self.experiments = load_experiments(experiments, sep)
         self.libraries = load_library_tables(libraries, sep)
         self.quantification_name = quantification
+        self.genome_dir = genome_dir
 
         # cached values
         self._samstats = load_all_samstats(self.libraries)
         self._distribution = load_all_distribution(self.libraries)
         self._coverage = load_all_coverage(self.libraries)
+        self._gtf_cache = {}
 
         # working space for generating report
         self._plot_handle = itertools.count()
         self._plots = {}
         self._experiment_report = {}
         self._transcript_library_plots = []
+
+    def _load_gtf_cache(self, genome_name):
+        """Look through list of libraries and attempt to load GTF caches
+        """
+        if genome_name not in self._gtf_cache:
+            cache_pathname = os.path.join(self.genome_dir, genome_name, genome_name + '.h5')
+            if os.path.exists(cache_pathname):
+                load_gtf_cache(cache_pathname)
+            else:
+                logging.error('Unable to load gene cache %s', cache_pathname)
 
     @property
     def next_plot_handle(self):
@@ -129,17 +143,32 @@ class QCReport:
 
             library_ids = self.experiments[experiment]
             seen_libraries.update(set(library_ids))
+            seen_genomes = set()
             for library_id in library_ids:
                 transcript_handle = self.make_spikein_per_transcript_plot(
                     quantifications,
                     library_id)
                 self._transcript_library_plots.append(transcript_handle)
+                genome_name = genome_name_from_library(self.libraries.loc[library_id])
+                self._load_gtf_cache(genome_name)
+                seen_genomes.add(genome_name)
+
+            if len(seen_genomes) > 1:
+                logger.warning('%s has mixed genome types %s',
+                               experiment, ','.join(seen_genomes))
 
             cur_experiment = {
                 'samstats': self.make_samstats_html(library_ids),
                 'coverage': self.make_coverage_plot(experiment),
                 'distribution': self.make_distribution_plot(experiment),
             }
+
+            if genome_name in self._gtf_cache:
+                cur_experiment['protein_genes'] = self.plot_genes_detected(
+                    quantifications,
+                    genome_name,
+                    experiment,
+                )
 
             handle = self.make_spikein_variance_plot(quantifications, experiment)
             if handle:
@@ -285,6 +314,21 @@ class QCReport:
         self._plots[handle] = plot
         return handle
 
+    def plot_genes_detected(self, quantifications, genome_name, experiment_name):
+        annotation = self._gtf_cache[genome_name]
+        protein_coding = protein_coding_gene_ids(annotation)
+        png_name = experiment_name + '-genes-detected.png'
+        csv_name = experiment_name + '-genes-detected.csv'
+
+        protein_quantifications = quantifications[protein_coding]
+        binned_quantifications = bin_library_quantification(
+            protein_quantifications,
+            self.quantification_name)
+        binned_quantifications.to_csv(csv_name)
+        f = plot_gene_detection_histogram(binned_quantifications, experiment_name)
+        f.savefig(png_name, bbox_inches='tight')
+
+        return png_name
 
 def make_correlation_heatmap(scores, score_name, experiment_name, vmin=None, vmax=None, cmap="coolwarm"):
     """Try to intellgently format our heatmap.

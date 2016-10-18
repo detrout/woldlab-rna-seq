@@ -54,6 +54,13 @@ def load_library_tables(table_filenames, sep='\t'):
     validate_library_ids(libraries)
     return libraries
 
+
+def genome_name_from_library(row):
+    """Generate genome name triple from a library row
+    """
+    return '-'.join([row.genome, row.annotation, row.sex])
+
+
 def required_library_columns_present(table):
     """Verify that a table contains required columns
     """
