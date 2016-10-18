@@ -12,6 +12,7 @@ from .common import (add_debug_arguments,
 
 logger = logging.getLogger('RSEM CSV')
 
+
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
@@ -37,6 +38,7 @@ def main(cmdline=None):
             replicates, libraries, args.quantification)
         quantifications.to_csv(filename, sep=output_sep)
 
+
 def make_parser():
     parser = argparse.ArgumentParser(
         description="Write combined CSV for a specific quantification.")
@@ -51,6 +53,7 @@ def make_parser():
     parser.add_argument('--output-format', choices=['TAB', ','], default=',')
     add_debug_arguments(parser)
     return parser
+
 
 if __name__ == '__main__':
     main()

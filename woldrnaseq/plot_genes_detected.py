@@ -45,12 +45,15 @@ def make_parser():
                         help='Combined file libraries by "genes"')
     return parser
 
+
 def load_gtf_cache(filename):
     store = pandas.HDFStore(filename, 'r')
     assert len(store.keys()) == 1
     annotation = store[store.keys()[0]]
+
     store.close()
     return annotation
+
 
 def protein_coding_gene_ids(annotation):
     """Filter GTF just protein coding genes
@@ -58,6 +61,7 @@ def protein_coding_gene_ids(annotation):
     entry_type = (annotation['type'] == 'gene')
     gene_type = (annotation['gene_type'] == 'protein_coding')
     return annotation[entry_type & gene_type]['gene_id']
+
 
 def bin_library_quantification(quantification, quantification_name, bins=None):
     """Bin a library quantification file

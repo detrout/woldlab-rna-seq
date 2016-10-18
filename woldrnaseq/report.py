@@ -67,6 +67,7 @@ def main(cmdline=None):
     with open(args.output, 'wt') as outstream:
         outstream.write(report.render())
 
+
 def make_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--quantification', choices=['FPKM', 'TPM'],

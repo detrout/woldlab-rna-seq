@@ -14,6 +14,7 @@ AnalysisFile = collections.namedtuple('AnalysisFile', ['library_id', 'filename']
 def prepend_path(path, file_name):
     return os.path.join(path, file_name)
 
+
 def read_line_from_stream(stream):
     """Read a line filtering out blank lines and comments.
     """
@@ -21,6 +22,7 @@ def read_line_from_stream(stream):
         line = line.strip()
         if len(line) > 0 and not line.startswith('#'):
             yield line
+
 
 def load_library_tables(table_filenames, sep='\t'):
     """Load table describing libraries to be analyized
@@ -72,6 +74,7 @@ def required_library_columns_present(table):
             missing.append(key)
     if len(missing) != 0:
         raise ValueError("Required columns missing: {}".format(','.join(missing)))
+
 
 def validate_library_ids(table):
     """Validate that library ids are unique
@@ -261,6 +264,7 @@ def get_single_spike_cpc():
     """Load single-cell copies-per-cell
     """
     return get_bulk_spike_cpc() / 1000.0
+
 
 def get_bulk_spike_cpc():
     """Return bulk copies per cell
