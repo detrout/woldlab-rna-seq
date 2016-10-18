@@ -27,7 +27,7 @@ def main(cmdline=None):
         _, filename = os.path.split(filename)
         basename, _ = os.path.splitext(filename)
         png_name = basename + '.png'
-        csv_name = basename + '.csv'
+        csv_name = 'genes-detected_' + basename + '.csv'
 
         binned_quantifications = bin_library_quantification(protein_quantifications, 'FPKM')
         binned_quantifications.to_csv(csv_name)
