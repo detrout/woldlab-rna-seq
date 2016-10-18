@@ -3,10 +3,12 @@
 
 import collections
 from glob import glob
+import logging
 import os
 from functools import partial
 import pandas
 
+logger = logging.getLogger(__name__)
 AnalysisFile = collections.namedtuple('AnalysisFile', ['library_id', 'filename'])
 
 def prepend_path(path, file_name):
@@ -225,12 +227,22 @@ def load_quantifications(experiment, quantification_name='FPKM'):
     quantification_filename = make_quantification_filename(
         experiment,
         quantification_name)
-    store = pandas.HDFStore(quantification_filename)
+
     quantifications = None
-    for key in store.keys():
-        quantifications =  store[key]
-    store.close()
-    return quantifications
+    if quantification_filename:
+        store = pandas.HDFStore(quantification_filename)
+        for key in store.keys():
+            quantifications =  store[key]
+        else:
+            logger.error("Quantification cache file %s is empty",
+                         quantification_filename)
+        store.close()
+        return quantifications
+    else:
+        logger.info("Quantification cache file %s not available",
+                    quantification_filename)
+
+        return None
 
 
 def normalize_hdf_key(key):
