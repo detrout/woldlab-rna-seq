@@ -20,8 +20,8 @@ def main(cmdline=None):
     configure_logging(args)
 
     sep = get_seperator(args.sep)
-    experiments = models.load_experiments([args.experiments], sep=sep)
-    libraries = models.load_library_tables([args.libraries], sep=sep)
+    experiments = models.load_experiments(args.experiments, sep=sep)
+    libraries = models.load_library_tables(args.libraries, sep=sep)
 
     output_sep = get_seperator(args.output_format)
     output_extension = {
@@ -47,8 +47,8 @@ def make_parser():
                                  'effective_length', 'length'],
                         default='FPKM',
                         help='which quantification value to use')
-    parser.add_argument('-l', '--libraries', help='library information table')
-    parser.add_argument('-e', '--experiments', help='experiment information table')
+    parser.add_argument('-l', '--libraries', action='append', help='library information table')
+    parser.add_argument('-e', '--experiments', action='append', help='experiment information table')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('--output-format', choices=['TAB', ','], default=',')
     add_debug_arguments(parser)
