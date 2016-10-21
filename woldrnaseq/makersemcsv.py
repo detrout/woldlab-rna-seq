@@ -5,9 +5,10 @@ import logging
 from woldrnaseq import models
 from woldrnaseq import madqc
 
-from .common import (add_debug_arguments,
-                     configure_logging,
-                     get_seperator,
+from woldrnaseq.common import (
+    add_debug_arguments,
+    configure_logging,
+    get_seperator,
 )
 
 logger = logging.getLogger('RSEM CSV')
