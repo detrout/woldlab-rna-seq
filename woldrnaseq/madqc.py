@@ -104,8 +104,21 @@ def compute_all_vs_all_scores(fpkms, Acutoff=0):
     return pandas.Panel(all_scores)
 
 
-def load_replicates(replicates, libraries, column='FPKM'):
+def load_genomic_quantifications(replicates, libraries, column='FPKM'):
+    """Load all of the RSEM gene quantifications files for a list of replicates
+    """
     extension = '*_rsem.genes.results'
+    return load_rsem_replicates(extension, replicates, libraries, column)
+
+
+def load_transcriptome_quantifications(replicates, libraries, column='FPKM'):
+    """Load all of the RSEM isoform quantifications files for a list of replicates
+    """
+    extension = '*_rsem.isoforms.results'
+    return load_rsem_replicates(extension, replicates, libraries, column)
+
+
+def load_rsem_replicates(extension, replicates, libraries, column):
     analysis_files = []
     library_ids = []
     for library_id in replicates:
@@ -139,9 +152,10 @@ def create_quantification_cache(
                                                          quantification_name)
     
     libraries = models.load_library_tables([library_table], sep=sep)
-    quantifications = load_replicates(replicates,
-                                      libraries,
-                                      quantification_name)
+    quantifications = load_gene_quantifications(
+        replicates,
+        libraries,
+        quantification_name)
     if os.path.exists(quant_filename):
         os.unlink(quant_filename)
 

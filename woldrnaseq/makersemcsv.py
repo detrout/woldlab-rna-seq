@@ -30,12 +30,21 @@ def main(cmdline=None):
         ',': '.csv',
     }[args.output_format]
 
+    if args.transcriptome:
+        # isoforms
+        load_quantifications = madqc.load_transcriptome_quantifications
+        quantification_extension = '_isoform_' + args.quantification + output_extension
+    else:
+        # genes
+        load_quantifications = madqc.load_genomic_quantifications
+        quantification_extension = '_gene_' + args.quantification + output_extension
+
     for name in experiments:
-        filename = name + '_' + args.quantification + output_extension
+        filename = name + quantification_extension
         replicates = experiments[name]
         logger.info("%s %s: %s",
                     name, args.quantification, ','.join(replicates))
-        quantifications = madqc.load_replicates(
+        quantifications = load_quantifications(
             replicates, libraries, args.quantification)
         quantifications.to_csv(filename, sep=output_sep)
 
@@ -52,6 +61,8 @@ def make_parser():
     parser.add_argument('-e', '--experiments', action='append', help='experiment information table')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('--output-format', choices=['TAB', ','], default=',')
+    parser.add_argument('--transcriptome', action='store_true', default=False,
+                        help='Use RSEM transcriptome quantifications instead of genomic quantifications')
     add_debug_arguments(parser)
     return parser
 
