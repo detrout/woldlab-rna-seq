@@ -4,6 +4,7 @@ import os
 import tempfile
 from pkg_resources import resource_filename
 from woldrnaseq import make_star_rsem_dag
+from woldrnaseq import common
 
 class TestMakeDag(TestCase):
     def setUp(self):
@@ -21,24 +22,24 @@ class TestMakeDag(TestCase):
         parser = make_star_rsem_dag.make_parser()
 
         args = parser.parse_args(['-g', 'genome', '-a', 'annotation','--read1', 'a.fastq.gz','b.fastq.gz'])
-        with self.assertLogs(make_star_rsem_dag.logger, logging.INFO) as log:
-            make_star_rsem_dag.validate_args(args)
+        with self.assertLogs(common.logger, logging.INFO) as log:
+            common.validate_args(args)
         self.assertEqual(len(log.output), 4)
 
         args = parser.parse_args(['-g', 'genome', '-a', 'annotation',
                                   '--georgi-dir', '~/scripts',
                                   '--genome-dir', '~/genome',
                                   '--read1', 'a.fastq.gz'])
-        with self.assertLogs(make_star_rsem_dag.logger, logging.INFO) as log:
-            make_star_rsem_dag.validate_args(args)
+        with self.assertLogs(common.logger, logging.INFO) as log:
+            common.validate_args(args)
         self.assertEqual(len(log.output), 2)
 
     def test_arguments_pe(self):
         parser = make_star_rsem_dag.make_parser()
 
         args = parser.parse_args(['-g', 'genome', '-a', 'annotation','--read1', 'a.fastq.gz','b.fastq.gz', '--read2', 'a2.fastq.gz','b2.fastq.gz'])
-        with self.assertLogs(make_star_rsem_dag.logger, logging.INFO) as log:
-            make_star_rsem_dag.validate_args(args)
+        with self.assertLogs(common.logger, logging.INFO) as log:
+            common.validate_args(args)
         self.assertEqual(len(log.output), 4)
 
         args = parser.parse_args(['-g', 'genome', '-a', 'annotation',
@@ -47,8 +48,8 @@ class TestMakeDag(TestCase):
                                   '--read1', 'a.fastq.gz',
                                   '--read2', 'b.fastq.gz',
         ])
-        with self.assertLogs(make_star_rsem_dag.logger, logging.INFO) as log:
-            make_star_rsem_dag.validate_args(args)
+        with self.assertLogs(common.logger, logging.INFO) as log:
+            common.validate_args(args)
         self.assertEqual(len(log.output), 2)
 
     def test_analysis(self):

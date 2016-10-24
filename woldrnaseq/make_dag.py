@@ -29,7 +29,7 @@ def main(cmdline=None):
 
     configure_logging(args)
 
-    if not make_star_rsem_dag.validate_args(args):
+    if not validate_args(args):
         parser.error("Please set required parameters")
 
     sep = get_seperator(args.sep)
