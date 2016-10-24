@@ -4,6 +4,8 @@ import configparser
 import logging
 import os
 
+logger = logging.getLogger(__name__)
+
 def add_default_path_arguments(parser):
     """Add arguments to allow overriding location of dependencies
     """
