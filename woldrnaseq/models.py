@@ -46,7 +46,10 @@ def load_library_tables(table_filenames, sep='\t'):
         table = pandas.read_csv(library_file, sep=sep,
                                 index_col='library_id',
                                 dtype={'library_id':str,
-                                       'analysis_dir': str})
+                                       'analysis_dir': str},
+                                comment='#',
+                                skip_blank_lines=True,
+        )
         required_library_columns_present(table)
         table.index = [str(x) for x in table.index]
         table.index.name = 'library id'
@@ -106,7 +109,9 @@ def load_experiments(experiment_filenames, sep='\t'):
     tables = []
     for experiment_filename in experiment_filenames:
         experiment_filename = os.path.abspath(experiment_filename)
-        table = pandas.read_csv(experiment_filename, sep=sep)
+        table = pandas.read_csv(experiment_filename, sep=sep, comment='#',
+                                skip_blank_lines=True,
+        )
         required_experiment_columns_present(table)
         tables.append(table)
 
