@@ -57,8 +57,10 @@ def make_parser():
                                  'effective_length', 'length'],
                         default='FPKM',
                         help='which quantification value to use')
-    parser.add_argument('-l', '--libraries', action='append', help='library information table')
-    parser.add_argument('-e', '--experiments', action='append', help='experiment information table')
+    parser.add_argument('-l', '--libraries', action='append', required=True,
+                        help='library information table')
+    parser.add_argument('-e', '--experiments', action='append', required=True,
+                        help='experiment information table')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('--output-format', choices=['TAB', ','], default=',')
     parser.add_argument('--transcriptome', action='store_true', default=False,
