@@ -153,7 +153,7 @@ def create_quantification_cache(
                                                          quantification_name)
     
     libraries = models.load_library_tables([library_table], sep=sep)
-    quantifications = load_gene_quantifications(
+    quantifications = load_genomic_quantifications(
         replicates,
         libraries,
         quantification_name)
