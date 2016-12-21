@@ -15,7 +15,7 @@ setup(
     install_requires=[
         'bokeh>=0.9.3',
         'numpy>=1.10',
-        'pandas>=0.17,<0.18',
+        'pandas>=0.17',
         'matplotlib>=1.4',
         'jinja2>=2.8',
         'scipy>=0.17',
