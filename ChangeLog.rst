@@ -11,6 +11,11 @@ wold-rna-seq-condor now
   * has a setup.py script
   * requires samtools >= 1.3
   * components were moved into a package
+  * Support paired end reads
+    Libraries have a read_2 column to specify what fastqs are the second read
+  * makersemcsv can output either genome or transcriptome summary files
+    the filenames have changed slightly to avoid colliding
+  * Added support for # as a comment charater in experiment and library files
 
 Release 0.3
 -----------
