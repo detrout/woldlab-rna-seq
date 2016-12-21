@@ -253,6 +253,55 @@ def load_quantifications(experiment, quantification_name='FPKM'):
         return None
 
 
+def load_gtf_cache(filename):
+    """Load GTF cache file
+
+    Produced by gff2table
+    """
+    store = pandas.HDFStore(filename, 'r')
+    assert len(store.keys()) == 1
+    annotation = store[store.keys()[0]]
+
+    store.close()
+    return annotation
+
+
+def lookup_gene_name_by_gene_id(annotation, table):
+    """Add gene names using gene_id
+    """
+    return lookup_gene_name_by_id(annotation, table, 'gene_id')
+
+
+def lookup_gene_name_by_transcript_id(annotation, table):
+    """Add gene names using transcript_id
+    """
+    return lookup_gene_name_by_id(annotation, table, 'transcript_id')
+
+
+def lookup_gene_name_by_id(annotation, table, column):
+    """Add gene names using specified column
+    """
+    column_id_to_type = {
+        'gene_id': 'gene',
+        'transcript_id': 'transcript',
+    }
+    annotation_type = column_id_to_type.get(column)
+    if annotation_type is None:
+        raise ValueError("Unsupported column type %s" % (column,))
+
+    annotation = annotation.set_index(column)
+    annotation_filter = annotation['type'] == annotation_type
+    annotated_table = table.merge(
+        annotation[['gene_name']][annotation_filter],
+        left_index=True,
+        right_index=True,
+        how='left')
+    # we should have the same number of rows as the initial table
+    assert annotated_table.shape[0] == table.shape[0]
+    preferred_order = ['gene_name'] + list(table.columns)
+    return annotated_table[preferred_order].fillna('')
+
+
 def normalize_hdf_key(key):
     return key.replace('/', '')
 

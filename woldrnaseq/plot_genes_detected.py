@@ -11,6 +11,7 @@ matplotlib.use('Agg')
 from matplotlib import pyplot
 
 from woldrnaseq.common import save_fixed_height
+from woldrnaseq.models import load_gtf_cache
 
 def main(cmdline=None):
     parser = make_parser()
@@ -44,15 +45,6 @@ def make_parser():
     parser.add_argument('filenames', nargs='+',
                         help='Combined file libraries by "genes"')
     return parser
-
-
-def load_gtf_cache(filename):
-    store = pandas.HDFStore(filename, 'r')
-    assert len(store.keys()) == 1
-    annotation = store[store.keys()[0]]
-
-    store.close()
-    return annotation
 
 
 def protein_coding_gene_ids(annotation):

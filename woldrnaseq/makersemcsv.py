@@ -30,13 +30,24 @@ def main(cmdline=None):
         ',': '.csv',
     }[args.output_format]
 
+    if args.add_names:
+        if args.gtf_cache is None:
+            parser.error('GTF-cache is needed to add names to the quantification file')
+        else:
+            logger.info('Loading GTF Cache %s', args.gtf_cache)
+            annotation = models.load_gtf_cache(args.gtf_cache)
+    else:
+        annotation = None
+
     if args.transcriptome:
         # isoforms
         load_quantifications = madqc.load_transcriptome_quantifications
+        lookup_ids = models.lookup_gene_name_by_transcript_id
         quantification_extension = '_isoform_' + args.quantification + output_extension
     else:
         # genes
         load_quantifications = madqc.load_genomic_quantifications
+        lookup_ids = models.lookup_gene_name_by_gene_id
         quantification_extension = '_gene_' + args.quantification + output_extension
 
     for name in experiments:
@@ -46,6 +57,10 @@ def main(cmdline=None):
                     name, args.quantification, ','.join(replicates))
         quantifications = load_quantifications(
             replicates, libraries, args.quantification)
+
+        if annotation is not None:
+            quantifications = lookup_ids(annotation, quantifications)
+
         quantifications.to_csv(filename, sep=output_sep)
 
 
@@ -65,6 +80,9 @@ def make_parser():
     parser.add_argument('--output-format', choices=['TAB', ','], default=',')
     parser.add_argument('--transcriptome', action='store_true', default=False,
                         help='Use RSEM transcriptome quantifications instead of genomic quantifications')
+    parser.add_argument('--gtf-cache', help='Specify name of GTF cache file')
+    parser.add_argument('--add-names', action='store_true', default=False,
+                        help='Add names to ouptut quantification file')
     add_debug_arguments(parser)
     return parser
 
