@@ -8,6 +8,7 @@ import scipy.stats
 import logging
 
 from woldrnaseq import models
+from .common import get_seperator
 
 logger = logging.getLogger('madQC')
 
@@ -177,7 +178,7 @@ def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
 
-    sep = models.get_seperator(args.sep)
+    sep = get_seperator(args.sep)
     if args.experiments:
         experiments = models.load_experiments([args.experiments], sep=sep)
     else:
