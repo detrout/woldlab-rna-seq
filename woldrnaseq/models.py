@@ -239,11 +239,12 @@ def load_quantifications(experiment, quantification_name='FPKM'):
     quantifications = None
     if quantification_filename:
         store = pandas.HDFStore(quantification_filename)
-        for key in store.keys():
-            quantifications =  store[key]
-        else:
+        if len(store.keys()) == 0:
             logger.error("Quantification cache file %s is empty",
                          quantification_filename)
+        else:
+            for key in store.keys():
+                quantifications =  store[key]
         store.close()
         return quantifications
     else:
