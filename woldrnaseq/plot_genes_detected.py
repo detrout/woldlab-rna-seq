@@ -43,7 +43,7 @@ def make_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--gtf-cache', required=True, help='name of HDF5 GTF file')
     parser.add_argument('filenames', nargs='+',
-                        help='Combined file libraries by "genes"')
+                        help='Combined quantification file: libraries by genes')
     return parser
 
 
