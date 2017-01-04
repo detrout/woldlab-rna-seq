@@ -61,9 +61,10 @@ def find_fastqs(table, fastq_column):
     """
     if fastq_column in table.columns:
         for library_id in table.index:
-            fastqs = find_fastqs_by_glob(
-                table.loc[library_id, fastq_column].split(','))
-            yield (library_id, list(fastqs))
+            fastq_field = table.loc[library_id, fastq_column]
+            if not pandas.isnull(fastq_field):
+                fastqs = find_fastqs_by_glob(fastq_field.split(','))
+                yield (library_id, list(fastqs))
     else:
         # eventually look up by library ID
         raise NotImplemented("Please specify fastq glob")
