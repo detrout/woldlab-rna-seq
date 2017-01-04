@@ -149,10 +149,11 @@ the analysis directories. You can do that with this command. You need to
 change the `-f 2` to be whatever column you used for analysis_dir. I usually put
 analysis_dir as the second column, so I used `-f 2.`::
 
-  python3 make_dag.py <list of library.tsv files> > <filename>.dagman
   tail -n +2 library.tsv  | cut -f 2 | xargs mkdir
 
 Next you can generate the DagMan script to generate the result files with::
+
+  make_dag <list of library.tsv files> > <filename>.dagman
   condor_submit_dag <filename>.dagman
 
 **TODO** Currently the QC summary statistics and report generation are
@@ -169,7 +170,7 @@ to try to contine.
 Fourth, to generate the HDF5 files containing the various pairwise
 correlation scores one needs to do::
 
-   python3 madqc.py -l <library.tsv> -e <output_experiment_name> <list_of_library ids>
+   madqc -l <library.tsv> -e <output_experiment_name> <list_of_library ids>
 
 **NOTE** Yes. That is currently annoying, the ``make_dag.py`` is
 supposed to generate the commands, but it doesn't yet.
@@ -177,7 +178,7 @@ supposed to generate the commands, but it doesn't yet.
 Fifth, after all of the experiment correlation scores are generated one can
 construct a summary report with::
 
-  python3 report.py -l <library.tsv> -e <experiment.tsv> > <html filename>
+  qcreport -l <library.tsv> -e <experiment.tsv> > <html filename>
 
 **TODO** Implement a way to specify where the Bokeh JavaScript and CSS is.
 
