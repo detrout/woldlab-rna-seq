@@ -146,8 +146,13 @@ read_2
 
 Second, after the definition files are constructed you can generate
 the DagMan script to generate the result files with::
+Second, after the definition files are constructed you need to create
+the analysis directories. You can do that with this command. You need to
+change the `-f 2` to be whatever column you used for analysis_dir. I usually put
+analysis_dir as the second column, so I used `-f 2.`::
 
   python3 make_dag.py <list of library.tsv files> > <filename>.dagman
+  tail -n +2 library.tsv  | cut -f 2 | xargs mkdir
   condor_submit_dag <filename>.dagman
 
 **TODO** Currently the QC summary statistics and report generation are
