@@ -161,6 +161,68 @@ def load_all_samstats(libraries):
     return pandas.DataFrame(samstats, index=library_ids)
 
 
+def parse_star_final_fieldname(name):
+    name = name.strip()
+    for sep in ['|', ':']:
+        if name.endswith(sep):
+            name = name[:-1]
+    return name.strip()
+
+
+def parse_star_final_percent(x):
+    return float(x.replace('%', ''))
+
+
+def load_star_final_log(filename):
+    name_type = {
+        'Started job on': str,
+        'Started mapping on': str,
+        'Finished on': str,
+        'Uniquely mapped reads %': parse_star_final_percent,
+        'Mismatch rate per base, %': parse_star_final_percent,
+        'Deletion rate per base': parse_star_final_percent,
+        'Insertion rate per base': parse_star_final_percent,
+        '% of reads mapped to multiple loci': parse_star_final_percent,
+        '% of reads mapped to too many loci': parse_star_final_percent,
+        '% of reads unmapped: too many mismatches': parse_star_final_percent,
+        '% of reads unmapped: too short': parse_star_final_percent,
+        '% of reads unmapped: other': parse_star_final_percent,
+        '% of chimeric reads': parse_star_final_percent,
+    }
+    prefix = ''
+    index = []
+    values = []
+    with open(filename) as instream:
+        for line in instream:
+            fields = line.split('\t')
+            if len(fields) == 0:
+                # blank line
+                continue
+            elif len(fields) == 1:
+                # header
+                prefix = parse_star_final_fieldname(fields[0])
+            else:
+                name = parse_star_final_fieldname(fields[0])
+                index.append((prefix, name))
+                values.append(name_type.get(name, float)(fields[1].strip()))
+
+    index = index=pandas.MultiIndex.from_tuples(index, names=['read_class', 'name'])
+    return pandas.Series(values, index)
+
+
+def load_all_star_final(libraries):
+    final = []
+    library_ids = []
+    analysis_files = find_library_analysis_file(libraries, 'Log.final.out')
+    for library_id, filename in analysis_files:
+        data = load_star_final_log(filename)
+        data.name = library_id
+        final.append(data)
+        library_ids.append(library_id)
+
+    return pandas.DataFrame(final)
+
+
 def load_distribution(filename):
     distribution = collections.OrderedDict()
     with open(filename, 'rt') as instream:
