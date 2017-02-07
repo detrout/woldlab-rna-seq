@@ -239,7 +239,7 @@ class QCReport:
 
     def make_spikein_per_transcript_plot(self, quantifications, library_id):
         spikein_cpc = pandas.DataFrame(get_single_spike_cpc(),
-                                       columns=['copies'])
+                                       columns=['cpc'])
         library = quantifications[library_id]
         spikes = library[library.index.isin(spikein_cpc.index)]
         if len(spikes) == 0:
@@ -250,7 +250,7 @@ class QCReport:
 
         source = ColumnDataSource(
             data=dict(
-                copies = copies_vs_quant['copies'],
+                copies = copies_vs_quant['cpc'],
                 fpkms = copies_vs_quant[library_id],
                 desc = copies_vs_quant.index,
             )
@@ -270,7 +270,7 @@ class QCReport:
         plot.xaxis.axis_label = "transcripts spiked in"
         plot.yaxis.axis_label = "RNA-Seq RSEM ({})".format(self.quantification_name)
         #plot.circle('copies', 'fpkms', source=source)
-        plot.circle(x=copies_vs_quant['copies'], y=copies_vs_quant[library_id])
+        plot.circle(x=copies_vs_quant['cpc'], y=copies_vs_quant[library_id])
 
         handle = self.next_plot_handle
         logger.debug('spikein per transcript plot handle for %s: %s',
