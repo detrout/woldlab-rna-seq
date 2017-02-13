@@ -94,6 +94,7 @@ called .htsworkflow.ini with the contents::
   star_dir=<directory containing STAR executable>
   rsem_dir=<directory containing rsem-calculate-expression>
   georgi_dir=<directory containing "GeorgiScripts" python files>
+  ucsc_tools_dir=<directory containing at least bedGraphToBigWig from ucsc tools>
 
 Processing
 ==========

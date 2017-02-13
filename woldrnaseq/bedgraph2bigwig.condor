@@ -6,8 +6,8 @@ error=bedgraph2bigwig-$(Process).out
 
 CURDIR=$$(curdir)
 ANALYSIS_NAME=$$(analysis_name:Analysis)
-BEDGRAPH_TO_BIGWIG=/woldlab/castor/proj/programs/x86_64/bedGraphToBigWig
 GENOME_ROOT=$$(genome_root:/woldlab/castor/home/diane/proj/genome)
+BEDGRAPH_TO_BIGWIG=$(UCSC_TOOLS)bedGraphToBigWig
 GENOME=$$(genome:mm10)
 ANNOTATION=$$(annotation:M4)
 SEX=$$(sex:male)

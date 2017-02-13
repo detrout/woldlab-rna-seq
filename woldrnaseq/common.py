@@ -23,6 +23,9 @@ def add_default_path_arguments(parser):
     group.add_argument('--georgi-dir',
                         default=defaults['georgi_dir'],
                         help='Specify the directory where georgi scripts are installed')
+    group.add_argument('--ucsc-tools-dir',
+                       default=defaults['ucsc_tools_dir'],
+                       help='Specify the directory where the UCSC tools are installed')
     return parser
 
 
@@ -65,6 +68,7 @@ def read_defaults():
         'star_dir': None,
         'rsem_dir': None,
         'georgi_dir': None,
+        'ucsc_tools_dir': None,
     }
     config = configparser.ConfigParser()
     config.read([os.path.expanduser('~/.htsworkflow.ini'),
@@ -72,7 +76,7 @@ def read_defaults():
 
     if config.has_section('analysis'):
         analysis = config['analysis']
-        for name in ['genome_dir', 'star_dir', 'rsem_dir', 'georgi_dir']:
+        for name in defaults.keys():
             defaults[name] = normalize_path(analysis.get(name))
 
     return defaults
