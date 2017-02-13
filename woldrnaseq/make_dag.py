@@ -107,6 +107,7 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
         analysis.star_dir = args.star_dir
         analysis.rsem_dir = args.rsem_dir
         analysis.georgi_dir = args.georgi_dir
+        analysis.ucsc_tools_dir = args.ucsc_tools_dir
 
         analysis.genome = libraries.loc[library_id, 'genome']
         analysis.annotation = libraries.loc[library_id, 'annotation']

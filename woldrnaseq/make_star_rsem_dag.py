@@ -25,6 +25,7 @@ def main(cmdline=None):
     analysis.star_dir = args.star_dir
     analysis.rsem_dir = args.rsem_dir
     analysis.georgi_dir = args.georgi_dir
+    analysis.ucsc_tools_dir = args.ucsc_tools_dir
     analysis.genome = args.genome
     analysis.annotation = args.annotation
     analysis.sex = args.sex
@@ -114,6 +115,7 @@ class AnalysisDAG:
             star_dir=self.star_dir,
             rsem_dir=self.rsem_dir,
             georgi_dir=self.georgi_dir,
+            ucsc_tools_dir=self.ucsc_tools_dir,
             job_id=self.job_id,
             genome=self.genome,
             annotation=self.annotation,
