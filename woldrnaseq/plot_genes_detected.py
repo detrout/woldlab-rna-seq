@@ -90,6 +90,9 @@ def plot_gene_detection_histogram(binned_quantifications, basename,
         width = max(len(binned_quantifications.index) * 0.5, 6)
         f = pyplot.figure(figsize=(width, 6), dpi=100)
         ax = f.add_subplot(1,1,1)
+
+        matplotlib.rcParams['patch.force_edgecolor'] = True
+        matplotlib.rcParams['patch.facecolor'] = 'b'
         gene_detection_histogram(ax, binned_quantifications,
                                  show_genes_detected=show_genes_detected)
         ax.set_title(basename)
