@@ -4,12 +4,7 @@ log=samtools-index-$(Process).log
 output=samtools-index-$(Process).out
 error=samtools-index-$(Process).out
 
-CURDIR=$$(curdir)
-GENOME=$$(genome:mm10)
-ANNOTATION=$$(annotation:M4)
-SEX=$$(sex:male)
-GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-IN=$$(in:Aligned.sortedByCoord.out.bam)
+IN=$$($(in):Aligned.sortedByCoord.out.bam)
 
 request_cpus=1
 request_memory=4G

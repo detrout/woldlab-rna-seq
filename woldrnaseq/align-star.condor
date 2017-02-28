@@ -3,7 +3,7 @@ log=align-star-$(Process).log
 output=align-star-$(Process).out
 error=align-star-$(Process).out
 
-STAR_DIR=$$(star_dir)
+STAR_DIR=$(star_dir)
 GENOME_ROOT=$$($(genome_root):/woldlab/castor/home/diane/proj/genome)
 GENOME=$$($(genome):mm10)
 ANNOTATION=$$($(annotation):M4)

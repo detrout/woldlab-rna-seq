@@ -4,17 +4,15 @@ output=rsem-$(Process).out
 error=rsem-$(Process).out
 environment="PATH=/usr/local/bin:/usr/bin:/bin"
 
-RSEM_DIR=$$(rsem_dir)
-ANALYSIS_NAME=$$(analysis_name:Analysis)
-GENOME_ROOT=$$(genome_root:~/proj/genome/)
-GENOME=$$(genome:mm10)
-ANNOTATION=$$(annotation:M4)
-SEX=$$(sex:male)
+ANALYSIS_NAME=$$($(analysis_name):Analysis)
+GENOME_ROOT=$$($(genome_root):~/proj/genome/)
+GENOME=$$($(genome):mm10)
+ANNOTATION=$$($(annotation):M4)
+SEX=$$($(sex):male)
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
 GENOME_DIR=$(GENOME_ROOT)$(GENOME_TRIPLET)/rsem
 PAIRED_END=$(paired_end)
 # dnanexus pipeline uses "star_anno_bam"
-CURDIR=$$(curdir)
 IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno.bam
 OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno_rsem
 RND_SEED=--seed 12345

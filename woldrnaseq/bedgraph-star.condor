@@ -3,11 +3,8 @@ log=bedgraph-star-$(Process).log
 output=bedgraph-star-$(Process).out
 error=bedgraph-star-$(Process).out
 
-STAR_DIR=$$(star_dir)
-
-CURDIR=$$(curdir)
-IN=$$(in:Aligned.sortedByCoord.out.bam)
-REFERENCE_PREFIX=$$(reference_prefix:chr)
+IN=$$($(in):Aligned.sortedByCoord.out.bam)
+REFERENCE_PREFIX=$$($(reference_prefix):chr)
 
 request_cpus=1
 request_memory=4G
