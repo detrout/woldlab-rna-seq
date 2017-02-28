@@ -6,7 +6,7 @@ export MEMORY=$3
 export THREADS=$4
 export PAIRED=$5
 
-if [ -z ${PAIRED} ]; then
+if [ ${PAIRED} -eq 0 ]; then
     echo "sort single end to ${OUT}"
   cat <( samtools view -H ${IN} ) \
       <( samtools view ${IN}  | \
