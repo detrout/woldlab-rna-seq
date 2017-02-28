@@ -88,7 +88,6 @@ def plot_gene_detection_histogram(binned_quantifications, basename,
     """
     with pyplot.style.context('seaborn-talk'):
         width = max(len(binned_quantifications.index) * 0.5, 6)
-        print(width, len(binned_quantifications.index))
         f = pyplot.figure(figsize=(width, 6), dpi=100)
         ax = f.add_subplot(1,1,1)
         gene_detection_histogram(ax, binned_quantifications,
