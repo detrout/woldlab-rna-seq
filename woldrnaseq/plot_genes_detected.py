@@ -23,6 +23,9 @@ def main(cmdline=None):
     toplot = OrderedDict()
     for filename in args.filenames:
         all_quantifications = pandas.read_csv(filename, header=0, index_col=0)
+        if 'gene_name' in all_quantifications.columns:
+            columns = [ c for c in all_quantifications.columns if c != 'gene_name']
+            all_quantifications = all_quantifications[columns]
         protein_quantifications = all_quantifications.loc[protein_coding]
         
         _, filename = os.path.split(filename)
