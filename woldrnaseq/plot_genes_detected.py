@@ -36,7 +36,9 @@ def main(cmdline=None):
         binned_quantifications = bin_library_quantification(protein_quantifications, 'FPKM')
         binned_quantifications.to_csv(csv_name)
 
-        f = plot_gene_detection_histogram(binned_quantifications, basename)
+        f = plot_gene_detection_histogram(binned_quantifications,
+                                          basename,
+                                          show_genes_detected=not args.hide_detected_sum)
         toplot[png_name] = f
 
     save_fixed_height(toplot)
@@ -45,6 +47,8 @@ def main(cmdline=None):
 def make_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--gtf-cache', required=True, help='name of HDF5 GTF file')
+    parser.add_argument('--hide-detected-sum', default=False,
+                        help='hide the total genes detected')
     parser.add_argument('filenames', nargs='+',
                         help='Combined quantification file: libraries by genes')
     return parser
@@ -78,32 +82,37 @@ def bin_library_quantification(quantification, quantification_name, bins=None):
     return histogram.reindex(histogram.index[::-1]).T
 
 
-def plot_gene_detection_histogram(binned_quantifications, basename):
+def plot_gene_detection_histogram(binned_quantifications, basename,
+                                  show_genes_detected=True):
     """Apply formatting to gene detction histogram
     """
-    with pyplot.style.context('seaborn-dark-palette'):
+    with pyplot.style.context('seaborn-talk'):
         width = max(len(binned_quantifications.index) * 0.5, 6)
         print(width, len(binned_quantifications.index))
         f = pyplot.figure(figsize=(width, 6), dpi=100)
         ax = f.add_subplot(1,1,1)
-        gene_detection_histogram(ax, binned_quantifications)
+        gene_detection_histogram(ax, binned_quantifications,
+                                 show_genes_detected=show_genes_detected)
         ax.set_title(basename)
 
     return f
 
 
-def gene_detection_histogram(ax, binned, cm=pyplot.cm.OrRd_r):
+def gene_detection_histogram(ax, binned,
+                             cm=pyplot.cm.OrRd_r,
+                             show_genes_detected=True):
     ax.set_ylabel('Number of genes')
     binned.plot.bar(
         stacked=True, 
         cmap=cm,
         ax=ax)
 
-    for rect, total in zip(ax.patches, list(binned.sum(axis=1))):
-        x = rect.get_x() + rect.get_width()/2
-        y = total + 5
-        label = "{:.2}k".format(total/1000)
-        ax.text(x, y, label, ha='center', va='bottom')
+    if show_genes_detected:
+        for rect, total in zip(ax.patches, list(binned.sum(axis=1))):
+            x = rect.get_x() + rect.get_width()/2
+            y = total + 5
+            label = "{:.2}k".format(total/1000)
+            ax.text(x, y, label, ha='center', va='bottom')
 
     ax.legend(bbox_to_anchor=(1.05, 1), 
               loc=2, 
