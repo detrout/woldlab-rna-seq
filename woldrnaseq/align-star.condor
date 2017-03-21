@@ -49,7 +49,7 @@ arguments="--genomeDir $(GENOME_DIR) \
 	   --outFilterType BySJout \
 	   --outSAMattributes NH HI AS NM MD \
 	   --outSAMtype BAM SortedByCoordinate \
-	   --quantMode TranscriptomeSAM \
+	   --quantMode TranscriptomeSAM GeneCounts \
 	   --sjdbScore 1 \
 	   --limitBAMsortRAM 30000000000 \
            $(EXTRA_ARGS) \
