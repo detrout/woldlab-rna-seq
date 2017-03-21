@@ -103,7 +103,8 @@ class AnalysisDAG:
         return template.render(
             align_star=resource_filename(__name__, 'align-star.condor'),
             sort_samtools=resource_filename(__name__, 'sort-samtools.condor'),
-            quant_rsem=resource_filename(__name__, 'quant-rsem.condor'),
+            quant_rsem_se=resource_filename(__name__, 'quant-rsem-se.condor'),
+            quant_rsem_pe=resource_filename(__name__, 'quant-rsem-pe.condor'),
             index_samtools=resource_filename(__name__, 'index-samtools.condor'),
             qc_samstats=resource_filename(__name__, 'qc-samstats.condor'),
             bedgraph_star=resource_filename(__name__, 'bedgraph-star.condor'),

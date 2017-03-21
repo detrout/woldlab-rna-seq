@@ -2,8 +2,9 @@
 # Processing {{job_id}} in {{analysis_dir}}
 
 JOB {{job_id}}_align-star {{align_star}}
-JOB {{job_id}}_sort-samtools {{sort_samtools}}
-JOB {{job_id}}_quant-rsem {{quant_rsem}}
+JOB {{job_id}}_sort-samtools {{sort_samtools}}{% if read_2_fastqs %}
+JOB {{job_id}}_quant-rsem {{quant_rsem_pe}}{% else %}
+JOB {{job_id}}_quant-rsem {{quant_rsem_se}}{% endif %}
 JOB {{job_id}}_index-samtools {{index_samtools}}
 JOB {{job_id}}_qc-samstats {{qc_samstats}}
 JOB {{job_id}}_bedgraph-star {{bedgraph_star}}
