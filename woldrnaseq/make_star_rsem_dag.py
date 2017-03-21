@@ -4,10 +4,12 @@ from __future__ import absolute_import, print_function
 
 from argparse import ArgumentParser
 import os
+import datetime
 import logging
 from pkg_resources import resource_filename
 from jinja2 import Environment, PackageLoader
 
+from woldrnaseq.version import get_git_version
 from .common import (add_default_path_arguments,
                      add_debug_arguments)
 
@@ -126,6 +128,9 @@ class AnalysisDAG:
             read_1_fastqs=",".join(self.read_1_fastqs),
             read_2_fastqs=",".join(self.read_2_fastqs),
             reference_prefix=self.reference_prefix,
+            username=os.getlogin(),
+            timestamp=datetime.datetime.now().isoformat(),
+            woldrnaseq_version=get_git_version(),
         )
 
 

@@ -1,5 +1,8 @@
 ###########################################
-# Processing {{job_id}} in {{analysis_dir}}
+# Processing {{job_id}} in {{analysis_dir}} with
+# Username: {{username}}
+# Timestamp: {{timestamp}}
+# Version: {{woldrnaseq_version}}
 
 JOB {{job_id}}_align-star {{align_star}}
 JOB {{job_id}}_sort-samtools {{sort_samtools}}{% if read_2_fastqs %}

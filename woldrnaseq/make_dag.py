@@ -14,12 +14,17 @@ import pandas
 
 from woldrnaseq import make_star_rsem_dag
 from woldrnaseq import models
+from woldrnaseq.version import get_git_version
 
-from .common import (add_default_path_arguments,
-                     add_debug_arguments,
-                     configure_logging,
-                     get_seperator,
-                     validate_args)
+from woldrnaseq.common import (
+    add_default_path_arguments,
+    add_debug_arguments,
+    add_version_argument,
+    configure_logging,
+    find_fastqs,
+    get_seperator,
+    validate_args
+)
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +33,9 @@ def main(cmdline=None):
     args = parser.parse_args(cmdline)
 
     configure_logging(args)
+
+    if args.version:
+        parser.exit(0, 'version: %s\n' % (get_git_version(),))
 
     if not validate_args(args):
         parser.error("Please set required parameters")
@@ -48,9 +56,10 @@ def main(cmdline=None):
 def make_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--sep', choices=['TAB',','], default='TAB')
-    parser.add_argument('libraries', nargs='+')
-    make_star_rsem_dag.add_default_path_arguments(parser)
-    make_star_rsem_dag.add_debug_arguments(parser)
+    parser.add_argument('libraries', nargs='*')
+    add_default_path_arguments(parser)
+    add_version_argument(parser)
+    add_debug_arguments(parser)
     
     return parser
 

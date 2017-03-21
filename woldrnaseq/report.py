@@ -2,6 +2,7 @@
 from __future__ import absolute_import, print_function
 
 import argparse
+import datetime
 import itertools
 import logging
 import os
@@ -32,8 +33,11 @@ from .models import (load_experiments,
                      genome_name_from_library,
 )
 from woldrnaseq import madqc
+from woldrnaseq.version import get_git_version
+
 from .common import (add_default_path_arguments,
                      add_debug_arguments,
+                     add_version_argument,
                      configure_logging,
                      get_seperator,
 )
@@ -48,6 +52,9 @@ logger = logging.getLogger('QC Report')
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
+
+    if args.version:
+        parser.exit(0, 'Version: %s' % (get_git_version(),))
 
     configure_logging(args)
 
@@ -81,6 +88,7 @@ def make_parser():
     parser.add_argument('-o', '--output', default='report.html',
                         help='output html filename')
     add_default_path_arguments(parser)
+    add_version_argument(parser)
     add_debug_arguments(parser)
 
     return parser
@@ -132,6 +140,9 @@ class QCReport:
             transcript_library_plots=self._transcript_library_plots,
             plot_divs=plot_divs,
             bokeh_script=script,
+            username=os.getlogin(),
+            timestamp=datetime.datetime.now().isoformat(),
+            woldrnaseq_version=get_git_version()
             )
         return page
 
