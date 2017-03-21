@@ -18,11 +18,8 @@ OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno_rsem
 RND_SEED=--seed 12345
 THREADS=8
 
-if defined PAIRED_END
-   EXTRA_FLAGS=--paired-end --forward-prob 0
-else
-   EXTRA_FLAGS=
-endif
+# Official pipleine has different conditions for forward-prob
+# for different strandedness. Woldlab protocol is usually unstranted.
 
 request_cpus=$(THREADS)
 request_memory=42G
