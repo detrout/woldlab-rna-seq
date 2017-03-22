@@ -38,6 +38,13 @@ def add_debug_arguments(parser):
     return parser
 
 
+def add_version_argument(parser):
+    """Add Version argument
+    """
+    parser.add_argument('--version', default=False, action='store_true')
+    return parser
+
+
 def configure_logging(args, **kwargs):
     """run logging.basicConfig based on common verbosity command line arguments
     """
