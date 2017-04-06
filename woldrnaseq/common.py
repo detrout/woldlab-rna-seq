@@ -1,8 +1,11 @@
 """Common utilities shared by several components
 """
 import configparser
+from glob import glob
 import logging
 import os
+
+import pandas
 
 logger = logging.getLogger(__name__)
 
@@ -148,4 +151,33 @@ def validate_args(args):
         can_continue = False
 
     return can_continue
+
+
+def find_fastqs(table, fastq_column):
+    """Find fastqs for a library from a library table
+
+    fastqs are a comma seperated glob pattern
+    """
+    if fastq_column in table.columns:
+        for library_id in table.index:
+            fastq_field = table.loc[library_id, fastq_column]
+            if not pandas.isnull(fastq_field):
+                fastqs = find_fastqs_by_glob(fastq_field.split(','))
+                yield (library_id, list(fastqs))
+    else:
+        # eventually look up by library ID
+        raise NotImplemented("Please specify fastq glob")
+
+
+def find_fastqs_by_glob(fastq_globs):
+    for fastq in fastq_globs:
+        fastq_list = glob(fastq)
+        if len(fastq_list) == 0:
+            logger.warn("No fastqs matched: %s", fastq)
+        for filename in fastq_list:
+            if os.path.exists(filename):
+                yield os.path.abspath(filename)
+            else:
+                logger.warn("Can't find fastq {}. skipping".format(filename))
+
 
