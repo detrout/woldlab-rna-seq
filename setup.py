@@ -5,6 +5,10 @@ setup(
     name='long-rna-seq-condor',
     version=get_git_version(),
     packages = find_packages(),
+    package_data={
+        'woldrnaseq': ['RELEASE-VERSION'],
+        'woldrnaseq.templates': ['*.dagman', '*.html']
+    },
     entry_points={
         'console_scripts': [
             'madqc = woldrnaseq.madqc:main',
