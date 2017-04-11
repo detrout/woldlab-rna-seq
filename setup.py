@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from woldrnaseq.version import get_git_version()
+from woldrnaseq.version import get_git_version
 
 setup(
     name='long-rna-seq-condor',
