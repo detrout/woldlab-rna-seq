@@ -80,6 +80,11 @@ class AnalysisDAG:
             elif key == '_analysis_name':
                 # analysis name will default to analysis dir
                 pass
+            elif key == 'analysis_dir':
+                if self.analysis_dir is None:
+                    raise ValueError("analysis_dir is not set")
+                if not os.path.exists(self.analysis_dir):
+                    logger.warning("Analysis dir %s doesn't exist", self.analysis_dir)
             elif getattr(self, key) is None:
                 raise ValueError("{} is not set".format(key))
         return True
