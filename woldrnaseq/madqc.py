@@ -5,6 +5,7 @@ import pandas
 import numpy
 import os
 import scipy.stats
+import sys
 import logging
 
 from woldrnaseq import models
@@ -20,9 +21,14 @@ def load_rsem_quantifications(experiment_files, index=None, column='FPKM'):
     quantifications = []
     filenames = []
     for filename in experiment_files:
-        table = pandas.read_csv(filename,
-                                sep='\t',
-                                index_col=0)
+        try:
+            table = pandas.read_csv(filename,
+                                    sep='\t',
+                                    index_col=0)
+        except pandas.io.common.EmptyDataError as e:
+            logger.error("Unable to read file {} empty data".format(filename))
+            sys.exit(1)
+
         table = table[[column]]
 
         quantifications.append(table[column])
