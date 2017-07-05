@@ -35,7 +35,7 @@ class TestModel(TestCase):
         mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
         hg38tsv = resource_filename(__name__, 'experiments-hg38.tsv')
         mm10 = models.load_experiments([mm10tsv])
-        self.assertEqual(len(mm10), count_valid_records(mm10))
+        self.assertEqual(len(mm10), count_valid_records(mm10tsv))
         hg38 = models.load_experiments([hg38tsv])
         both = models.load_experiments([mm10tsv, hg38tsv])
         self.assertEqual(len(mm10) + len(hg38), len(both))
