@@ -16,8 +16,9 @@ request_cpus=$(THREADS)
 request_memory=$(MEMORY)
 
 initialdir=$(CURDIR)
-
-transfer_executable=false
-executable=/bin/bash
-arguments="$(sort_samtools) $(IN) $(OUT) $(MEMORY) $(THREADS) $(paired_end)"
+transfer_executable=true
+executable=$(sort_samtools)
+transfer_output_files=$(OUT)
+should_transfer_files=Always
+arguments="$(CURDIR)/$(IN) $(OUT) $(MEMORY) $(THREADS) $(paired_end)"
 queue
