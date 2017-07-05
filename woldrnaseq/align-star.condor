@@ -26,8 +26,10 @@ endif
 request_cpus=$(THREADS)
 request_memory=31G
 executable=$(STAR_DIR)STAR
-transfer_executable=False
-should_transfer_files=IF_NEEDED
+transfer_executable=false
+
+should_transfer_files=Always
+when_to_transfer_files=ON_EXIT
 
 initialdir=$(CURDIR)
 arguments="--genomeDir $(GENOME_DIR) \
@@ -51,7 +53,8 @@ arguments="--genomeDir $(GENOME_DIR) \
 	   --outSAMtype BAM SortedByCoordinate \
 	   --quantMode TranscriptomeSAM GeneCounts \
 	   --sjdbScore 1 \
-	   --limitBAMsortRAM 30000000000 \
+	   --outFileNamePrefix $(CURDIR)/ \
+	   --limitBAMsortRAM 90000000000 \
            $(EXTRA_ARGS) \
 "
 queue
