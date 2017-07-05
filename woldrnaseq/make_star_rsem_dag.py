@@ -63,6 +63,7 @@ class AnalysisDAG:
         self.star_dir = None
         self.rsem_dir = None
         self.georgi_dir = None
+        self.ucsc_tools_dir = None
         self.job_id = None
         self.genome = None
         self.annotation = None

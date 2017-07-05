@@ -59,6 +59,7 @@ class TestMakeDag(TestCase):
         analysis.star_dir = '/usr/bin'
         analysis.rsem_dir = '/usr/bin' # should this actually be required?
         analysis.georgi_dir = '~/GeorgiScripts'
+        analysis.ucsc_tools_dir = '~/x86_64-304'
         analysis.genome = 'mm10'
         analysis.annotation = 'M4'
         analysis.sex = 'male'
