@@ -18,7 +18,7 @@ setup(
         ],
     },
     install_requires=[
-        'bokeh>=0.9.3',
+        'bokeh>=0.11.0',
         'numpy>=1.10',
         'pandas>=0.17',
         'matplotlib>=1.4',
