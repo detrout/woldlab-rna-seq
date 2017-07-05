@@ -40,7 +40,10 @@ def main(cmdline=None):
         parser.error("Please set required parameters")
 
     sep = get_seperator(args.sep)
-    libraries = models.load_library_tables(args.libraries, sep)
+    library_filenames = args.libraries
+    library_filenames.extend(args.other_libraries)
+
+    libraries = models.load_library_tables(library_filenames, sep)
     read1 = dict(find_fastqs(libraries, 'read_1'))
     if 'read_2' in libraries.columns:
         read2 = dict(find_fastqs(libraries, 'read_2'))
@@ -55,7 +58,8 @@ def main(cmdline=None):
 def make_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--sep', choices=['TAB',','], default='TAB')
-    parser.add_argument('libraries', nargs='*')
+    parser.add_argument('-l', '--libraries', action='append', default=[])
+    parser.add_argument('other_libraries', nargs='*')
     add_default_path_arguments(parser)
     add_version_argument(parser)
     add_debug_arguments(parser)
