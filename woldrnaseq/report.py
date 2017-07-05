@@ -119,6 +119,8 @@ class QCReport:
         """
         if genome_name not in self._gtf_cache:
             cache_pathname = os.path.join(self.genome_dir, genome_name, genome_name + '.h5')
+            logging.debug('Searching for %s', cache_pathname)
+
             if os.path.exists(cache_pathname):
                 load_gtf_cache(cache_pathname)
             else:
