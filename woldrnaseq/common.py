@@ -171,7 +171,7 @@ def find_fastqs(table, fastq_column):
 
 def find_fastqs_by_glob(fastq_globs):
     for fastq in fastq_globs:
-        fastq_list = glob(fastq)
+        fastq_list = sorted(glob(fastq))
         if len(fastq_list) == 0:
             logger.warn("No fastqs matched: %s", fastq)
         for filename in fastq_list:
