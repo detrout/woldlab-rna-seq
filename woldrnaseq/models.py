@@ -11,6 +11,7 @@ import pandas
 logger = logging.getLogger(__name__)
 AnalysisFile = collections.namedtuple('AnalysisFile', ['library_id', 'filename'])
 
+
 def prepend_path(path, file_name):
     return os.path.join(path, file_name)
 
