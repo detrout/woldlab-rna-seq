@@ -266,7 +266,7 @@ def find_library_analysis_file(libraries, extension):
         analysis_dir = libraries.loc[library_id, 'analysis_dir']
         filenames = glob(os.path.join(analysis_dir, extension))
         if len(filenames) == 0:
-            raise RuntimeError("No files found in {} for {}".format(
+            logger.warn("No files found in {} for {}".format(
                 analysis_dir, extension))
         elif len(filenames) > 1:
             raise RuntimeError("To many files {}".format(filenames))
