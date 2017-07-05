@@ -26,13 +26,14 @@ request_memory=42G
 
 executable=$(RSEM_DIR)rsem-calculate-expression
 transfer_executable=False
-should_transfer_files=IF_NEEDED
+should_transfer_files=Always
+transfer_output_files=$(OUT).genes.results,$(OUT).isoforms.results
+initial_dir=$(CURDIR)
 
-initialdir=$(CURDIR)
 arguments="--bam --estimate-rspd --calc-ci $(RND_SEED) -p $(THREADS) \
            --no-bam-output --ci-memory 30000 --paired-end --forward-prob 0.5 \
-           --temporary-folder /tmp/$(OUT).temp \
-	   $(IN) \
+           --temporary-folder ./$(OUT).temp \
+	   $(CURDIR)/$(IN) \
 	   $(GENOME_DIR) \
 	   $(OUT) \
 "
