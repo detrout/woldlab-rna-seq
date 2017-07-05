@@ -17,6 +17,10 @@ wold-rna-seq-condor now
     the filenames have changed slightly to avoid colliding
   * Added support for # as a comment charater in experiment and library files
   * Now require path to UCSC tools (add ucsc_tools_dir to .htsworkflow.ini)
+  * long-rna-seq-condors version number is written to the dagman script
+  * Uses condor scratch directories for STAR, RSEM, and sorting.
+    This should lower NFS load, and leave fewer temp files around that
+    need to be cleaned.
 
 Release 0.3
 -----------
