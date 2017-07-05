@@ -164,7 +164,6 @@ class QCReport:
                     library_id)
                 self._transcript_library_plots.append(transcript_handle)
                 genome_name = genome_name_from_library(self.libraries.loc[library_id])
-                self._load_gtf_cache(genome_name)
                 seen_genomes.add(genome_name)
 
             if len(seen_genomes) > 1:
