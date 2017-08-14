@@ -20,7 +20,6 @@ SAMSTATS=$(GEORGI_DIR)SAMstats.py
 request_cpus=1
 request_memory=4G
 
-
 executable=/usr/bin/python2
 transfer_executable=False
 
