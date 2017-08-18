@@ -14,7 +14,10 @@ from woldrnaseq.common import (
     get_seperator,
     validate_args
 )
-from woldrnaseq.models import load_library_tables
+from woldrnaseq.models import (
+    genome_name_from_library,
+    load_library_tables,
+)
 from woldrnaseq.version import get_git_version
 
 logger = logging.getLogger('make_tracks')
@@ -90,36 +93,31 @@ def make_bigwig_track_name(library, signal_type, analysis_root):
     """
     assert signal_type in ('uniq', 'all')
     
-    analysis_name = make_analysis_name(library)
-    genome_triplet = make_genome_triplet(library)
-    track_name = analysis_name + '-' + genome_triplet + '_' + signal_type + '.bw'
+    genome_triplet = genome_name_from_library(library)
+    track_name = library.analysis_name + '-' + genome_triplet + '_' + signal_type + '.bw'
 
-    for pathname in [ os.path.join(library.analysis_dir, track_name), track_name]:
-        abspathname = os.path.join(analysis_root, pathname)
-        if os.path.exists(abspathname):
-            return pathname
+    for pathname in [ os.path.join(library.analysis_dir, track_name),
+                      os.path.join(analysis_root, track_name)]:
+        if os.path.exists(pathname):
+            return return_subpath(pathname, analysis_root)
 
     logger.warning("Couldn't find track file %s", track_name)
 
 
-def make_analysis_name(library):
-    """generate analysis name from library table
+def return_subpath(pathname, analysis_root):
+    """Strip off analysis_root from path to file
 
-    FIXME: this is duplicate functionaliy in make_star_rsem_dag
+    :param str pathname: absolute path to file of interest
+    :param str analysis_root: root directory to be searching for track files
+    :returns: relative path rooted at analysis_root
     """
-    if 'analysis_name' in library.index:
-        return library.analysis_name
+    if pathname.startswith(analysis_root):
+        common = os.path.commonpath([pathname, analysis_root])
+        assert common[-1] != '/'
+        return pathname.replace(common + '/', '')
     else:
-        return library.analysis_dir
+        raise ValueError("Path {} does not start with {}".format(pathname, analysis_root))
 
-
-def make_genome_triplet(library):
-    """Make genome triplet string from library table row
-
-    FIXME: this is duplicate functionality in make_star_rsem_dag
-    """
-    return '-'.join([library.genome, library.annotation, library.sex])
-    
 if __name__ == '__main__':
     main()
     
