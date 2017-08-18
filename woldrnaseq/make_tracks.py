@@ -146,6 +146,11 @@ def make_bigwig_custom_tracks(library, web_root, analysis_root):
 
 def make_bigwig_track_name(library, signal_type, analysis_root):
     """Generate the base path where the bigwig track is
+
+    :param Series library: row from a library table DataFrame
+    :param str signal_type: either uniq or all to specify bigwig type.
+    :param str analysis_root: root directory to be searching for track files
+    :returns: list of paths of bigWig files relative to analysis_root
     """
     assert signal_type in ('uniq', 'all')
     
