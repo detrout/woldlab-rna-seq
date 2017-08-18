@@ -137,7 +137,7 @@ def make_bigwig_custom_tracks(library, web_root, analysis_root):
         track = track_template.format(library_id=library.name,
                                       description=library.analysis_name,
                                       url=url,
-                                      db=library.genome
+                                      genome=library.genome,
         )
 
         tracks.append(track)
