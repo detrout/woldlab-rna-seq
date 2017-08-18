@@ -77,7 +77,7 @@ class AnalysisDAG:
     def is_valid(self):
         for key in self.__dict__:
             if key == 'read_1_fastqs' and len(self.read_1_fastqs) == 0:
-                raise ValueError("Read 1 fastqs are required")
+                raise ValueError("Read 1 fastqs are required for library {}".format(self.job_id))
             elif key == '_analysis_name':
                 # analysis name will default to analysis dir
                 pass
