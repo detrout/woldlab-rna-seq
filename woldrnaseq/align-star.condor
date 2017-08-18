@@ -1,7 +1,7 @@
 universe=vanilla
-log=align-star-$(Process).log
-output=align-star-$(Process).out
-error=align-star-$(Process).out
+log=$(CURDIR)/align-star-$(Process).log
+output=$(CURDIR)/align-star-$(Process).out
+error=$(CURDIR)/align-star-$(Process).out
 
 STAR_DIR=$(star_dir)
 GENOME_ROOT=$$($(genome_root):/woldlab/castor/home/diane/proj/genome)
@@ -31,9 +31,8 @@ executable=$(STAR_DIR)STAR
 transfer_executable=false
 
 should_transfer_files=Always
-when_to_transfer_files=ON_EXIT
+when_to_transfer_output=ON_EXIT
 
-initialdir=$(CURDIR)
 arguments="--genomeDir $(GENOME_DIR) \
            --readFilesIn $(READ1) $(READ2) \
            --readFilesCommand zcat \
@@ -55,6 +54,7 @@ arguments="--genomeDir $(GENOME_DIR) \
 	   --outSAMtype BAM SortedByCoordinate \
 	   --quantMode TranscriptomeSAM GeneCounts \
 	   --sjdbScore 1 \
+           --outTmpDir ./_STARtmp/ \
 	   --outFileNamePrefix $(CURDIR)/ \
 	   --limitBAMsortRAM 90000000000 \
            $(EXTRA_ARGS) \
