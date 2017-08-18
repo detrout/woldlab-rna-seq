@@ -45,6 +45,10 @@ def main(cmdline=None):
             custom_tracks.extend(
                 make_bigwig_custom_tracks(library, args.web_root, args.root))
 
+        if args.bam:
+            custom_tracks.append(
+                make_bam_custom_track(library, args.web_root, args.root))
+
     print(os.linesep.join(custom_tracks))
 
 
@@ -56,6 +60,8 @@ def make_parser():
                         help='root directory to search for tracks')
     parser.add_argument('--bigwig', action='store_true', default=False,
                         help='generate track blocks for bigwigs')
+    parser.add_argument('--bam', action='store_true', default=False,
+                        help='generate track blocks for bam files')
     
     parser.add_argument('-s', '--sep', choices=['TAB',','], default='TAB')
     parser.add_argument('-l', '--libraries', action='append', default=[])
@@ -66,23 +72,73 @@ def make_parser():
     return parser
 
 
-def make_bigwig_custom_tracks(library, web_root, analysis_root):
+def make_bam_custom_track(library, web_root, analysis_root):
     """Generate a bigwig custom track record
+
+    this is singular 'track' because it returns a single row
 
     :param Series library: row from a library table DataFrame
     :param str web_root: base url to be prepended to paths
     :param str analysis_root: base directory to look for track files
     """
-    track_template = 'track type=bigWig name={library_id} description={description} visibility=full color=255,0,0 bigDataUrl={url}'
+    track_template = 'track type=bam name={library_id} description={description} visibility=dense db={genome} bigDataUrl={url}'
+
+    pathname = make_bam_track_name(library, analysis_root)
+    url = web_root +  pathname.replace(analysis_root, '')
+    track = track_template.format(library_id=library.name,
+                                  description=library.analysis_name,
+                                  url=url,
+                                  genome=library.genome,
+    )
+
+    return track
+
+
+def make_bam_track_name(library, analysis_root):
+    """Generate the base path where the bam track is.
+
+    :param Series library: row from a library table DataFrame
+    :param str analysis_root: root directory to be searching for track files
+    :returns: path of bam file relative to analysis_root
+    """
+    genome_triplet = genome_name_from_library(library)
+    track_name = library.analysis_name + '-' + genome_triplet + '_genome.bam'
+    old_name = 'Aligned.sortedByCoord.out.bam'
+    to_check = [
+        os.path.join(library.analysis_dir, track_name),
+        os.path.join(analysis_root, track_name),
+        os.path.join(library.analysis_dir, old_name),
+    ]
+    for pathname in to_check:
+        if os.path.exists(pathname):
+            bai = pathname + '.bai'
+            if not os.path.exists(bai):
+                logger.warning('Missing index file for {}'.format(pathname))
+            return return_subpath(pathname, analysis_root)
+
+    logger.warning("Couldn't find track file %s", track_name)
+
+
+def make_bigwig_custom_tracks(library, web_root, analysis_root):
+    """Generate a bigwig custom track record
+
+    this is plural 'tracks' because it returns uniq and all bigwig tracks
+
+    :param Series library: row from a library table DataFrame
+    :param str web_root: base url to be prepended to paths
+    :param str analysis_root: base directory to look for track files
+    """
+    track_template = 'track type=bigWig name={library_id} description={description} visibility=full color=255,0,0 db={genome} bigDataUrl={url}'
 
     tracks = []
     for signal_type in ['uniq', 'all']:
         pathname = make_bigwig_track_name(library, signal_type, analysis_root)
-        analysis_name = make_analysis_name(library)
         url = web_root +  pathname.replace(analysis_root, '')
         track = track_template.format(library_id=library.name,
-                                      description=analysis_name,
-                                      url=url)
+                                      description=library.analysis_name,
+                                      url=url,
+                                      db=library.genome
+        )
 
         tracks.append(track)
     return tracks
