@@ -25,7 +25,9 @@ PARENT {{job_id}}_bedgraph-star  CHILD {{job_id}}_qc-coverage
 PARENT {{job_id}}_bedgraph-star  CHILD {{job_id}}_bedgraph2bigwig
 
 VARS {{job_id}}_align-star      library_id="{{job_id}}"
+VARS {{job_id}}_align-star      analysis_name="{{analysis_name}}"
 VARS {{job_id}}_sort-samtools   analysis_name="{{analysis_name}}"
+VARS {{job_id}}_index-samtools  analysis_name="{{analysis_name}}"
 VARS {{job_id}}_quant-rsem      analysis_name="{{analysis_name}}"
 VARS {{job_id}}_qc-samstats     analysis_name="{{analysis_name}}"
 VARS {{job_id}}_bedgraph-star   analysis_name="{{analysis_name}}"

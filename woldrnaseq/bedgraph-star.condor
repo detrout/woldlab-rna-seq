@@ -3,7 +3,9 @@ log=bedgraph-star-$(Process).log
 output=bedgraph-star-$(Process).out
 error=bedgraph-star-$(Process).out
 
-IN=$$($(in):Aligned.sortedByCoord.out.bam)
+GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
+
 REFERENCE_PREFIX=$$($(reference_prefix):chr)
 
 request_cpus=1

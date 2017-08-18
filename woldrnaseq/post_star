@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo $1
+ls $1/Aligned.sortedByCoord.out.bam
+mv $1/Aligned.sortedByCoord.out.bam $1/$2
