@@ -60,22 +60,63 @@ two replicates there are cells indicating the human female genome
 index files used, which in this case were TopHat ENCFF700TXC_ STAR
 ENCFF839KAI_ and RSEM ENCFF826ONU_
 
-The mouse mm10 / M4 male genomic index files used were TopHat
-ENCFF268IGM_, STAR ENCFF483PAE_, and RSEM ENCFF064YNQ_.
+(In the following the links are are direct links to download the
+files, instead of viewing the DCC metadata about the tar file)
 
-The human hg19 / V19 male genomic index files used were Tophat
-ENCFF515BAC_, STAR ENCFF746IZL_, and RSEM ENCFF826ONU_.
+The mouse mm10 / M4 male genomic index files used were:
+
+============  ==========
+Download      Index type
+============  ==========
+ENCFF483PAE_  STAR
+ENCFF064YNQ_  RSEM
+ENCFF268IGM_  TopHat
+============  ==========
+
+Late in ENCODE 3 we swiched to GRCh38 / V24 for the human reference
+genome and GENCODE annotation, The index files are.
+
+============  ==========
+Download      Index type
+============  ==========
+ENCFF742NER_  STAR
+ENCFF940AZB_  RSEM
+ENCFF751OWT_  Tophat
+============  ==========
+
+I included the TopHat link although I'm not sure anyone bothered with
+TopHat at this point in the project.
+
+Earlier in ENCODE 3 we were using human hg19 reference genome with
+GENCODE V19. The male genomic index files used were:
+
+============  ==========
+Download      Index type
+============  ==========
+ENCFF746IZL_  STAR
+ENCFF826ONU_  RSEM
+ENCFF515BAC_  TopHat
+============  ==========
 
 All the tar files containing the various indexes genome version,
 annotation version, and chromosomal sex for the supported software are
 also available from the following links.
 
+============= ==================================================
+Accession     Description
+============= ==================================================
 ENCSR641UDW_: Tophat indexed reference files with ERCC spike-ins
 ENCSR314WMD_: STAR indexed reference files with ERCC spike-ins
 ENCSR219BJA_: RSEM indexed reference files with ERCC spike-ins
+============= ==================================================
 
 Even though we are currently just running STAR/RSEM the Tophat indexes
-provide the GFF file we need for Wold Lab QC software.
+include the prebuilt GFF file that contains all of tRNA and spikes
+that we need for Wold Lab QC software.
+
+You can also download the components for the GFF files from `GENCODE
+reference files used in ENCODE pipelines`_. Though they might still
+need to be processed to add the tRNA's and spike-ins commonly used.
 
 To prepare an index directory:
 
@@ -234,4 +275,8 @@ Steps for our processing pipeline:
 .. _ENCFF515BAC: https://www.encodeproject.org/files/ENCFF515BAC/@@download/ENCFF515BAC.tar.gz
 .. _ENCFF746IZL: https://www.encodeproject.org/files/ENCFF746IZL/@@download/ENCFF746IZL.tar.gz
 .. _ENCFF826ONU: https://www.encodeproject.org/files/ENCFF826ONU/@@download/ENCFF826ONU.tar.gz
+.. _ENCFF742NER: https://www.encodeproject.org/files/ENCFF742NER/@@download/ENCFF742NER.tar.gz
+.. _ENCFF940AZB: https://www.encodeproject.org/files/ENCFF940AZB/@@download/ENCFF940AZB.tar.gz
+.. _ENCFF751OWT: https://www.encodeproject.org/files/ENCFF751OWT/@@download/ENCFF751OWT.tar.gz
 .. _GeorgisScripts: https://github.com/georgimarinov/GeorgiScripts
+.. _GENCODE reference files used in ENCODE pipelines: https://www.encodeproject.org/references/ENCSR884DHJ/
