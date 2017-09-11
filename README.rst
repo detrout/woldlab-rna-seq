@@ -2,6 +2,20 @@
 Long RNA Seq Condor
 ===================
 
+Table of Contents
+=================
+
+* `Introduction`_
+* `Installation`_
+
+  * `Required Dependencies`_
+
+* `Obtaining Indexes`_
+* `Configuration`_
+* `Processing`_
+
+  * `Running`_
+
 Introduction
 ============
 
