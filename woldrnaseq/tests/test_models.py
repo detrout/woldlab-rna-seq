@@ -1,3 +1,7 @@
+from contextlib import contextmanager
+import shutil
+import os
+from tempfile import TemporaryDirectory
 from unittest import TestCase, main
 from pkg_resources import resource_filename
 from woldrnaseq import models
@@ -39,6 +43,30 @@ class TestModel(TestCase):
         hg38 = models.load_experiments([hg38tsv])
         both = models.load_experiments([mm10tsv, hg38tsv])
         self.assertEqual(len(mm10) + len(hg38), len(both))
-        
+
+    def test_load_library_analysis_root(self):
+        with TemporaryDirectory() as analysis_dir:
+            print(analysis_dir)
+            with chdir(analysis_dir):
+                mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
+                tmpname = os.path.join(analysis_dir, 'library-mm10-se.tsv')
+                shutil.copy(mm10tsv, tmpname)
+                analysis_root = os.path.dirname(mm10tsv)
+                mm10 = models.load_library_tables([mm10tsv])
+                mm10tmp = models.load_library_tables([tmpname],
+                                                     analysis_root=analysis_root)
+                for i in mm10['analysis_dir'].index:
+                    self.assertEqual(mm10['analysis_dir'][i],
+                                     mm10tmp['analysis_dir'][i])
+
+
+@contextmanager
+def chdir(d):
+    """Change dir in a context manager"""
+    olddir = os.getcwd()
+    os.chdir(d)
+    yield olddir
+    os.chdir(olddir)
+
 if __name__ == '__main__':
     main()

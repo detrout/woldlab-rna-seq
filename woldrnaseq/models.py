@@ -25,7 +25,7 @@ def read_line_from_stream(stream):
             yield line
 
 
-def load_library_tables(table_filenames, sep='\t'):
+def load_library_tables(table_filenames, sep='\t', analysis_root=None):
     """Load table describing libraries to be analyized
 
     Parameters:
@@ -33,6 +33,8 @@ def load_library_tables(table_filenames, sep='\t'):
          the tables need to have a library_id, genome, sex, annotation,
          analysis_dir and fastq read_1 columns.
       sep - separator character to use for table defaults to TAB
+      analysis_root - analysis_dirs are relative to this path, defaults to location
+                      of library.txt file
 
     Returns: a pandas dataframe containing required information
 
@@ -43,7 +45,8 @@ def load_library_tables(table_filenames, sep='\t'):
     tables = []
     for library_file in table_filenames:
         library_file = os.path.abspath(library_file)
-        path, name = os.path.split(library_file)
+        if analysis_root is None:
+            analysis_root, name = os.path.split(library_file)
         table = pandas.read_csv(library_file, sep=sep,
                                 index_col='library_id',
                                 dtype={'library_id':str,
@@ -54,7 +57,7 @@ def load_library_tables(table_filenames, sep='\t'):
         required_library_columns_present(table)
         table.index = [str(x) for x in table.index]
         table.index.name = 'library id'
-        table['analysis_dir'] = table['analysis_dir'].apply(partial(prepend_path, path))
+        table['analysis_dir'] = table['analysis_dir'].apply(partial(prepend_path, analysis_root))
         table['analysis_name'] = table['analysis_dir'].apply(os.path.basename)
         tables.append(table)
 
