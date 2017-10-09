@@ -4,6 +4,7 @@ import os
 from tempfile import TemporaryDirectory
 from unittest import TestCase, main
 from pkg_resources import resource_filename
+import pandas
 from woldrnaseq import models
 
 def count_valid_records(filename):
@@ -14,6 +15,14 @@ def count_valid_records(filename):
     return total_lines - (comment_lines + header_lines + blank_lines)
 
 class TestModel(TestCase):
+    def test_required_library_columns_present(self):
+        df = pandas.DataFrame({'library_id': ['1'],
+                               'genome': ['mm10'],
+                               'sex': ['male'],
+                               'annotation': ['M4'],
+                               'analysis_dir': ['1/']})
+        self.assertRaises(ValueError, models.required_library_columns_present, df)
+
     def test_invalid_library(self):
         tsvname = resource_filename(__name__, 'library-invalid.tsv')
         self.assertRaises(ValueError, models.load_library_tables, tsvname)
