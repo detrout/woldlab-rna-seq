@@ -95,6 +95,13 @@ class TestModel(TestCase):
         self.assertEqual(cwd_files[0].filename, abs_files[0].filename)
 
 
+    def test_load_all_coverage(self):
+        mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
+        mm10 = models.load_library_tables([mm10tsv])
+        coverage = models.load_all_coverage(mm10)
+        self.assertEqual(coverage.shape, (100, 1))
+
+
 @contextmanager
 def chdir(d):
     """Change dir in a context manager"""

@@ -256,9 +256,9 @@ def load_coverage(filename, library_id=None):
     return pandas.DataFrame(coverage, columns=[library_id])
 
 
-def load_all_coverage(libraries):
+def load_all_coverage(libraries, analysis_root=None):
     coverage = []
-    analysis_files = find_library_analysis_file(libraries, '*.coverage')
+    analysis_files = find_library_analysis_file(libraries, '*.coverage', analysis_root)
     for library_id, filename in analysis_files:
         coverage.append(load_coverage(filename, library_id))
     return pandas.concat(coverage, axis=1)
