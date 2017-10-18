@@ -6,6 +6,7 @@ import logging
 import os
 
 import pandas
+import numpy
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +109,7 @@ def get_fixed_range(limits):
     """Return minimum and maxmium limits
     """
     # this wont work if we have the larger value on the bottom
+    assert numpy.all([a[0] <= a[1] for a in limits]), 'Constraint error disordered list {}'.format(limits)
     a = min((a[0] for a in limits))
     b = max((a[1] for a in limits))
     return (a, b)
