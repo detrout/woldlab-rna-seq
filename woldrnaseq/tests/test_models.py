@@ -68,6 +68,32 @@ class TestModel(TestCase):
                     self.assertEqual(mm10['analysis_dir'][i],
                                      mm10tmp['analysis_dir'][i])
 
+    def test_load_find_library_analysis_file(self):
+        mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
+        mm10 = models.load_library_tables([mm10tsv])
+
+        cwd_files = list(models.find_library_analysis_file(mm10, '*.coverage', analysis_root=None))
+        self.assertGreaterEqual(len(cwd_files), 1)
+        for f in cwd_files:
+            self.assertTrue(isinstance(f, models.AnalysisFile))
+
+        with TemporaryDirectory() as analysis_dir:
+            with chdir(analysis_dir):
+                mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
+                tmpname = os.path.join(analysis_dir, 'library-mm10-se.tsv')
+                shutil.copy(mm10tsv, tmpname)
+                analysis_root = os.path.dirname(mm10tsv)
+                mm10 = models.load_library_tables([tmpname],
+                                                  analysis_root=analysis_root)
+
+                abs_files = list(models.find_library_analysis_file(mm10, '*.coverage', analysis_root=analysis_root))
+                self.assertGreaterEqual(len(abs_files), 1)
+                for f in abs_files:
+                    self.assertTrue(isinstance(f, models.AnalysisFile))
+
+        self.assertEqual(len(cwd_files), len(abs_files))
+        self.assertEqual(cwd_files[0].filename, abs_files[0].filename)
+
 
 @contextmanager
 def chdir(d):

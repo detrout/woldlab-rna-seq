@@ -264,9 +264,11 @@ def load_all_coverage(libraries):
     return pandas.concat(coverage, axis=1)
 
 
-def find_library_analysis_file(libraries, extension):
+def find_library_analysis_file(libraries, extension, analysis_root=None):
     for library_id in libraries.index:
         analysis_dir = libraries.loc[library_id, 'analysis_dir']
+        if analysis_root is not None:
+            analysis_dir = os.path.join(analysis_root, analysis_dir)
         filenames = glob(os.path.join(analysis_dir, extension))
         if len(filenames) == 0:
             logger.warn("No files found in {} for {}".format(
