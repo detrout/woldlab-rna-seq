@@ -14,7 +14,16 @@ def count_valid_records(filename):
     header_lines = 1
     return total_lines - (comment_lines + header_lines + blank_lines)
 
+
 class TestModel(TestCase):
+    def test_read_line_from_stream(self):
+        mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
+        with open(mm10tsv) as instream:
+            lines = list(models.read_line_from_stream(instream))
+        mm10 = models.load_library_tables([mm10tsv])
+        # add one to mm10 dataframe because the header is not counted in len()
+        self.assertEqual(len(lines), len(mm10) + 1)
+
     def test_required_library_columns_present(self):
         df = pandas.DataFrame({'library_id': ['1'],
                                'genome': ['mm10'],
