@@ -110,6 +110,14 @@ class TestModel(TestCase):
         self.assertEqual(coverage.shape, (100, 1))
 
 
+    def test_load_all_samstats(self):
+        mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
+        mm10 = models.load_library_tables([mm10tsv])
+        samstats = models.load_all_samstats(mm10)
+        self.assertEqual(samstats.shape, (1, 10))
+        self.assertEqual(samstats.index[0], '12304')
+
+
 @contextmanager
 def chdir(d):
     """Change dir in a context manager"""
