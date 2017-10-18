@@ -154,10 +154,10 @@ def load_samstats(filename):
     return pandas.Series(samstats, index=samstats.keys())
 
 
-def load_all_samstats(libraries):
+def load_all_samstats(libraries, analysis_root=None):
     samstats = []
     library_ids = []
-    analysis_files = find_library_analysis_file(libraries, '*.samstats')
+    analysis_files = find_library_analysis_file(libraries, '*.samstats', analysis_root)
     for library_id, filename in analysis_files:
         samstats.append(load_samstats(filename))
         library_ids.append(library_id)
@@ -214,10 +214,10 @@ def load_star_final_log(filename):
     return pandas.Series(values, index)
 
 
-def load_all_star_final(libraries):
+def load_all_star_final(libraries, analysis_root=None):
     final = []
     library_ids = []
-    analysis_files = find_library_analysis_file(libraries, 'Log.final.out')
+    analysis_files = find_library_analysis_file(libraries, 'Log.final.out', analysis_root)
     for library_id, filename in analysis_files:
         data = load_star_final_log(filename)
         data.name = library_id
