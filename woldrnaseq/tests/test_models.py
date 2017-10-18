@@ -55,7 +55,6 @@ class TestModel(TestCase):
 
     def test_load_library_analysis_root(self):
         with TemporaryDirectory() as analysis_dir:
-            print(analysis_dir)
             with chdir(analysis_dir):
                 mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
                 tmpname = os.path.join(analysis_dir, 'library-mm10-se.tsv')
