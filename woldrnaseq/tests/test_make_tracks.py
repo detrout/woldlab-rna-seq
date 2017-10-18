@@ -79,5 +79,6 @@ class TestMakeTracks(TestCase):
                      '/home/user/analysis']:
             self.assertEqual(make_tracks.return_subpath(path, root),
                              'library/uniq.bw')
+
 if __name__ == '__main__':
     main()
