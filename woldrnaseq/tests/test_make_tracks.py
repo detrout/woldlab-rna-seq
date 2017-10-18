@@ -81,4 +81,3 @@ class TestMakeTracks(TestCase):
                              'library/uniq.bw')
 if __name__ == '__main__':
     main()
-os.path
