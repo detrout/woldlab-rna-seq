@@ -118,6 +118,14 @@ class TestModel(TestCase):
         self.assertEqual(samstats.index[0], '12304')
 
 
+    def test_load_star_final_log(self):
+        mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
+        mm10 = models.load_library_tables([mm10tsv])
+        final_out = models.load_all_star_final(mm10)
+        self.assertEqual(final_out.shape, (1, 27))
+        self.assertEqual(final_out.index[0], '12304')
+
+
 @contextmanager
 def chdir(d):
     """Change dir in a context manager"""
