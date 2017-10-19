@@ -126,6 +126,14 @@ class TestModel(TestCase):
         self.assertEqual(final_out.index[0], '12304')
 
 
+    def test_load_all_distribution(self):
+        mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
+        mm10 = models.load_library_tables([mm10tsv])
+        distribution = models.load_all_distribution(mm10)
+        self.assertEqual(distribution.shape, (1, 3))
+        self.assertEqual(distribution.index[0], '12304')
+
+
 @contextmanager
 def chdir(d):
     """Change dir in a context manager"""
