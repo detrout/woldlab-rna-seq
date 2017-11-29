@@ -7,11 +7,14 @@ import pandas
 import numpy
 import os
 import matplotlib
-matplotlib.use('Agg')
+
 from matplotlib import pyplot
 
 from woldrnaseq.common import save_fixed_height
 from woldrnaseq.models import load_gtf_cache
+
+matplotlib.use('Agg')
+
 
 def main(cmdline=None):
     parser = make_parser()
@@ -24,10 +27,10 @@ def main(cmdline=None):
     for filename in args.filenames:
         all_quantifications = pandas.read_csv(filename, header=0, index_col=0)
         if 'gene_name' in all_quantifications.columns:
-            columns = [ c for c in all_quantifications.columns if c != 'gene_name']
+            columns = [c for c in all_quantifications.columns if c != 'gene_name']
             all_quantifications = all_quantifications[columns]
         protein_quantifications = all_quantifications.loc[protein_coding]
-        
+
         _, filename = os.path.split(filename)
         basename, _ = os.path.splitext(filename)
         png_name = basename + '.png'
@@ -69,13 +72,13 @@ def bin_library_quantification(quantification, quantification_name, bins=None):
     """
     if bins is None:
         bins = [0.1, 1, 2, 5, 10, 50, 500, 5000, 1e9]
-    
+
     histogram = {}
     for col in quantification:
         histogram[col], _ = numpy.histogram(quantification[col], bins)
 
     histogram = pandas.DataFrame(
-        histogram, 
+        histogram,
         columns=quantification.columns,
         index=['{} {}'.format(x, quantification_name) for x in bins[:-1]])
 
@@ -105,7 +108,7 @@ def gene_detection_histogram(ax, binned,
                              show_genes_detected=True):
     ax.set_ylabel('Number of genes')
     binned.plot.bar(
-        stacked=True, 
+        stacked=True,
         cmap=cm,
         ax=ax)
 
@@ -116,10 +119,11 @@ def gene_detection_histogram(ax, binned,
             label = "{:.2}k".format(total/1000)
             ax.text(x, y, label, ha='center', va='bottom')
 
-    ax.legend(bbox_to_anchor=(1.05, 1), 
-              loc=2, 
+    ax.legend(bbox_to_anchor=(1.05, 1),
+              loc=2,
               borderaxespad=0.0)
     return ax
+
 
 if __name__ == '__main__':
     main()
