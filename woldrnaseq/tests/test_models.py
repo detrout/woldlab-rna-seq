@@ -7,10 +7,11 @@ from pkg_resources import resource_filename
 import pandas
 from woldrnaseq import models
 
+
 def count_valid_records(filename):
-    total_lines = sum([ 1 for l in open(filename, 'rt') ])
-    comment_lines = sum([ 1 for l in open(filename, 'rt') if l.strip().startswith('#')])
-    blank_lines = sum([ 1 for l in open(filename, 'rt') if len(l.strip()) == 0 ])
+    total_lines = sum([1 for l in open(filename, 'rt')])
+    comment_lines = sum([1 for l in open(filename, 'rt') if l.strip().startswith('#')])
+    blank_lines = sum([1 for l in open(filename, 'rt') if len(l.strip()) == 0])
     header_lines = 1
     return total_lines - (comment_lines + header_lines + blank_lines)
 
