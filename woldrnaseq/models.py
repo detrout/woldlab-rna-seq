@@ -45,6 +45,7 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
     tables = []
     for library_file in table_filenames:
         library_file = os.path.abspath(library_file)
+        warn_if_spaces(library_file)
         if analysis_root is None:
             analysis_root, name = os.path.split(library_file)
         table = pandas.read_csv(library_file, sep=sep,
@@ -490,3 +491,9 @@ def get_bulk_spike_cpc():
     s.index.name = 'spike-in'
     s.name = 'cpc'
     return s
+
+def warn_if_spaces(filename):
+    with open(filename, 'rt') as instream:
+        line = instream.readline()
+        if ' ' in line:
+            logger.warn("There are spaces in the header line, is this intentional?")

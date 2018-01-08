@@ -134,6 +134,13 @@ class TestModel(TestCase):
         self.assertEqual(distribution.shape, (1, 3))
         self.assertEqual(distribution.index[0], '12304')
 
+    def test_warn_if_spaces(self):
+        mm10invalid = resource_filename(__name__, 'library-invalid.tsv')
+
+        with self.assertLogs(models.logger, level='WARN') as log:
+            models.warn_if_spaces(mm10invalid)
+        self.assertEqual(log.output,
+                         ['WARNING:woldrnaseq.models:There are spaces in the header line, is this intentional?'])
 
 @contextmanager
 def chdir(d):
