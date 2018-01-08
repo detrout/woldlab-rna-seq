@@ -35,7 +35,7 @@ class TestModel(TestCase):
 
     def test_invalid_library(self):
         tsvname = resource_filename(__name__, 'library-invalid.tsv')
-        self.assertRaises(ValueError, models.load_library_tables, tsvname)
+        self.assertRaises(ValueError, models.load_library_tables, [tsvname])
 
     def test_load_library(self):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')

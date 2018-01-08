@@ -42,6 +42,7 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
       ValueError if a required column is missing
       ValueError if there are duplicated library ids.
     """
+    assert not isinstance(table_filenames, str)
     tables = []
     for library_file in table_filenames:
         library_file = os.path.abspath(library_file)
