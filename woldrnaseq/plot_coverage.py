@@ -85,7 +85,7 @@ def make_by_experiment_median_summary(experiments, coverage):
             f = pyplot.figure(dpi=100)
             ax = f.add_subplot(1, 1, 1)
 
-            add_median_plot(ax, exerpiments, experiment, coverage)
+            add_median_plot(ax, experiments, experiment, coverage)
             
             ax.set_title('Median coverage for {}'.format(experiment))
             ax.set_xlabel("position quantile (5' to 3')")
