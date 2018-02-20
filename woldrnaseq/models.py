@@ -290,8 +290,9 @@ def load_correlations(experiment):
     """
     correlations = collections.OrderedDict()
     correlation_filename = make_correlation_filename(experiment)
+
     if not os.path.exists(correlation_filename):
-        raise RuntimeError(
+        raise FileNotFoundError(
             "Unable to open expected score file {}".format(
                 correlation_filename))
     store = pandas.HDFStore(correlation_filename)
@@ -312,8 +313,9 @@ def load_quantifications(experiment, quantification_name='FPKM'):
         experiment,
         quantification_name)
 
+    logger.debug("Opening quantification file: %s", quantification_filename)
     quantifications = None
-    if quantification_filename:
+    if os.path.exists(quantification_filename):
         store = pandas.HDFStore(quantification_filename)
         if len(store.keys()) == 0:
             logger.error("Quantification cache file %s is empty",
@@ -335,12 +337,14 @@ def load_gtf_cache(filename):
 
     Produced by gff2table
     """
-    store = pandas.HDFStore(filename, 'r')
-    assert len(store.keys()) == 1
-    annotation = store[store.keys()[0]]
-
-    store.close()
-    return annotation
+    if os.path.exists(filename):
+        store = pandas.HDFStore(filename, 'r')
+        assert len(store.keys()) == 1
+        annotation = store[store.keys()[0]]
+        store.close()
+        return annotation
+    else:
+        raise FileNotFoundError('Unable to load file {}'.format(filename))
 
 
 def lookup_gene_name_by_gene_id(annotation, table):
