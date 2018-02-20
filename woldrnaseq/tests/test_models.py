@@ -160,6 +160,50 @@ class TestModel(TestCase):
         self.assertEqual(log.output,
                          ['WARNING:woldrnaseq.models:There are spaces in the header line, is this intentional?'])
 
+    def test_make_correlation_filename_default(self):
+        """Does make_correlation_filename work with default analysis_root
+        """
+        mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
+        path, _ = os.path.split(mm10tsv)
+        mm10 = models.load_experiments([mm10tsv])
+
+        filename = models.make_correlation_filename(mm10.ix[0])
+        expected = os.path.join(path, 'expf_correlation.h5')
+        self.assertEqual(filename, expected)
+
+    def test_make_correlation_filename_other(self):
+        """Does make_correlation_filename work with an alternate analysis_root
+        """
+        mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
+        path = '/tmp'
+        mm10 = models.load_experiments([mm10tsv], analysis_root=path)
+
+        filename = models.make_correlation_filename(mm10.ix[0])
+        expected = os.path.join(path, 'expf_correlation.h5')
+        self.assertEqual(filename, expected)
+
+    def test_make_quantification_filename_default(self):
+        """Does make_quantification_filename work with default analysis_root
+        """
+        mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
+        path, _ = os.path.split(mm10tsv)
+        mm10 = models.load_experiments([mm10tsv])
+
+        filename = models.make_quantification_filename(mm10.ix[0])
+        expected = os.path.join(path, 'expf_FPKM.h5')
+        self.assertEqual(filename, expected)
+
+    def test_make_quantification_filename_other(self):
+        """Does make_quantification_filename work with an alternate analysis_root
+        """
+        mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
+        path = '/tmp'
+        mm10 = models.load_experiments([mm10tsv], analysis_root=path)
+
+        filename = models.make_quantification_filename(mm10.ix[0])
+        expected = os.path.join(path, 'expf_FPKM.h5')
+        self.assertEqual(filename, expected)
+
 @contextmanager
 def chdir(d):
     """Change dir in a context manager"""
