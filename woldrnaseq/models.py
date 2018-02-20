@@ -333,9 +333,11 @@ def load_quantifications(experiment, quantification_name='FPKM'):
 
 
 def load_gtf_cache(filename):
-    """Load GTF cache file
+    """Load GTF cache file produced by gff2table
 
-    Produced by gff2table
+    :Paramters:
+      - filename: (str) path to .h5 gtf cache file
+    :Returns: DataFrame of annotations
     """
     if os.path.exists(filename):
         store = pandas.HDFStore(filename, 'r')
