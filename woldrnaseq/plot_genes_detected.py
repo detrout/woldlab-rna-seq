@@ -13,6 +13,7 @@ from matplotlib import pyplot
 
 from woldrnaseq.common import save_fixed_height
 from woldrnaseq.models import load_gtf_cache
+from woldrnaseq.gtfcache import protein_coding_gene_ids
 
 
 def main(cmdline=None):
@@ -54,14 +55,6 @@ def make_parser():
     parser.add_argument('filenames', nargs='+',
                         help='Combined quantification file: libraries by genes')
     return parser
-
-
-def protein_coding_gene_ids(annotation):
-    """Filter GTF just protein coding genes
-    """
-    entry_type = (annotation['type'] == 'gene')
-    gene_type = (annotation['gene_type'] == 'protein_coding')
-    return annotation[entry_type & gene_type]['gene_id']
 
 
 def bin_library_quantification(quantification, quantification_name, bins=None):
