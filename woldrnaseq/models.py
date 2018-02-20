@@ -25,6 +25,41 @@ def read_line_from_stream(stream):
             yield line
 
 
+def load_experiments(experiment_filenames, sep='\t', analysis_root=None):
+    """Load table describing experiments
+
+    Parameters:
+      experiment_filenames - list of filenames to load
+         the tables need to have a experiment name and list of
+         library ids that are intended to be treated as related
+         replicates
+      sep - separator character to use for table defaults to TAB
+
+    Returns a dictionary mapping experiment names to list of replicates
+    """
+    tables = []
+    for experiment_filename in experiment_filenames:
+        warn_if_spaces(experiment_filename)
+        experiment_filename = os.path.abspath(experiment_filename)
+        if analysis_root is None:
+            analysis_root, name = os.path.split(experiment_filename)
+
+        table = pandas.read_csv(experiment_filename, sep=sep, comment='#',
+                                skip_blank_lines=True,
+                                index_col='experiment',
+                                header=0,
+                                converters={
+                                    'replicates': lambda x: x.split(',')
+                                    }
+        )
+        required_experiment_columns_present(table)
+        table['analysis_dir'] = analysis_root
+        tables.append(table)
+
+    experiments = {}
+    return pandas.concat(tables)
+
+
 def load_library_tables(table_filenames, sep='\t', analysis_root=None):
     """Load table describing libraries to be analyized
 
@@ -100,43 +135,13 @@ def validate_library_ids(table):
     if len(duplicates) > 0:
         raise ValueError("Duplicate library ids: {}".format(duplicates))
 
-def load_experiments(experiment_filenames, sep='\t'):
-    """Load table describing experiments
-
-    Parameters:
-      experiment_filenames - list of filenames to load
-         the tables need to have a experiment name and list of
-         library ids that are intended to be treated as related
-         replicates
-      sep - separator character to use for table defaults to TAB
-
-    Returns a dictionary mapping experiment names to list of replicates
-    """
-    tables = []
-    for experiment_filename in experiment_filenames:
-        experiment_filename = os.path.abspath(experiment_filename)
-        table = pandas.read_csv(experiment_filename, sep=sep, comment='#',
-                                skip_blank_lines=True,
-        )
-        required_experiment_columns_present(table)
-        tables.append(table)
-
-    experiments = {}
-    all_tables = pandas.concat(tables)
-
-    for i, row in all_tables.iterrows():
-        replicates = row.replicates.split(',')
-        experiments[row.experiment] = replicates
-    return experiments
-
-
 def required_experiment_columns_present(table):
     """Verify that a experiment table contains required columns
     """
-    missing = []
-    for key in ['experiment', 'replicates']:
-        if key not in table.columns:
-            missing.append(key)
+    missing = set(('replicates',)).difference(table.columns)
+    if table.index.name != 'experiment':
+        missing.add('experiment')
+
     if len(missing) != 0:
         raise ValueError("Required columns missing: {}".format(','.join(missing)))
 
@@ -156,10 +161,10 @@ def load_samstats(filename):
     return pandas.Series(samstats, index=samstats.keys())
 
 
-def load_all_samstats(libraries, analysis_root=None):
+def load_all_samstats(libraries):
     samstats = []
     library_ids = []
-    analysis_files = find_library_analysis_file(libraries, '*.samstats', analysis_root)
+    analysis_files = find_library_analysis_file(libraries, '*.samstats')
     for library_id, filename in analysis_files:
         samstats.append(load_samstats(filename))
         library_ids.append(library_id)
@@ -216,10 +221,10 @@ def load_star_final_log(filename):
     return pandas.Series(values, index)
 
 
-def load_all_star_final(libraries, analysis_root=None):
+def load_all_star_final(libraries):
     final = []
     library_ids = []
-    analysis_files = find_library_analysis_file(libraries, 'Log.final.out', analysis_root)
+    analysis_files = find_library_analysis_file(libraries, 'Log.final.out')
     for library_id, filename in analysis_files:
         data = load_star_final_log(filename)
         data.name = library_id
@@ -258,19 +263,18 @@ def load_coverage(filename, library_id=None):
     return pandas.DataFrame(coverage, columns=[library_id])
 
 
-def load_all_coverage(libraries, analysis_root=None):
+def load_all_coverage(libraries):
     coverage = []
-    analysis_files = find_library_analysis_file(libraries, '*.coverage', analysis_root)
+    analysis_files = find_library_analysis_file(libraries, '*.coverage')
     for library_id, filename in analysis_files:
         coverage.append(load_coverage(filename, library_id))
     return pandas.concat(coverage, axis=1)
 
 
-def find_library_analysis_file(libraries, extension, analysis_root=None):
+def find_library_analysis_file(libraries, extension):
     for library_id in libraries.index:
         analysis_dir = libraries.loc[library_id, 'analysis_dir']
-        if analysis_root is not None:
-            analysis_dir = os.path.join(analysis_root, analysis_dir)
+        assert analysis_dir is not None
         filenames = glob(os.path.join(analysis_dir, extension))
         if len(filenames) == 0:
             logger.warn("No files found in {} for {}".format(
@@ -302,6 +306,8 @@ def load_correlations(experiment):
 def load_quantifications(experiment, quantification_name='FPKM'):
     """Load quantifications for an experiment
     """
+    assert isinstance(experiment, pandas.Series)
+
     quantification_filename = make_quantification_filename(
         experiment,
         quantification_name)
@@ -378,11 +384,15 @@ def normalize_hdf_key(key):
 
 
 def make_correlation_filename(experiment):
-    return experiment + '_correlation.h5'
+    assert isinstance(experiment, pandas.Series)
+    name = experiment.name + '_correlation.h5'
+    return os.path.join(experiment['analysis_dir'], name)
 
 
 def make_quantification_filename(experiment, quantification='FPKM'):
-    return experiment + '_' + quantification + '.h5'
+    assert isinstance(experiment, pandas.Series)
+    name = experiment.name + '_' + quantification + '.h5'
+    return os.path.join(experiment['analysis_dir'], name)
 
 
 def get_single_spike_cpc():

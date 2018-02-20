@@ -58,10 +58,28 @@ class TestModel(TestCase):
         mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
         hg38tsv = resource_filename(__name__, 'experiments-hg38.tsv')
         mm10 = models.load_experiments([mm10tsv])
+        self.assertIn('replicates', mm10.columns)
         self.assertEqual(len(mm10), count_valid_records(mm10tsv))
         hg38 = models.load_experiments([hg38tsv])
         both = models.load_experiments([mm10tsv, hg38tsv])
         self.assertEqual(len(mm10) + len(hg38), len(both))
+
+        self.assertEqual(mm10.loc['expm']['replicates'],
+                         ['12307', '12308'])
+
+    def test_load_experiments_analysis_root(self):
+        with TemporaryDirectory() as analysis_dir:
+            with chdir(analysis_dir):
+                mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
+                tmpname = os.path.join(analysis_dir, 'experiments-mm10.tsv')
+                shutil.copy(mm10tsv, tmpname)
+                analysis_root = os.path.dirname(mm10tsv)
+                mm10 = models.load_experiments([mm10tsv])
+                mm10tmp = models.load_experiments([tmpname],
+                                                  analysis_root=analysis_root)
+                for i in mm10['analysis_dir'].index:
+                    self.assertEqual(mm10['analysis_dir'][i],
+                                     mm10tmp['analysis_dir'][i])
 
     def test_load_library_analysis_root(self):
         with TemporaryDirectory() as analysis_dir:
@@ -81,7 +99,7 @@ class TestModel(TestCase):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
         mm10 = models.load_library_tables([mm10tsv])
 
-        cwd_files = list(models.find_library_analysis_file(mm10, '*.coverage', analysis_root=None))
+        cwd_files = list(models.find_library_analysis_file(mm10, '*.coverage'))
         self.assertGreaterEqual(len(cwd_files), 1)
         for f in cwd_files:
             self.assertTrue(isinstance(f, models.AnalysisFile))
@@ -95,7 +113,7 @@ class TestModel(TestCase):
                 mm10 = models.load_library_tables([tmpname],
                                                   analysis_root=analysis_root)
 
-                abs_files = list(models.find_library_analysis_file(mm10, '*.coverage', analysis_root=analysis_root))
+                abs_files = list(models.find_library_analysis_file(mm10, '*.coverage'))
                 self.assertGreaterEqual(len(abs_files), 1)
                 for f in abs_files:
                     self.assertTrue(isinstance(f, models.AnalysisFile))

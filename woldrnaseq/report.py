@@ -69,7 +69,9 @@ def main(cmdline=None):
     report = QCReport(args.experiments, args.libraries,
                       quantification=args.quantification,
                       genome_dir=args.genome_dir,
-                      sep=sep)
+                      sep=sep,
+                      root=args.root,
+    )
 
     with open(args.output, 'wt') as outstream:
         outstream.write(report.render())
@@ -87,6 +89,9 @@ def make_parser():
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('-o', '--output', default='report.html',
                         help='output html filename')
+    parser.add_argument('--root', default=None,
+                        help='analysis_dir will be relative to this path '\
+                        'instead of library.txt file')
     add_default_path_arguments(parser)
     add_version_argument(parser)
     add_debug_arguments(parser)
@@ -95,12 +100,16 @@ def make_parser():
 
 
 class QCReport:
-    def __init__(self, experiments, libraries, quantification, genome_dir, sep="\t"):
+    def __init__(self, experiments, libraries, quantification, genome_dir,
+                 sep="\t",
+                 root=None
+    ):
         # user set parameters
-        self.experiments = load_experiments(experiments, sep)
-        self.libraries = load_library_tables(libraries, sep)
+        self.experiments = load_experiments(experiments, sep, analysis_root=root)
+        self.libraries = load_library_tables(libraries, sep, analysis_root=root)
         self.quantification_name = quantification
         self.genome_dir = genome_dir
+        self.analysis_root = root
 
         # cached values
         self._samstats = load_all_samstats(self.libraries)

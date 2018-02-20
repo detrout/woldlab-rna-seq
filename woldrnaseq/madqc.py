@@ -111,27 +111,29 @@ def compute_all_vs_all_scores(fpkms, Acutoff=0):
     return pandas.Panel(all_scores)
 
 
-def load_genomic_quantifications(replicates, libraries, column='FPKM'):
-    """Load all of the RSEM gene quantifications files for a list of replicates
+def load_genomic_quantifications(experiment, libraries, column='FPKM'):
+    """Load all of the RSEM gene quantifications files for an experiment
     """
     extension = '*_rsem.genes.results'
-    return load_rsem_replicates(extension, replicates, libraries, column)
+    return load_rsem_replicates(extension, experiment, libraries, column)
 
 
-def load_transcriptome_quantifications(replicates, libraries, column='FPKM'):
-    """Load all of the RSEM isoform quantifications files for a list of replicates
+def load_transcriptome_quantifications(experiment, libraries, column='FPKM'):
+    """Load all of the RSEM isoform quantifications files for an experiment
     """
     extension = '*_rsem.isoforms.results'
-    return load_rsem_replicates(extension, replicates, libraries, column)
+    return load_rsem_replicates(extension, experiment, libraries, column)
 
 
-def load_rsem_replicates(extension, replicates, libraries, column):
+def load_rsem_replicates(extension, experiment, libraries, column):
     analysis_files = []
     library_ids = []
-    for library_id in replicates:
+
+    assert isinstance(experiment, pandas.Series)
+    for library_id in experiment.replicates:
         library_ids.append(library_id)
         library = libraries.loc[library_id]
-        analysis_dir = library['analysis_dir']
+        analysis_dir = library.analysis_dir
         pattern = os.path.join(analysis_dir, extension)
         result = glob(pattern)
         if len(result) != 1:
@@ -152,15 +154,14 @@ def load_rsem_replicates(extension, replicates, libraries, column):
 
 
 def create_quantification_cache(
-        library_table, experiment_name, replicates, quantification_name,
+        experiment, libraries, quantification_name,
         sep='\t'):
-    score_filename = models.make_correlation_filename(experiment_name)
-    quant_filename = models.make_quantification_filename(experiment_name,
+    score_filename = models.make_correlation_filename(experiment)
+    quant_filename = models.make_quantification_filename(experiment,
                                                          quantification_name)
     
-    libraries = models.load_library_tables([library_table], sep=sep)
     quantifications = load_genomic_quantifications(
-        replicates,
+        experiment,
         libraries,
         quantification_name)
     if os.path.exists(quant_filename):
@@ -186,7 +187,8 @@ def main(cmdline=None):
 
     sep = get_seperator(args.sep)
     if args.experiments:
-        experiments = models.load_experiments([args.experiments], sep=sep)
+        experiments = models.load_experiments(args.experiments, sep=sep,
+                                              analysis_root=args.root)
     else:
         if args.experiment_name is None:
             parser.error(
@@ -199,13 +201,13 @@ def main(cmdline=None):
     if args.library is None:
         parser.error("Please provide library information tables")
 
-    for experiment_name in experiments:
-        replicates = experiments[experiment_name]
-        logging.info('Processing:', experiment_name, ','.join(replicates))
+    libraries = models.load_library_tables(args.library, sep=sep)
+
+    for i, experiment in experiments.iterrows():
+        logging.info('Processing:', experiment.name)
         create_quantification_cache(
-            args.library,
-            experiment_name,
-            replicates,
+            experiment,
+            libraries,
             args.quantification,
             sep)
 
@@ -219,13 +221,16 @@ def make_parser():
     #                     default='gene',
     #                     help="Quantify on genes or transcripts")
 
-    parser.add_argument('-l', '--library',
+    parser.add_argument('-l', '--library', action='append',
                         help='library information table')
-    parser.add_argument('-e', '--experiments', help='experiments tables')
+    parser.add_argument('-e', '--experiments', action='append',
+                        help='experiments tables')
     parser.add_argument('-n', '--experiment-name', help='experiment name')
     parser.add_argument('replicates', nargs='*',
                         help='list of replicates for this experiment')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
+    parser.add_argument('--root', default=None,
+                        help='write analysis files to this directory')
     return parser
         
     
