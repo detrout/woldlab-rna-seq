@@ -6,3 +6,7 @@
 /dist/
 /*.egg-info
 /woldrnaseq/RELEASE-VERSION
+/.cache/
+.coverage
+/.eggs/
+/.htmlcov/
