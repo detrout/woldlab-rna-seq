@@ -175,56 +175,10 @@ class QCReport:
 
         spare_libraries = set(self.libraries.index).difference(seen_libraries)
 
-    def make_correlation_plots(self, experiment):
-        report = {}
-        scores = load_correlations(experiment)
-        if scores.shape[0] > 0:
-            report['spearman_plot'] = make_correlation_heatmap(
-                scores, 'rafa_spearman', experiment)
-            report['spearman'] = scores.rafa_spearman.to_html()
-            if scores.shape[1] > 2:
-                handle = self.next_plot_handle
-                self._plots[handle] = make_correlation_histogram(
-                    scores, 'rafa_spearman', experiment)
-                report['correlation_histogram'] = handle
-        else:
-            print('scores failed')
-
-        return report
-
-    def make_coverage_plot(self, experiment):
-        """Show read depth coverage over normalized gene regions.
-        """
-        library_ids = self.experiments[experiment]
-        subset = self._coverage[library_ids]
-        plot = Line(subset,
-                    title="Coverage for {}".format(experiment),
-                    xlabel="position quantile (5' to 3')",
-                    ylabel="Read depth",
-                    legend=True)
         handle = self.next_plot_handle
         logger.debug('coverage plot handle for %s: %s', experiment, handle)
         self._plots[handle] = plot
         return handle
-
-    def make_distribution_plot(self, experiment):
-        """Show fraction of reads landing in exon, intron, and intergenic regions.
-        """
-        library_ids = self.experiments[experiment]
-        subset = self._distribution.select(lambda x: x in library_ids).unstack()
-        subset.index.names = ['class', 'library_id']
-        subset.name = 'fraction'
-        subset = subset.reset_index()
-        plot = Bar(subset,
-                   label='library_id',
-                   values='fraction',
-                   stack='class',
-                   title="Distribution for {}".format(experiment),
-                   legend=True,
-        )
-        handle = self.next_plot_handle
-        logger.debug('distribution plot handle for %s: %s', experiment, handle)
-        self._plots[handle] = plot
         return handle
 
     def make_samstats_html(self, library_ids):
@@ -307,45 +261,6 @@ class QCReport:
         handle = self.next_plot_handle
         self._plots[handle] = plot
         return handle
-
-def make_correlation_heatmap(scores, score_name, experiment_name, vmin=None, vmax=None, cmap="coolwarm"):
-    """Try to intellgently format our heatmap.
-    """
-    score = scores[score_name]
-    #score.to_csv(experiment_name + '_' + score_name + '.csv')
-    figure, ax = pyplot.subplots(1,1)
-    filename = score_name + '-' + experiment_name + '.png'
-    ax.set_title('Pairwise {} for {}'.format(score_name, experiment_name))
-    ticks = range(len(score.columns))
-    cax = ax.imshow(score, cmap='coolwarm', interpolation='none', origin='lower')
-    cax.axes.set_xticks(ticks)
-    cax.axes.set_yticks(ticks)
-    cax.axes.set_xticklabels(score.columns, rotation=90)
-    cax.axes.set_yticklabels(score.columns)
-
-    divider = make_axes_locatable(ax)
-    div_ax = divider.append_axes("right", size='5%', pad=0.05)
-    pyplot.colorbar(cax, cax=div_ax)
-    figure.savefig(filename)
-
-    return filename
-
-
-def make_correlation_histogram(scores, score_name, experiment_name):
-    scores = score_upper_triangular(scores[score_name])
-    plot = Histogram(scores, bins=min(10, len(scores)),
-                     title='{} scores for {}'.format(
-                     score_name, experiment_name))
-    return plot
-
-
-def score_upper_triangular(df):
-    """Return the cells from the upper triangular indicies of a data frame.
-    """
-    scores = []
-    for i,j in zip(*numpy.triu_indices(len(df), k=1)):
-        scores.append(df.ix[i,j])
-    return scores
 
 
 if __name__ == "__main__":
