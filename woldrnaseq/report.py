@@ -192,10 +192,10 @@ class QCReport:
 
         spare_libraries = set(self.libraries.index).difference(seen_libraries)
 
+    def make_plot_handle(self, plot, experiment):
         handle = self.next_plot_handle
-        logger.debug('coverage plot handle for %s: %s', experiment, handle)
-        self._plots[handle] = plot
-        return handle
+        logger.debug('%s plot handle %s: %s', type(plot), experiment, handle)
+        self._plots[handle] = plot.make_plot(experiment)
         return handle
 
     def make_samstats_html(self, library_ids):
