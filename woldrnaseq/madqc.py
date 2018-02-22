@@ -221,7 +221,7 @@ def make_parser():
     #                     default='gene',
     #                     help="Quantify on genes or transcripts")
 
-    parser.add_argument('-l', '--library', action='append',
+    parser.add_argument('-l', '--libraries', action='append',
                         help='library information table')
     parser.add_argument('-e', '--experiments', action='append',
                         help='experiments tables')
