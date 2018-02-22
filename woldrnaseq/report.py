@@ -163,10 +163,10 @@ class QCReport:
             seen_libraries.update(set(library_ids))
             seen_genomes = set()
             for library_id in library_ids:
-                transcript_handle = self.make_spikein_per_transcript_plot(
-                    quantifications,
-                    library_id)
-                self._transcript_library_plots.append(transcript_handle)
+                #transcript_handle = self.make_spikein_per_transcript_plot(
+                #    quantifications,
+                #    library_id)
+                #self._transcript_library_plots.append(transcript_handle)
                 genome_name = genome_name_from_library(self.libraries.loc[library_id])
                 seen_genomes.add(genome_name)
 
@@ -183,14 +183,12 @@ class QCReport:
                 'protein_genes': self.make_plot_handle(genes_detected_plots, experiment_name),
             }
 
-            handle = self.make_spikein_variance_plot(quantifications, experiment)
-            if handle:
-                cur_experiment['spike_variance'] = handle
-            else:
-                print("Didn't generate spike report for:", experiment)
-
-            cur_experiment.update(self.make_correlation_plots(experiment))
             self._experiment_report[experiment_name] = cur_experiment
+            #handle = self.make_spikein_variance_plot(quantifications, experiment)
+            #if handle:
+            #    cur_experiment['spike_variance'] = handle
+            #else:
+            #    print("Didn't generate spike report for:", experiment)
 
         spare_libraries = set(self.libraries.index).difference(seen_libraries)
 
@@ -204,6 +202,10 @@ class QCReport:
         return self._samstats.select(lambda x: x in library_ids).to_html()
 
     def make_spikein_per_transcript_plot(self, quantifications, library_id):
+        """WARNING: Outdated plot
+
+        Make scatter plot of spike-in FPKM vs expected FPKM
+        """
         spikein_cpc = pandas.DataFrame(get_single_spike_cpc(),
                                        columns=['cpc'])
         library = quantifications[library_id]
@@ -246,8 +248,12 @@ class QCReport:
         return handle
 
     def make_spikein_variance_plot(self, quantifications, experiment):
+        """WARNING: Outdated plot
+
+        Make box plot showing typical performance of the spike-ins
+        """
         spikein_cpc = models.get_single_spike_cpc().sort_values(inplace=False)
-        library_ids = self.experiments[experiment]
+        library_ids = self.experiments.loc[experiment]['replicates']
         libraries = quantifications[library_ids]
         spikes = libraries[libraries.index.isin(spikein_cpc.index)]
         if len(spikes) == 0:
@@ -266,12 +272,15 @@ class QCReport:
         # Thanks to
         # https://github.com/bokeh/bokeh/issues/2924#issuecomment-166969014
         # for how to get around the auto sorting of the category with bokeh 0.10+
+        plot = figure(
+            x_range=spikes_sorted.index,
+            title="Spike-in variance for experiment {}".format(experiment),
+        )
         plot = BoxPlot(
             spikes_sorted,
             values=self.quantification_name,
             label=CatAttr(columns=['spike-ins'], sort=False),
             color = 'cpc',
-            title="Spike-in variance for experiment {}".format(experiment),
             xlabel="spike-in",
             ylabel="RNA-Seq RSEM ({})".format(self.quantification_name),
             width=900,
