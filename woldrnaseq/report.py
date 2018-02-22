@@ -14,11 +14,8 @@ import numpy
 from matplotlib import pyplot
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import pandas
-from bokeh import mpl
 from bokeh.models import HoverTool
 from bokeh.plotting import figure, ColumnDataSource
-from bokeh.charts import Line, Bar, Dot, HeatMap, BoxPlot, Histogram
-from bokeh.charts.attributes import CatAttr
 from bokeh.embed import components
 
 from woldrnaseq import models
