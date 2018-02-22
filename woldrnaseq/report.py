@@ -105,8 +105,6 @@ class QCReport:
 
         # cached values
         self._samstats = load_all_samstats(self.libraries)
-        self._distribution = load_all_distribution(self.libraries)
-        self._coverage = load_all_coverage(self.libraries)
 
         # working space for generating report
         self._plot_handle = itertools.count()
