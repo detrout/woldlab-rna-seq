@@ -123,7 +123,7 @@ class QCReport:
         script, plot_divs = components(self._plots)
         template = env.get_template('rnaseq.html')
         page = template.render(
-            experiments=self.experiments,
+            experiments=self.experiments.index,
             experiment_report=self._experiment_report,
             transcript_library_plots=self._transcript_library_plots,
             plot_divs=plot_divs,
@@ -136,12 +136,13 @@ class QCReport:
 
     def generate_report(self):
         seen_libraries = set()
-        for experiment in sorted(self.experiments):
+        for experiment_name in sorted(self.experiments.index):
+            experiment = self.experiments.loc[experiment_name]
             quantifications = load_quantifications(
                 experiment,
                 self.quantification_name)
 
-            library_ids = self.experiments[experiment]
+            library_ids = experiment['replicates']
             seen_libraries.update(set(library_ids))
             seen_genomes = set()
             for library_id in library_ids:
@@ -154,7 +155,7 @@ class QCReport:
 
             if len(seen_genomes) > 1:
                 logger.warning('%s has mixed genome types %s',
-                               experiment, ','.join(seen_genomes))
+                               experiment_name, ','.join(seen_genomes))
 
             cur_experiment = {
                 'samstats': self.make_samstats_html(library_ids),
