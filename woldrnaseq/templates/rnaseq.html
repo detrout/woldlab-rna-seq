@@ -24,7 +24,7 @@
     {{ bokeh_script }}
   </head>
   <body>
-    <h1>Table of Contents</h1><ul>{% for name in experiments %}
+    <h1>Table of Contents</h1><a name="index"/><ul>{% for name in experiments %}
       <li><a href="#{{ name }}">{{ name }}</a></li>
       {% endfor %}
       <li><a href="#Per_library_reports">Per library reports</a></li></ul>{% for name in experiments %}
@@ -44,6 +44,7 @@
     {{experiment_report[name]['spearman']}}
     <h2>{{ name }} spike-in variance</h2>
     {{plot_divs[experiment_report[name]['spike_variance']]}}
+    <p><a href="#index">return to index</a></p>
     {% endfor %}
     <h1><a name ="Per_library_reports"
            href="#Per_library_reports">Per library reports</a></h1>
