@@ -141,6 +141,11 @@ class QCReport:
             quantifications = load_quantifications(
                 experiment,
                 self.quantification_name)
+            if quantifications is None:
+                raise FileNotFoundError(
+                    "Unable to load quantification {} for {}".format(
+                        self.quantification_name,
+                        experiment_name))
 
             library_ids = experiment['replicates']
             seen_libraries.update(set(library_ids))
