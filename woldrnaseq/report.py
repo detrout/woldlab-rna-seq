@@ -38,6 +38,10 @@ from .common import (add_default_path_arguments,
                      configure_logging,
                      get_seperator,
 )
+from .bokeh.correlation import ScoreCorrelationPlot
+from .bokeh.genes_detected import GenesDetectedPlot
+from .bokeh.gene_coverage import GeneCoverage
+from .bokeh.distribution import DistributionPlot
 
 logger = logging.getLogger('QC Report')
 
@@ -136,11 +140,19 @@ class QCReport:
 
     def generate_report(self):
         seen_libraries = set()
+
+        coverage_plots = GeneCoverage(self.experiments, self.libraries)
+        distribution_plots = DistributionPlot(self.experiments, self.libraries)
+        genes_detected_plots = GenesDetectedPlot(self.experiments, self.libraries, self.genome_dir)
+        score_correlation_plots = ScoreCorrelationPlot(self.experiments)
+
         for experiment_name in sorted(self.experiments.index):
             experiment = self.experiments.loc[experiment_name]
             quantifications = load_quantifications(
                 experiment,
                 self.quantification_name)
+            scores = load_correlations(experiment)
+
             if quantifications is None:
                 raise FileNotFoundError(
                     "Unable to load quantification {} for {}".format(
@@ -163,9 +175,12 @@ class QCReport:
                                experiment_name, ','.join(seen_genomes))
 
             cur_experiment = {
+                'spearman': scores.rafa_spearman.to_html(),
                 'samstats': self.make_samstats_html(library_ids),
-                'coverage': self.make_coverage_plot(experiment),
-                'distribution': self.make_distribution_plot(experiment),
+                'coverage': self.make_plot_handle(coverage_plots, experiment_name),
+                'distribution': self.make_plot_handle(distribution_plots, experiment_name),
+                'correlation': self.make_plot_handle(score_correlation_plots, experiment_name),
+                'protein_genes': self.make_plot_handle(genes_detected_plots, experiment_name),
             }
 
             handle = self.make_spikein_variance_plot(quantifications, experiment)
@@ -175,7 +190,7 @@ class QCReport:
                 print("Didn't generate spike report for:", experiment)
 
             cur_experiment.update(self.make_correlation_plots(experiment))
-            self._experiment_report[experiment] = cur_experiment
+            self._experiment_report[experiment_name] = cur_experiment
 
         spare_libraries = set(self.libraries.index).difference(seen_libraries)
 
