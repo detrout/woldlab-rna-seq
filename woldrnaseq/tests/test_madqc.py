@@ -2,6 +2,7 @@ import os
 import tempfile
 from pkg_resources import resource_filename
 from unittest import TestCase
+from unittest.mock import patch
 
 from woldrnaseq import madqc
 from woldrnaseq import models
@@ -26,8 +27,8 @@ class TestMadqc(TestCase):
         quant_filename = models.make_quantification_filename(self.experiments.ix[0],
                                                              quant)
 
-        assert not os.path.exists(score_filename)
-        assert not os.path.exists(quant_filename)
+        assert not os.path.exists(score_filename), 'Unexpected copy of {}'.format(score_filename)
+        assert not os.path.exists(quant_filename), 'Unexpected copy of {}'.format(quant_filename)
         cache = madqc.create_quantification_cache(
             self.experiments.ix[0],
             self.libraries,
@@ -65,4 +66,7 @@ class TestMadqc(TestCase):
             self.assertTrue(os.path.exists(quant_filename))
             os.remove(quant_filename)
 
-            
+    def test_madqc_command_line(self):
+        with patch('woldrnaseq.madqc.create_quantification_cache') as create_quantification_cache:
+            madqc.main(['-l', self.lib_tsv, '-e', self.exp_tsv])
+            create_quantification_cache.assert_called()

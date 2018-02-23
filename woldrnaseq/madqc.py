@@ -198,10 +198,10 @@ def main(cmdline=None):
                 "Please provide list of replicates or experiment table")
         experiments = {args.experiment_name: args.replicates}
 
-    if args.library is None:
+    if args.libraries is None:
         parser.error("Please provide library information tables")
 
-    libraries = models.load_library_tables(args.library, sep=sep)
+    libraries = models.load_library_tables(args.libraries, sep=sep)
 
     for i, experiment in experiments.iterrows():
         logging.info('Processing:', experiment.name)
