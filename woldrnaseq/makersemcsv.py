@@ -24,12 +24,6 @@ def main(cmdline=None):
     experiments = models.load_experiments(args.experiments, sep=sep)
     libraries = models.load_library_tables(args.libraries, sep=sep)
 
-    output_sep = get_seperator(args.output_format)
-    output_extension = {
-        'TAB': '.tsv',
-        ',': '.csv',
-    }[args.output_format]
-
     if args.add_names:
         if args.gtf_cache is None:
             parser.error('GTF-cache is needed to add names to the quantification file')
@@ -41,27 +35,14 @@ def main(cmdline=None):
 
     if args.transcriptome:
         # isoforms
-        load_quantifications = madqc.load_transcriptome_quantifications
-        lookup_ids = models.lookup_gene_name_by_transcript_id
-        quantification_extension = '_isoform_' + args.quantification + output_extension
+        loader = IsoformRsemLoader(args.quantification, annotation)
     else:
         # genes
-        load_quantifications = madqc.load_genomic_quantifications
-        lookup_ids = models.lookup_gene_name_by_gene_id
-        quantification_extension = '_gene_' + args.quantification + output_extension
+        loader = GeneRsemLoader(args.quantification, annotation)
 
-    for name in experiments:
-        filename = name + quantification_extension
-        replicates = experiments[name]
-        logger.info("%s %s: %s",
-                    name, args.quantification, ','.join(replicates))
-        quantifications = load_quantifications(
-            replicates, libraries, args.quantification)
-
-        if annotation is not None:
-            quantifications = lookup_ids(annotation, quantifications)
-
-        quantifications.to_csv(filename, sep=output_sep)
+    for i, experiment in experiments.iterrows():
+        quantification = loader.load(experiment, libraries)
+        loader.save(quantification, args.output_format)
 
 
 def make_parser():
@@ -85,6 +66,56 @@ def make_parser():
                         help='Add names to ouptut quantification file')
     add_debug_arguments(parser)
     return parser
+
+
+class RsemLoader:
+    def __init__(self, quantification_name, annotation):
+        self.quantification_name = quantification_name
+        self.annotation = annotation
+
+    def save(self, quantifications, output_format, filename=None):
+        output_sep = get_seperator(output_format)
+        output_extension = {
+            'TAB': '.tsv',
+            ',': '.csv',
+        }[output_format]
+
+        if filename is None:
+            filename = quantifications.name + output_extension
+
+        quantifications.to_csv(filename, sep=output_sep)
+
+
+class IsoformRsemLoader(RsemLoader):
+    def load(self, experiment, libraries):
+        replicates = experiment['replicates']
+        logger.info("%s %s: %s",
+                    experiment.name, self.quantification_name, ','.join(replicates))
+        quantifications = madqc.load_transcriptome_quantifications(
+            experiment, libraries, self.quantification_name)
+
+        if self.annotation is not None:
+            quantifications = models.lookup_gene_name_by_transcript_id(
+                self.annotation, quantifications)
+
+        quantifications.name = experiment.name + '_isoform_' + self.quantification_name
+        return quantifications
+
+
+class GeneRsemLoader(RsemLoader):
+    def load(self, experiment, libraries):
+        replicates = experiment['replicates']
+        logger.info("%s %s: %s",
+                    experiment.name, self.quantification_name, ','.join(replicates))
+        quantifications = madqc.load_genomic_quantifications(
+            experiment, libraries, self.quantification_name)
+
+        if self.annotation is not None:
+            quantifications = models.lookup_gene_name_by_gene_id(
+                self.annotation, quantifications)
+
+        quantifications.name = experiment.name + '_gene_' + self.quantification_name
+        return quantifications
 
 
 if __name__ == '__main__':
