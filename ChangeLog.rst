@@ -1,6 +1,22 @@
 Changelog
 =========
 
+Release 1.0
+-----------
+
+  * Requires bokeh ~ 0.12.9
+  * Generate bam comments for STAR run
+  * Supports running report & summary generator in a different
+    directory than where the result files are found.
+    (See --root argument to madqc and report)
+  * Changes to Report
+
+    * Report is heavily modified to now use bokeh plots
+    * The genes detected plot was added to the standard report
+    * The per library spike in scatter plot was removed
+    * The per experiment scatter box plot was removed (at least
+      temporarily)
+
 Release 0.9
 -----------
 
