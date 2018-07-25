@@ -38,10 +38,10 @@ from .common import (add_default_path_arguments,
                      configure_logging,
                      get_seperator,
 )
-from .bokeh.correlation import ScoreCorrelationPlot
-from .bokeh.genes_detected import GenesDetectedPlot
-from .bokeh.gene_coverage import GeneCoverage
-from .bokeh.distribution import DistributionPlot
+from woldrnaseq.iplots.correlation import ScoreCorrelationPlot
+from woldrnaseq.iplots.genes_detected import GenesDetectedPlot
+from woldrnaseq.iplots.gene_coverage import GeneCoverage
+from woldrnaseq.iplots.distribution import DistributionPlot
 
 logger = logging.getLogger('QC Report')
 

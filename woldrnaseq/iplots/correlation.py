@@ -26,9 +26,7 @@ from woldrnaseq.models import (
     load_correlations
 )
 
-# This can't be a relative import because if bokeh serve loads it, its
-# not in a proper module
-from woldrnaseq.bokeh.coverage import Coverage
+from woldrnaseq.iplots.coverage import Coverage
 
 def main(cmdline=None):
     parser = make_parser()
