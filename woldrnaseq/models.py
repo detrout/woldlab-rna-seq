@@ -42,7 +42,9 @@ def load_experiments(experiment_filenames, sep='\t', analysis_root=None):
         warn_if_spaces(experiment_filename)
         experiment_filename = os.path.abspath(experiment_filename)
         if analysis_root is None:
-            analysis_root, name = os.path.split(experiment_filename)
+            analysis_cur_root, name = os.path.split(experiment_filename)
+        else:
+            analysis_cur_root = analysis_root
 
         table = pandas.read_csv(experiment_filename, sep=sep, comment='#',
                                 skip_blank_lines=True,
@@ -53,7 +55,7 @@ def load_experiments(experiment_filenames, sep='\t', analysis_root=None):
                                     }
         )
         required_experiment_columns_present(table)
-        table['analysis_dir'] = analysis_root
+        table['analysis_dir'] = analysis_cur_root
         tables.append(table)
 
     experiments = {}
@@ -83,7 +85,10 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
         library_file = os.path.abspath(library_file)
         warn_if_spaces(library_file)
         if analysis_root is None:
-            analysis_root, name = os.path.split(library_file)
+            analysis_cur_root, name = os.path.split(library_file)
+        else:
+            analysis_cur_root = analysis_root
+
         table = pandas.read_csv(library_file, sep=sep,
                                 index_col='library_id',
                                 dtype={'library_id':str,
@@ -94,7 +99,7 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
         required_library_columns_present(table)
         table.index = [str(x) for x in table.index]
         table.index.name = 'library id'
-        table['analysis_dir'] = table['analysis_dir'].apply(partial(prepend_path, analysis_root))
+        table['analysis_dir'] = table['analysis_dir'].apply(partial(prepend_path, analysis_cur_root))
         table['analysis_name'] = table['analysis_dir'].apply(os.path.basename)
         tables.append(table)
 
