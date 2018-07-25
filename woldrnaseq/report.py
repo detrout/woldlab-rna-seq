@@ -18,7 +18,6 @@ from bokeh.models import HoverTool
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
 
-from woldrnaseq import models
 from .models import (load_experiments,
                      load_library_tables,
                      load_correlations,
@@ -252,7 +251,7 @@ class QCReport:
 
         Make box plot showing typical performance of the spike-ins
         """
-        spikein_cpc = models.get_single_spike_cpc().sort_values(inplace=False)
+        spikein_cpc = get_single_spike_cpc().sort_values(inplace=False)
         library_ids = self.experiments.loc[experiment]['replicates']
         libraries = quantifications[library_ids]
         spikes = libraries[libraries.index.isin(spikein_cpc.index)]
