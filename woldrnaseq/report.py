@@ -18,29 +18,31 @@ from bokeh.models import HoverTool
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
 
-from .models import (load_experiments,
-                     load_library_tables,
-                     load_correlations,
-                     load_all_coverage,
-                     load_all_distribution,
-                     load_all_samstats,
-                     load_quantifications,
-                     get_single_spike_cpc,
-                     genome_name_from_library,
+from .models import (
+    load_experiments,
+    load_library_tables,
+    load_correlations,
+    load_all_coverage,
+    load_all_distribution,
+    load_all_samstats,
+    load_quantifications,
+    get_single_spike_cpc,
+    genome_name_from_library,
 )
-from woldrnaseq import madqc
-from woldrnaseq.version import get_git_version
+from . import madqc
+from .version import get_git_version
 
-from .common import (add_default_path_arguments,
-                     add_debug_arguments,
-                     add_version_argument,
-                     configure_logging,
-                     get_seperator,
+from .common import (
+    add_default_path_arguments,
+    add_debug_arguments,
+    add_version_argument,
+    configure_logging,
+    get_seperator,
 )
-from woldrnaseq.iplots.correlation import ScoreCorrelationPlot
-from woldrnaseq.iplots.genes_detected import GenesDetectedPlot
-from woldrnaseq.iplots.gene_coverage import GeneCoverage
-from woldrnaseq.iplots.distribution import DistributionPlot
+from .iplots.correlation import ScoreCorrelationPlot
+from .iplots.genes_detected import GenesDetectedPlot
+from .iplots.gene_coverage import GeneCoverage
+from .iplots.distribution import DistributionPlot
 
 logger = logging.getLogger('QC Report')
 
