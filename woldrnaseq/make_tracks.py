@@ -94,7 +94,7 @@ def make_bam_custom_track(library, web_root, analysis_root):
     return track
 
 
-def make_bam_track_name(library, analysis_root):
+def make_bam_track_name(library, analysis_root=None):
     """Generate the base path where the bam track is.
 
     :param Series library: row from a library table DataFrame
