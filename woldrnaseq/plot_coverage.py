@@ -52,10 +52,10 @@ def make_experiment_by_library_coverage_plots(experiments, coverage):
     """
     tosave = OrderedDict()
 
-    for experiment in experiments:
-        png_name = experiment + '.coverage.png'
-        library_ids = experiments[experiment]
-        f = make_coverage_plot(experiment, coverage[library_ids])
+    for experiment_name, experiment_row in experiments.iterrows():
+        library_ids = experiment_row['replicates']
+        png_name = experiment_name + '.coverage.png'
+        f = make_coverage_plot(experiment_name, coverage[library_ids])
         tosave[png_name] = f
 
     save_fixed_height(tosave)
@@ -81,7 +81,7 @@ def make_by_experiment_median_summary(experiments, coverage):
     """
     tosave = OrderedDict()
     with pyplot.style.context('seaborn-dark-palette'):
-        for experiment in experiments:
+        for experiment in experiments.index:
             f = pyplot.figure(dpi=100)
             ax = f.add_subplot(1, 1, 1)
 
@@ -106,7 +106,7 @@ def make_combined_experiment_median_summary(experiments, coverage):
     with pyplot.style.context('seaborn-dark-palette'):
         f = pyplot.figure(dpi=100)
         ax = f.add_subplot(1, 1, 1)
-        for experiment in experiments:
+        for experiment in experiments.index:
             print(experiment)
             add_median_plot(ax, experiments, experiment, coverage)
             
@@ -126,7 +126,7 @@ def make_combined_experiment_median_summary(experiments, coverage):
 
 
 def add_median_plot(ax, experiments, experiment, coverage):
-    library_ids = experiments[experiment]
+    library_ids = experiments['replicates'][experiment]
     median = coverage[library_ids].median(axis=1)
     # TOTAL HACK FOR A GRANT 
     if experiment == 'embryo fibroblasts':
