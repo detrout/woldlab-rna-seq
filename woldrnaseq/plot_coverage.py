@@ -158,10 +158,11 @@ def add_median_plot(ax, experiments, experiment, coverage):
 def make_median_normalized_summary(experiments, coverage):
     """Coverage plot showing the median +/-sd of all libraries for an experiment
     """
+    assert isinstance(experiments, pandas.DataFrame)
     tosave = OrderedDict()
     library_ids = []
-    for experiment in experiments:
-        library_ids.extend(experiments[experiment])
+    for experiment in experiments.index:
+        library_ids.extend(experiments['replicates'][experiment])
 
     with pyplot.style.context('seaborn-dark-palette'):
         f = pyplot.figure(dpi=100, figsize=(4, 2.5))
