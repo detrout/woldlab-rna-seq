@@ -331,8 +331,8 @@ def load_quantifications(experiment, quantification_name='FPKM'):
         store.close()
         return quantifications
     else:
-        logger.info("Quantification cache file %s not available",
-                    quantification_filename)
+        logger.error("Quantification cache file %s not available",
+                     quantification_filename)
 
         return None
 
