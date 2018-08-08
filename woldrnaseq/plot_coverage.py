@@ -28,6 +28,7 @@ def main(cmdline=None):
                         help='summarize all experiments')
     parser.add_argument('--combined-median-summary', action='store_true',
                         help='plot all experiment medians one plot')
+    parser.add_argument('--output-format', default='png', choices=['png', 'svg'])
     #parser.add_argument('filename', nargs=1)
     #parser.add_argument('-o', '--output')
 
@@ -38,25 +39,25 @@ def main(cmdline=None):
     coverage = models.load_all_coverage(libraries)
 
     if args.all_experiments:
-        make_median_normalized_summary(experiments, coverage)
+        make_median_normalized_summary(experiments, coverage, args.output_format)
     elif args.by_experiment:
-        make_by_experiment_median_summary(experiments, coverage)
+        make_by_experiment_median_summary(experiments, coverage, args.output_format)
     elif args.combined_median_summary:
-        make_combined_experiment_median_summary(experiments, coverage)
+        make_combined_experiment_median_summary(experiments, coverage, args.output_format)
     else:
-        make_experiment_by_library_coverage_plots(experiments, coverage)
+        make_experiment_by_library_coverage_plots(experiments, coverage, args.output_format)
 
 
-def make_experiment_by_library_coverage_plots(experiments, coverage):
+def make_experiment_by_library_coverage_plots(experiments, coverage, output_format):
     """Coverage plot showing all the libraries for an experiment
     """
     tosave = OrderedDict()
 
     for experiment_name, experiment_row in experiments.iterrows():
         library_ids = experiment_row['replicates']
-        png_name = experiment_name + '.coverage.png'
+        image_name = experiment_name + '.coverage.' + output_format
         f = make_coverage_plot(experiment_name, coverage[library_ids])
-        tosave[png_name] = f
+        tosave[image_name] = f
 
     save_fixed_height(tosave)
 
@@ -76,7 +77,7 @@ def make_coverage_plot(experiment, coverage):
     return f
 
 
-def make_by_experiment_median_summary(experiments, coverage):
+def make_by_experiment_median_summary(experiments, coverage, output_format):
     """Coverage plot showing the median +/-sd of all libraries for an experiment
     """
     tosave = OrderedDict()
@@ -93,13 +94,13 @@ def make_by_experiment_median_summary(experiments, coverage):
             ax.legend(bbox_to_anchor=(1.05, 1), 
                       loc=2, 
                       borderaxespad=0.0)
-            png_name = experiment + '.median.coverage.png'
-            tosave[png_name] = f
+            image_name = experiment + '.median.coverage.' + output_format
+            tosave[image_name] = f
 
         save_fixed_height(tosave)
 
 
-def make_combined_experiment_median_summary(experiments, coverage):
+def make_combined_experiment_median_summary(experiments, coverage, output_format):
     """Coverage plot showing the median +/-sd of all libraries for an experiment
     """
     tosave = OrderedDict()
@@ -119,8 +120,8 @@ def make_combined_experiment_median_summary(experiments, coverage):
             ax.legend(bbox_to_anchor=(1.05, 1), 
                       loc=2, 
                       borderaxespad=0.0)
-            png_name = 'all-experiments.median.coverage.png'
-            tosave[png_name] = f
+            image_name = 'all-experiments.median.coverage.' + output_format
+            tosave[image_name] = f
 
         save_fixed_height(tosave)
 
@@ -155,7 +156,7 @@ def add_median_plot(ax, experiments, experiment, coverage):
     ax.plot(median-stddev, **errstyle)
 
             
-def make_median_normalized_summary(experiments, coverage):
+def make_median_normalized_summary(experiments, coverage, output_format):
     """Coverage plot showing the median +/-sd of all libraries for an experiment
     """
     assert isinstance(experiments, pandas.DataFrame)
@@ -208,10 +209,10 @@ def make_median_normalized_summary(experiments, coverage):
         #          loc=2, 
         #          borderaxespad=0.0)
         #ax.legend(loc=8, fontsize='small')
-        png_name = experiment + '.median-normalized.coverage.png'
-        f.savefig(png_name) #, bbox_inches='tight')
+        image_name = experiment + '.median-normalized.coverage.' + output_format
+        f.savefig(image_name) #, bbox_inches='tight')
 
-        tosave[png_name] = f
+        tosave[image_name] = f
 
         save_fixed_height(tosave)
 
