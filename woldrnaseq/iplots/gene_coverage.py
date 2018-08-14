@@ -59,11 +59,12 @@ class GeneCoverage(Coverage):
                    y_axis_label="Read depth",
                    toolbar_location='above',
         )
-        colors = palettes.Category20c[20]
+        colors = palettes.Category10[10]
         colorcycler = cycle(colors)
         legend_items = []
         for lib in subset:
-            line = f.line(x=subset[lib].index, y=subset[lib], line_color=next(colorcycler))
+            next_color = next(colorcycler)
+            line = f.line(x=subset[lib].index, y=subset[lib], line_color=next_color)
             legend_items.append((lib, [line]))
         legend = Legend(items=legend_items, location=(0,-60))
         f.add_layout(legend, 'right')
