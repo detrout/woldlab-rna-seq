@@ -103,8 +103,8 @@ class ScoreCorrelationPlot:
             x_range=factors,
             y_range=factors,
             plot_width=600,
-            x_axis_location='above',
-            toolbar_location='below',
+            x_axis_location='below',
+            toolbar_location='above',
         )
         plot.xaxis.major_label_orientation = math.pi/2
         plot.rect(x, y, color=colors, width=1, height=1)
