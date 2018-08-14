@@ -126,6 +126,21 @@ def parse_phase(x):
 
 def convert_gff(inname, outname, table_name, sep):
     logger.info("Converting %s to %s", inname, outname)
+
+    gtf = read_gff(inname, sep)
+
+    store = pandas.HDFStore(outname, mode='w', complevel=9, complib='bzip2')
+    store.append(table_name, gtf_with_metadata,
+                 min_itemsize = attribute_parser.max_string)
+    tnow = time.monotonic()
+    logger.info("Wrote table in {:.3} seconds".format(tnow-tprev))
+    tprev = tnow
+    store.create_table_index(name, optlevel=9, kind='full')
+    tnow = time.monotonic()
+    logger.info("Wrote index in {:.3} seconds".format(tnow-tprev))
+    store.close()
+
+def read_gff(inname, sep):
     attribute_parser = AttributesParser(sep=sep)
     tzero = time.monotonic()
     required_gtf_names=[
@@ -162,17 +177,7 @@ def convert_gff(inname, outname, table_name, sep):
     tnow = time.monotonic()
     logger.info("Merged table in {:.3} seconds".format(tnow-tprev))
     tprev = tnow
-    
-    store = pandas.HDFStore(outname, mode='w', complevel=9, complib='bzip2')
-    store.append(table_name, gtf_with_metadata,
-                 min_itemsize = attribute_parser.max_string)
-    tnow = time.monotonic()
-    logger.info("Wrote table in {:.3} seconds".format(tnow-tprev))
-    tprev = tnow
-    store.create_table_index(name, optlevel=9, kind='full')
-    tnow = time.monotonic()
-    logger.info("Wrote index in {:.3} seconds".format(tnow-tprev))
-    store.close()
+    return gtf_with_metadata
 
 def main(cmdline=None):
     parser = argparse.ArgumentParser()
