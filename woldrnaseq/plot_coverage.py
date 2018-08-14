@@ -29,6 +29,8 @@ def main(cmdline=None):
     parser.add_argument('--combined-median-summary', action='store_true',
                         help='plot all experiment medians one plot')
     parser.add_argument('--output-format', default='png', choices=['png', 'svg'])
+    parser.add_argument('--bare', default=False, action='store_true',
+                        help='leave off text annotations')
     #parser.add_argument('filename', nargs=1)
     #parser.add_argument('-o', '--output')
 
@@ -39,7 +41,7 @@ def main(cmdline=None):
     coverage = models.load_all_coverage(libraries)
 
     if args.all_experiments:
-        make_median_normalized_summary(experiments, coverage, args.output_format)
+        make_combined_median_normalized_summary(experiments, coverage, args.output_format, args.bare)
     elif args.by_experiment:
         make_by_experiment_median_summary(experiments, coverage, args.output_format)
     elif args.combined_median_summary:
@@ -156,7 +158,7 @@ def add_median_plot(ax, experiments, experiment, coverage):
     ax.plot(median-stddev, **errstyle)
 
             
-def make_median_normalized_summary(experiments, coverage, output_format):
+def make_combined_median_normalized_summary(experiments, coverage, output_format, bare):
     """Coverage plot showing the median +/-sd of all libraries for an experiment
     """
     assert isinstance(experiments, pandas.DataFrame)
@@ -165,6 +167,19 @@ def make_median_normalized_summary(experiments, coverage, output_format):
     for experiment in experiments.index:
         library_ids.extend(experiments['replicates'][experiment])
 
+    f = make_median_normalized_summary(experiment, library_ids, coverage, bare)
+    if bare:
+        plot_suffix = '.median-normalized.coverage.bare.'
+    else:
+        plot_suffix = '.median-normalized.coverage.'
+
+    image_name = experiment + plot_suffix + output_format
+    f.savefig(image_name)
+    tosave[image_name] = f
+    save_fixed_height(tosave)
+
+
+def make_median_normalized_summary(experiment, library_ids, coverage, bare):
     with pyplot.style.context('seaborn-dark-palette'):
         f = pyplot.figure(dpi=100, figsize=(4, 2.5))
         ax = f.add_subplot(1, 1, 1)
@@ -186,35 +201,29 @@ def make_median_normalized_summary(experiments, coverage, output_format):
 
         plateau = median[20:81]
         m, b = numpy.polyfit(numpy.arange(20, 81), plateau, 1)
-        #y = m * numpy.arange(20, 81) + b/2.0
-        #ax.plot(numpy.arange(20, 81), y, color='red',
-        #        label='slope {:0.2}'.format(m))
-        ax.text(50, 0.25, s="ENCODE QC slope = {:0.2}".format(m),
-                horizontalalignment='center',
-        )
-
-        #ax.set_title('N = {}'.format(centered.shape[1]))
-        ax.text(50, -0.5,
-                s='N = {}'.format(centered.shape[1]),
-                size='x-large',
-                horizontalalignment='center',
-                
-        )
         ax.set_xticklabels( ax.get_xticks() / 100 )
         ax.set_yticks([])
-        ax.set_xlabel(r"5' $\rightarrow$ 3' normalized position")
-        ax.set_ylabel('normalized read coverage')
+
+        if not bare:
+            ax.text(50, 0.25, s="ENCODE QC slope = {:0.2}".format(m),
+                    horizontalalignment='center',
+            )
+
+            ax.text(50, -0.5,
+                    s='N = {}'.format(centered.shape[1]),
+                    size='x-large',
+                    horizontalalignment='center',
+
+            )
+            ax.set_xlabel(r"5' $\rightarrow$ 3' normalized position")
+            ax.set_ylabel('normalized read coverage')
+
         #ax.set_ylabel(r'$median_{quantile}\left(\frac{coverage}{median_{library} \left(coverage\right)}\right)$')
         #ax.legend(bbox_to_anchor=(1.05, 1), 
         #          loc=2, 
         #          borderaxespad=0.0)
         #ax.legend(loc=8, fontsize='small')
-        image_name = experiment + '.median-normalized.coverage.' + output_format
-        f.savefig(image_name) #, bbox_inches='tight')
-
-        tosave[image_name] = f
-
-        save_fixed_height(tosave)
+    return f
 
 #
 # 20/80 find slope needs to be < .3
