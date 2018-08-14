@@ -114,7 +114,6 @@ def make_combined_experiment_median_summary(experiments, coverage, output_format
         f = pyplot.figure(dpi=100)
         ax = f.add_subplot(1, 1, 1)
         for experiment in experiments.index:
-            print(experiment)
             add_median_plot(ax, experiments, experiment, coverage)
             
             #ax.set_title('Median coverage for {}'.format(experiment))
