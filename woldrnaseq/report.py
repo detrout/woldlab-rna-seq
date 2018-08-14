@@ -200,7 +200,27 @@ class QCReport:
         return handle
 
     def make_samstats_html(self, library_ids):
-        return self._samstats.loc[library_ids].to_html()
+        def reads_format(x):
+            return "{:,}".format(int(x))
+
+        def fraction_mapped(x):
+            return "{:.3}".format(x)
+
+        def read_length(x):
+            return "{:,}".format(int(x))
+
+        return self._samstats.loc[library_ids].to_html(
+            formatters={
+                'Unique': reads_format,
+                'Unique Splices': reads_format,
+                'Multi': reads_format,
+                'Multi Splices': reads_format,
+                'Total Aligned Reads': reads_format,
+                'Fraction Mapped': fraction_mapped,
+                'Read Length, Minimum': read_length,
+                'Read Length, Maximum': read_length,
+            })
+
 
     def make_spikein_per_transcript_plot(self, quantifications, library_id):
         """WARNING: Outdated plot
