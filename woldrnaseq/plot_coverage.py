@@ -26,6 +26,8 @@ def main(cmdline=None):
                         help='do per experiment summary plot')
     parser.add_argument('--all-experiments', action='store_true',
                         help='summarize all experiments')
+    parser.add_argument('--experiment-median-summary', action='store_true',
+                        help='plot each experiment median summary as different plots')
     parser.add_argument('--combined-median-summary', action='store_true',
                         help='plot all experiment medians one plot')
     parser.add_argument('--output-format', default='png', choices=['png', 'svg'])
@@ -42,6 +44,8 @@ def main(cmdline=None):
 
     if args.all_experiments:
         make_combined_median_normalized_summary(experiments, coverage, args.output_format, args.bare)
+    elif args.experiment_median_summary:
+        make_per_experiment_median_normalized_summary(experiments, coverage, args.output_format, args.bare)
     elif args.by_experiment:
         make_by_experiment_median_summary(experiments, coverage, args.output_format)
     elif args.combined_median_summary:
@@ -176,6 +180,26 @@ def make_combined_median_normalized_summary(experiments, coverage, output_format
     image_name = experiment + plot_suffix + output_format
     f.savefig(image_name)
     tosave[image_name] = f
+    save_fixed_height(tosave)
+
+
+def make_per_experiment_median_normalized_summary(experiments, coverage, output_format, bare):
+    """Coverage plot showing the median +/-sd of all libraries for each experiment
+    """
+    assert isinstance(experiments, pandas.DataFrame)
+    tosave = OrderedDict()
+    library_ids = []
+    if bare:
+        plot_suffix = '.median-normalized.coverage.bare.'
+    else:
+        plot_suffix = '.median-normalized.coverage.'
+    for experiment in experiments.index:
+        library_ids = experiments['replicates'][experiment]
+
+        f = make_median_normalized_summary(experiment, library_ids, coverage, bare)
+        image_name = experiment + plot_suffix + output_format
+        f.savefig(image_name)
+        tosave[image_name] = f
     save_fixed_height(tosave)
 
 
