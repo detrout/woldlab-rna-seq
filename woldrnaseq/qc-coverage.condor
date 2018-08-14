@@ -5,7 +5,7 @@ output=coverage-$(Process).out
 error=coverage-$(Process).out
 
 ANALYSIS_NAME=$$($(analysis_name):Analysis)
-GEORGI_DIR=$$($(georgi_dir):/woldlab/castor/home/sau/cod/GeorgiScripts)
+GEORGI_DIR=$$($(georgi_dir):/woldlab/castor/home/diane/proj/GeorgiScripts)
 GENE_COVERAGE=$(GEORGI_DIR)/gene_coverage_wig_gtf.py
 GENOME_ROOT=$$($(genome_root):/home/diane/proj/genome/)
 GENOME=$$($(genome):mm10)
