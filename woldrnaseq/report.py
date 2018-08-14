@@ -200,7 +200,7 @@ class QCReport:
         return handle
 
     def make_samstats_html(self, library_ids):
-        return self._samstats.select(lambda x: x in library_ids).to_html()
+        return self._samstats.loc[library_ids].to_html()
 
     def make_spikein_per_transcript_plot(self, quantifications, library_id):
         """WARNING: Outdated plot

@@ -77,8 +77,7 @@ class DistributionPlot:
     def make_plot(self, experiment_name=None, title=None):
         if experiment_name is not None:
             self.experiment_name = experiment_name
-        subset = self._distribution.select(
-            lambda x: x in self.library_names)
+        subset = self._distribution.loc[self.library_names]
         subset.index.name = 'library_id'
         subset = subset.reset_index()
 
