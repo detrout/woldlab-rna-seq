@@ -176,7 +176,7 @@ class QCReport:
                                experiment_name, ','.join(seen_genomes))
 
             cur_experiment = {
-                'spearman': scores.rafa_spearman.to_html(),
+                'spearman': scores.rafa_spearman.to_html(na_rep=''),
                 'samstats': self.make_samstats_html(library_ids),
                 'coverage': self.make_plot_handle(coverage_plots, experiment_name),
                 'distribution': self.make_plot_handle(distribution_plots, experiment_name),
