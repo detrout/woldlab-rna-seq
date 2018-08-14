@@ -86,8 +86,10 @@ class ScoreCorrelationPlot:
         x = list(itertools.chain(*[itertools.repeat(name, len(factors)) for name in factors]))
         y = list(itertools.chain(*itertools.repeat(factors, len(factors))))
         colors = []
-        spearman_min = numpy.min(spearman.unstack())
-        spearman_max = numpy.max(spearman.unstack())
+        #spearman_min = numpy.min(spearman.unstack())
+        #spearman_max = numpy.max(spearman.unstack())
+        spearman_min = 0
+        spearman_max = 1
         spearman_range = spearman_max-spearman_min
         for c in spearman.unstack():
             c = (c - spearman_min)/spearman_range * 255
@@ -118,8 +120,10 @@ class ScoreCorrelationPlot:
     def make_score_histogram(self, scores, bins=10):
         triangle = score_upper_triangular(scores)
         hist, edges = numpy.histogram(triangle, bins=bins)
-        spearman_min = numpy.min(scores.unstack())
-        spearman_max = numpy.max(scores.unstack())
+        #spearman_min = numpy.min(scores.unstack())
+        #spearman_max = numpy.max(scores.unstack())
+        spearman_min = 0
+        spearman_max = 1
         spearman_range = spearman_max-spearman_min
         vmax = max(hist)
         
@@ -128,6 +132,7 @@ class ScoreCorrelationPlot:
             #plot_width=200,
             #plot_height=main_plot.plot_height,
             #x_range=(min(edges), max(edges)),
+            x_range=(0, 1),
             #y_range=(0, vmax),
             #min_border=10,
             #y_axis_location="right"
