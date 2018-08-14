@@ -121,6 +121,8 @@ class GenesDetectedPlot:
     def load_all_quantifications(self, experiments):
         for experiment_name, experiment_row in experiments.iterrows():
             all_quant = load_quantifications(experiment_row)
+            if all_quant is None:
+                continue
             
             annotation = self._gtf_cache[all_quant.columns[-1]]
             protein_genes = protein_coding_gene_ids(annotation)
