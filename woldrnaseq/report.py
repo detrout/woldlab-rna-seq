@@ -14,6 +14,7 @@ import numpy
 from matplotlib import pyplot
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import pandas
+import bokeh
 from bokeh.models import HoverTool
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
@@ -135,7 +136,8 @@ class QCReport:
             bokeh_script=script,
             username=os.getlogin(),
             timestamp=datetime.datetime.now().isoformat(),
-            woldrnaseq_version=get_git_version()
+            woldrnaseq_version=get_git_version(),
+            bokeh_version=bokeh.__version__,
             )
         return page
 
