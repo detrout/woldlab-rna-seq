@@ -34,7 +34,9 @@
     <h2>{{ name }} coverage</h2>
     {{plot_divs[experiment_report[name]['coverage']]}}
     <h2>{{ name }} Samstats</h2>
-    {{experiment_report[name]['samstats']}}
+    {{experiment_report[name]['samstats']}}{% if experiment_report[name]['star_stats'] %}
+    <h2>{{ name }} STAR Stats</h2>
+    {{experiment_report[name]['star_stats']}}{% endif %}
     <h2>{{ name }} distribution</h2>
     {{plot_divs[experiment_report[name]['distribution']]}}
     <h2>{{ name }} Score Correlation</h2>

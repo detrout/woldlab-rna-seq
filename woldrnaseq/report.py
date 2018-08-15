@@ -26,6 +26,7 @@ from .models import (
     load_all_coverage,
     load_all_distribution,
     load_all_samstats,
+    load_all_star_final,
     load_quantifications,
     get_single_spike_cpc,
     genome_name_from_library,
@@ -111,6 +112,7 @@ class QCReport:
 
         # cached values
         self._samstats = load_all_samstats(self.libraries)
+        self._star_stats = load_all_star_final(self.libraries)
 
         # working space for generating report
         self._plot_handle = itertools.count()
@@ -180,6 +182,7 @@ class QCReport:
             cur_experiment = {
                 'spearman': scores.rafa_spearman.to_html(na_rep=''),
                 'samstats': self.make_samstats_html(library_ids),
+                'star_stats': self.make_star_stats_html(library_ids),
                 'coverage': self.make_plot_handle(coverage_plots, experiment_name),
                 'distribution': self.make_plot_handle(distribution_plots, experiment_name),
                 'correlation': self.make_plot_handle(score_correlation_plots, experiment_name),
@@ -223,6 +226,12 @@ class QCReport:
                 'Read Length, Maximum': read_length,
             })
 
+    def make_star_stats_html(self, library_ids):
+        library_ids = [ x for x in library_ids if x in self._star_stats.columns]
+        if len(library_ids) > 0:
+            return self._star_stats.loc[library_ids].to_html()
+        else:
+            return None
 
     def make_spikein_per_transcript_plot(self, quantifications, library_id):
         """WARNING: Outdated plot
