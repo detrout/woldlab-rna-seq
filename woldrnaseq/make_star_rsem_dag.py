@@ -36,6 +36,7 @@ def main(cmdline=None):
     analysis.analysis_name = args.analysis_name
     analysis.read_1_fastqs = args.read1
     analysis.read_2_fastqs = args.read2
+    analysis.rnaseq_template = args.template
 
     if analysis.is_valid():
         print(str(analysis))
@@ -51,6 +52,8 @@ def make_parser():
     parser.add_argument('--read1', nargs='+', help='path to read 1 fastqs')
     parser.add_argument('--read2', nargs='*', default=[],
                         help='path to read 2 fastqs')
+    parser.add_argument('--template', default='star_rsem.dagman',
+                        help='Override default dagman template')
 
     add_default_path_arguments(parser)
     add_debug_arguments(parser)
@@ -73,6 +76,7 @@ class AnalysisDAG:
         self.read_1_fastqs = []
         self.read_2_fastqs = []
         self.reference_prefix = 'chr'
+        self.dagman_template = 'star_rsem.dagman'
 
     def is_valid(self):
         for key in self.__dict__:
@@ -106,7 +110,7 @@ class AnalysisDAG:
 
     def __str__(self):
         env = Environment(loader=PackageLoader('woldrnaseq', 'templates'))
-        template = env.get_template('star_rsem.dagman')
+        template = env.get_template(self.dagman_template)
 
         return template.render(
             align_star=resource_filename(__name__, 'align-star.condor'),

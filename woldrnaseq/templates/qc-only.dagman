@@ -1,0 +1,56 @@
+###########################################
+# Processing {{job_id}} in {{analysis_dir}} with
+# Username: {{username}}
+# Timestamp: {{timestamp}}
+# Version: {{woldrnaseq_version}}
+
+JOB {{job_id}}_index-samtools {{index_samtools}}
+JOB {{job_id}}_qc-samstats {{qc_samstats}}
+JOB {{job_id}}_bedgraph-star {{bedgraph_star}}
+JOB {{job_id}}_qc-coverage {{qc_coverage}}
+JOB {{job_id}}_qc-distribution {{qc_distribution}}
+JOB {{job_id}}_bedgraph2bigwig {{bedgraph2bigwig}}
+
+PARENT {{job_id}}_index-samtools CHILD {{job_id}}_qc-samstats
+PARENT {{job_id}}_index-samtools CHILD {{job_id}}_qc-distribution
+PARENT {{job_id}}_bedgraph-star  CHILD {{job_id}}_qc-coverage
+PARENT {{job_id}}_bedgraph-star  CHILD {{job_id}}_bedgraph2bigwig
+
+VARS {{job_id}}_index-samtools  analysis_name="{{analysis_name}}"
+VARS {{job_id}}_qc-samstats     analysis_name="{{analysis_name}}"
+VARS {{job_id}}_bedgraph-star   analysis_name="{{analysis_name}}"
+VARS {{job_id}}_qc-coverage     analysis_name="{{analysis_name}}"
+VARS {{job_id}}_qc-distribution analysis_name="{{analysis_name}}"
+VARS {{job_id}}_bedgraph2bigwig analysis_name="{{analysis_name}}"
+
+VARS {{job_id}}_index-samtools  curdir="{{analysis_dir}}"
+VARS {{job_id}}_qc-samstats     curdir="{{analysis_dir}}"
+VARS {{job_id}}_bedgraph-star   curdir="{{analysis_dir}}"
+VARS {{job_id}}_qc-coverage     curdir="{{analysis_dir}}"
+VARS {{job_id}}_qc-distribution curdir="{{analysis_dir}}"
+VARS {{job_id}}_bedgraph2bigwig curdir="{{analysis_dir}}"
+
+VARS {{job_id}}_index-samtools  genome_root="{{genome_dir}}"
+VARS {{job_id}}_qc-samstats     genome_root="{{genome_dir}}"
+VARS {{job_id}}_bedgraph-star   genome_root="{{genome_dir}}"
+VARS {{job_id}}_qc-coverage     genome_root="{{genome_dir}}"
+VARS {{job_id}}_qc-distribution genome_root="{{genome_dir}}"
+VARS {{job_id}}_bedgraph2bigwig genome_root="{{genome_dir}}"
+
+VARS {{job_id}}_bedgraph-star   star_dir="{{star_dir}}"
+
+VARS {{job_id}}_qc-samstats     georgi_dir="{{georgi_dir}}"
+VARS {{job_id}}_qc-coverage     georgi_dir="{{georgi_dir}}"
+VARS {{job_id}}_qc-distribution georgi_dir="{{georgi_dir}}"
+
+VARS {{job_id}}_bedgraph2bigwig ucsc_tools_dir="{{ucsc_tools_dir}}"
+
+VARS {{job_id}}_bedgraph-star   reference_prefix="{{reference_prefix}}"
+
+VARS {{job_id}}_index-samtools  genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}" 
+VARS {{job_id}}_qc-samstats     genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}" 
+VARS {{job_id}}_bedgraph-star   genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
+VARS {{job_id}}_qc-coverage     genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}" 
+VARS {{job_id}}_qc-distribution genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}" 
+VARS {{job_id}}_bedgraph2bigwig genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
+

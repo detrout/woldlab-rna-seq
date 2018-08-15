@@ -63,6 +63,7 @@ def make_parser():
     add_default_path_arguments(parser)
     add_version_argument(parser)
     add_debug_arguments(parser)
+    parser.add_argument('--template', help='override default dagman template')
     
     return parser
 
@@ -104,6 +105,7 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
         analysis.read_2_fastqs = read_2_fastqs.get(library_id, [])
 
         analysis.reference_prefix = get_reference_prefix(libraries, library_id)
+        analysis.dagman_template = args.template
 
         if analysis.is_valid():
             dag.append(str(analysis))
