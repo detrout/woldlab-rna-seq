@@ -66,6 +66,9 @@ class GTFCache(Mapping):
           - genome_name: (string) like mm10-M4-male
         :Returns: Filename
         """
+        if self._genome_dir is None:
+            logger.error("genome_dir is not specified. Please configure")
+            raise ValueError("genome_dir is not set")
         return os.path.join(self._genome_dir, genome_name, genome_name + '.h5')
         
 def protein_coding_gene_ids(annotation):
