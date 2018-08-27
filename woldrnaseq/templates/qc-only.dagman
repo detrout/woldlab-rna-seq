@@ -32,7 +32,6 @@ VARS {{job_id}}_bedgraph2bigwig curdir="{{analysis_dir}}"
 
 VARS {{job_id}}_index-samtools  genome_root="{{genome_dir}}"
 VARS {{job_id}}_qc-samstats     genome_root="{{genome_dir}}"
-VARS {{job_id}}_bedgraph-star   genome_root="{{genome_dir}}"
 VARS {{job_id}}_qc-coverage     genome_root="{{genome_dir}}"
 VARS {{job_id}}_qc-distribution genome_root="{{genome_dir}}"
 VARS {{job_id}}_bedgraph2bigwig genome_root="{{genome_dir}}"
