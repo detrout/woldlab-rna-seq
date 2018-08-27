@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 export IN=$1
 export OUT=$2
