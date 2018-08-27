@@ -37,6 +37,8 @@ VARS {{job_id}}_qc-distribution genome_root="{{genome_dir}}"
 VARS {{job_id}}_bedgraph2bigwig genome_root="{{genome_dir}}"
 
 VARS {{job_id}}_bedgraph-star   star_dir="{{star_dir}}"
+VARS {{job_id}}_bedgraph-star   ucsc_tools_dir="{{ucsc_tools_dir}}"
+VARS {{job_id}}_bedgraph-star   bedsort_sh="{{bedgraph_bedsort_sh}}"
 
 VARS {{job_id}}_qc-samstats     georgi_dir="{{georgi_dir}}"
 VARS {{job_id}}_qc-coverage     georgi_dir="{{georgi_dir}}"

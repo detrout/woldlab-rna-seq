@@ -4,7 +4,7 @@ output=bedgraph-star-$(Process).out
 error=bedgraph-star-$(Process).out
 
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
+IN=$(CURDIR)/$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
 
 REFERENCE_PREFIX=$$($(reference_prefix):chr)
 
@@ -12,7 +12,10 @@ request_cpus=1
 request_memory=4G
 executable=$(STAR_DIR)STAR
 transfer_executable=False
-should_transfer_files=IF_NEEDED
+should_transfer_files=ALWAYS
+when_to_transfer_output=ON_EXIT
+transfer_input_files=$(UCSC_TOOLS_DIR)/bedSort,$(bedsort_sh)
+transfer_output_files=Signal.UniqueMultiple.str1.out.bg,Signal.Unique.str1.out.bg
 
 initialdir=$(CURDIR)
 arguments="--runMode inputAlignmentsFromBAM \
@@ -21,4 +24,6 @@ arguments="--runMode inputAlignmentsFromBAM \
            --outWigStrand Unstranded \
            --outWigReferencesPrefix $(REFERENCE_PREFIX) \
 "
++PostCmd="bedsort.sh"
++PostArguments="$(CURDIR)"
 queue

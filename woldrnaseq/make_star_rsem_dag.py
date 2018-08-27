@@ -124,6 +124,7 @@ class AnalysisDAG:
             qc_distribution=resource_filename(__name__, 'qc-distribution.condor'),
             bedgraph2bigwig=resource_filename(__name__, 'bedgraph2bigwig.condor'),
             sort_samtools_sh=resource_filename(__name__, 'sort-samtools.sh'),
+            bedgraph_bedsort_sh=resource_filename(__name__, 'bedsort.sh'),
             genome_dir=self.genome_dir,
             star_dir=self.star_dir,
             rsem_dir=self.rsem_dir,

@@ -67,6 +67,8 @@ VARS {{job_id}}_qc-distribution georgi_dir="{{georgi_dir}}"
 VARS {{job_id}}_bedgraph2bigwig ucsc_tools_dir="{{ucsc_tools_dir}}"
 
 VARS {{job_id}}_bedgraph-star   reference_prefix="{{reference_prefix}}"
+VARS {{job_id}}_bedgraph-star   ucsc_tools_dir="{{ucsc_tools_dir}}"
+VARS {{job_id}}_bedgraph-star   bedsort_sh="{{bedgraph_bedsort_sh}}"
 
 VARS {{job_id}}_align-star      genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
 VARS {{job_id}}_sort-samtools   genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
