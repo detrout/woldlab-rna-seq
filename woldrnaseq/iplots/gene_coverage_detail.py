@@ -51,7 +51,7 @@ def main(cmdline=None):
 
     coverage_by_type = {}
     counts_by_type = {}
-    for gene_coverage_table in load_all_gene_coverage(libraries, args.gene_list):
+    for gene_coverage_table in load_all_gene_coverage(libraries, args.gene_list, args.gene_normalization):
         coverage, counts = sum_gene_coverage_by_type(gene_types, gene_coverage_table)
         coverage_by_type[coverage.name] = coverage
         counts_by_type[coverage.name] = counts
@@ -85,6 +85,7 @@ def make_parser():
     #parser.add_argument('-n', '--use-experiment', help='plot specific experiment name')
     #parser.add_argument('-r', '--remove', nargs='*', action='append',
     #                    help='Libraries to filter out')
+    parser.add_argument('--gene-normalization', choices=['None', 'max'], default=None)
     parser.add_argument('--root', default=None,
                         help='analysis_dir will be relative to this path '\
                         'instead of library.txt file')
@@ -98,18 +99,20 @@ def make_parser():
     return parser
 
 
-def load_all_gene_coverage(libraries, gene_list):
+def load_all_gene_coverage(libraries, gene_list, gene_normalization):
     if len(libraries) > 0:
         analysis_files = find_library_analysis_file(libraries, '*.geneList')
         for library_id, filename in analysis_files:
-            yield load_gene_coverage(filename, library_id)
+            yield load_gene_coverage(filename, library_id, gene_normalization)
     for filename in gene_list:
         library_id = os.path.split(filename.replace('.coverage.geneList', ''))[1]
-        yield load_gene_coverage(filename, library_id)
+        yield load_gene_coverage(filename, library_id, gene_normalization)
 
 
-def load_gene_coverage(filename, library_id):
+def load_gene_coverage(filename, library_id, gene_normalization):
     coverage = pandas.read_csv(filename, sep='\t', index_col=0, header=None)
+    if gene_normalization == 'max':
+        coverage = coverage.divide(coverage.max(axis=1), axis=0)
     coverage.name = library_id
     return coverage
 
