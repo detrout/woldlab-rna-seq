@@ -160,7 +160,7 @@ def add_median_plot(ax, experiments, experiment, coverage):
             label='+/- one std. deviation')
     ax.plot(median-stddev, **errstyle)
 
-            
+
 def make_combined_median_normalized_summary(experiments, coverage, output_format, bare):
     """Coverage plot showing the median +/-sd of all libraries for an experiment
     """

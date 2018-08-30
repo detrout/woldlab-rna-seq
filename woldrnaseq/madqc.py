@@ -13,9 +13,10 @@ from .common import get_seperator
 
 logger = logging.getLogger('madQC')
 
+
 def load_rsem_quantifications(experiment_files, index=None, column='FPKM'):
     """Load quantifications out of RSEM results into a pandas dataframe
-    
+
     Columns will be library accession identifiers.
     """
     quantifications = []
@@ -42,16 +43,17 @@ def load_rsem_quantifications(experiment_files, index=None, column='FPKM'):
         df.columns = filenames
     return df
 
+
 def replicate_scores(table, rep1_name, rep2_name, Acutoff=0):
     """Compute correlations, MAD, and SD replicate comparison scores
     """
     rep1 = table[rep1_name]
     rep2 = table[rep2_name]
-    
+
     eitherzero = (rep1 == 0) | (rep2 == 0)
     replz1 = numpy.log2(rep1[eitherzero != True])
     replz2 = numpy.log2(rep2[eitherzero != True])
-    
+
     M = replz1 - replz2
     A = (replz1 + replz2) / 2.0
 
@@ -66,29 +68,30 @@ def replicate_scores(table, rep1_name, rep2_name, Acutoff=0):
     scores = pandas.Series({
         'total_rows': len(table),
         'passed_filter': len(replz1[A > Acutoff]),
-            
+
         'naive_pearson': scipy.stats.pearsonr(rep1, rep2)[0],
         'naive_spearman': scipy.stats.spearmanr(rep1, rep2)[0],
-            
+
         'rafa_pearson': scipy.stats.pearsonr(replz1_gt_Acutoff,
                                              replz2_gt_Acutoff)[0],
         'rafa_spearman': scipy.stats.spearmanr(replz1_gt_Acutoff,
-                                             replz2_gt_Acutoff)[0],
+                                               replz2_gt_Acutoff)[0],
         'MAD': numpy.round(numpy.median(numpy.abs(M)[A > Acutoff]) * 1.4826, 3),
         'SD': numpy.round(numpy.sqrt(numpy.mean(M[A > Acutoff] ** 2)), 3)
     },
-    index = ['total_rows', 'passed_filter', 
-             'naive_pearson', 'naive_spearman', 
-             'rafa_pearson', 'rafa_spearman',
-             'MAD', 'SD']
+        index=['total_rows', 'passed_filter',
+               'naive_pearson', 'naive_spearman',
+               'rafa_pearson', 'rafa_spearman',
+               'MAD', 'SD']
     )
     return scores
+
 
 def compute_all_vs_all_scores(fpkms, Acutoff=0):
     """Compute all the scores of note for a FPKM table.
     """
     all_scores = collections.OrderedDict()
-    shape = (len(fpkms.columns),len(fpkms.columns))
+    shape = (len(fpkms.columns), len(fpkms.columns))
     for i in range(0, len(fpkms.columns)):
         for j in range(0, len(fpkms.columns)):
             if i == j:
@@ -97,7 +100,7 @@ def compute_all_vs_all_scores(fpkms, Acutoff=0):
             rep1 = fpkms.columns[i]
             rep2 = fpkms.columns[j]
             scores = replicate_scores(fpkms, rep1, rep2, Acutoff)
-                
+
             for name in scores.keys():
                 if name not in all_scores:
                     a = numpy.empty(shape)
@@ -159,7 +162,7 @@ def create_quantification_cache(
     score_filename = models.make_correlation_filename(experiment)
     quant_filename = models.make_quantification_filename(experiment,
                                                          quantification_name)
-    
+
     quantifications = load_genomic_quantifications(
         experiment,
         libraries,
@@ -232,7 +235,7 @@ def make_parser():
     parser.add_argument('--root', default=None,
                         help='write analysis files to this directory')
     return parser
-        
-    
+
+
 if __name__ == '__main__':
     main()
