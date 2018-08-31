@@ -18,6 +18,20 @@ def load_rsem_quantifications(experiment_files, index=None, column='FPKM'):
     """Load quantifications out of RSEM results into a pandas dataframe
 
     Columns will be library accession identifiers.
+
+    Parameters
+    ----------
+    experiment_files: list of filenames
+        list of paths to RSEM result files.
+    index: list of column names
+    column: str
+        what RSEM column to load.
+
+    Returns
+    -------
+    pandas.DataFrame
+        gene id (rows) x library id (columns) table of the
+        specified RSEM column
     """
     quantifications = []
     filenames = []
@@ -46,6 +60,23 @@ def load_rsem_quantifications(experiment_files, index=None, column='FPKM'):
 
 def replicate_scores(table, rep1_name, rep2_name, Acutoff=0):
     """Compute correlations, MAD, and SD replicate comparison scores
+
+    Parameters
+    ----------
+    table: pandas.DataFrame
+       DataFrame of RSEM quantifications
+    rep1_name: str
+       name of one column to score (library name)
+    rep2_name: str
+       name of the other column to score (library name)
+    Acutoff: float
+       Require that the average of the two replicates is greater
+       than this cutoff in log2 space
+
+    Returns
+    -------
+    pandas.Series
+       Containing all the scores between the two replicates
     """
     rep1 = table[rep1_name]
     rep2 = table[rep2_name]
@@ -89,6 +120,17 @@ def replicate_scores(table, rep1_name, rep2_name, Acutoff=0):
 
 def compute_all_vs_all_scores(fpkms, Acutoff=0):
     """Compute all the scores of note for a FPKM table.
+
+    Parameters
+    ----------
+    fpkms: pandas.DataFrame
+        Table of gene x library quantification scores
+
+    Returns
+    -------
+    pandas.Panel
+        Containing every replicate vs every other replicate by 
+        the pandas.Series of scores from replicate_scores
     """
     all_scores = collections.OrderedDict()
     shape = (len(fpkms.columns), len(fpkms.columns))
@@ -116,6 +158,20 @@ def compute_all_vs_all_scores(fpkms, Acutoff=0):
 
 def load_genomic_quantifications(experiment, libraries, column='FPKM'):
     """Load all of the RSEM gene quantifications files for an experiment
+
+    Parameters
+    ----------
+    experiment: pandas.Series
+        row of information about an experiment
+    libraries: pandas.DataFrame
+        Table of library metadata
+    columns: str
+       name of quantification column to load
+
+    Returns
+    -------
+    pandas.DataFrame
+       Table of all the quantification folumn for all gene RSEM result files.
     """
     extension = '*_rsem.genes.results'
     return load_rsem_replicates(extension, experiment, libraries, column)
@@ -123,6 +179,20 @@ def load_genomic_quantifications(experiment, libraries, column='FPKM'):
 
 def load_transcriptome_quantifications(experiment, libraries, column='FPKM'):
     """Load all of the RSEM isoform quantifications files for an experiment
+
+    Parameters
+    ----------
+    experiment: pandas.Series
+        row of information about an experiment
+    libraries: pandas.DataFrame
+        Table of library metadata
+    columns: str
+       name of quantification column to load
+
+    Returns
+    -------
+    pandas.DataFrame
+       Table of all the quantification folumn for all isoform RSEM result files.
     """
     extension = '*_rsem.isoforms.results'
     return load_rsem_replicates(extension, experiment, libraries, column)
