@@ -15,12 +15,12 @@ control reports that we added for our own purposes.
 Workflow
 --------
 
-.. actdiag::
+.. blockdiag::
    :caption: RNA-Seq workflow
    :align: center
    :desctable:
 
-   actdiag {
+   blockdiag workflow {
      align-STAR -> sort-samtools;
      align-STAR -> index-samtools;
      align-STAR -> bedgraph-star;
