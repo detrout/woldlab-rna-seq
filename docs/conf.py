@@ -56,7 +56,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'long-rna-seq-condor'
-copyright = '2016, Diane Trout'
+copyright = '2018 California Institute of Technology'
 author = 'Diane Trout'
 
 # The version info for the project you're documenting, acts as replacement for
