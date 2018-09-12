@@ -20,5 +20,5 @@ transfer_executable=true
 executable=$(sort_samtools)
 should_transfer_files=Always
 
-arguments="$(CURDIR)/$(IN) $(OUT) $(MEMORY) $(THREADS) $(paired_end)"
+arguments="$(CURDIR)/$(IN) $(CURDIR)/$(OUT) $(MEMORY) $(THREADS) $(paired_end)"
 queue
