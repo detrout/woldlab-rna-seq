@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 echo $1
 ls $1/Aligned.sortedByCoord.out.bam
