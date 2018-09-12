@@ -9,11 +9,12 @@ IN=$$($(bam_in):Aligned.toTranscriptome.out.bam)
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
 OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno.bam
 
-THREADS=4
-MEMORY=12G
+THREADS=8
+MEMORY=40G
 
 request_cpus=$(THREADS)
 request_memory=$(MEMORY)
+request_disk=100G
 
 initialdir=$(CURDIR)
 transfer_executable=true
