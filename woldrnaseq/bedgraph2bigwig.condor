@@ -13,7 +13,6 @@ ANNOTATION=$$($(annotation):M4)
 SEX=$$($(sex):male)
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
 GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)
-GTF=$(GENOME_DIR)/gencode.v$(ANNOTATION)-tRNAs-ERCC.gff
 CHROM_INFO=$(GENOME_DIR)/chrNameLength.txt
 IN=$$($(in):Aligned.sortedByCoord.out.bam)
 OUT_ALL=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_all.bw
