@@ -196,6 +196,8 @@ def make_per_experiment_median_normalized_summary(experiments, coverage, output_
         library_ids = experiments['replicates'][experiment]
 
         f = make_median_normalized_summary(experiment, library_ids, coverage, bare)
+        ax = f.get_axes()[0]
+        ax.set_title('Median normalized coverage for {}'.format(experiment.replace('_', ' ')))
         image_name = experiment + plot_suffix + output_format
         f.savefig(image_name)
         tosave[image_name] = f
