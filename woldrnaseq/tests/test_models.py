@@ -54,6 +54,12 @@ class TestModel(TestCase):
         invalid = resource_filename(__name__, 'experiments-invalid.tsv')
         self.assertRaises(ValueError, models.load_experiments, [invalid])
 
+    def test_load_numeric_experiment(self):
+        filename = resource_filename(__name__, 'experiments-numeric.tsv')
+        experiment = models.load_experiments([filename])
+        for name in experiment.index:
+            self.assertIsInstance(name, str)
+
     def test_load_experiment(self):
         mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
         hg38tsv = resource_filename(__name__, 'experiments-hg38.tsv')
