@@ -279,7 +279,7 @@ def main(cmdline=None):
     libraries = models.load_library_tables(args.libraries, sep=sep)
 
     for i, experiment in experiments.iterrows():
-        logging.info('Processing:', experiment.name)
+        logging.info('Processing: %s', experiment.name)
         create_quantification_cache(
             experiment,
             libraries,
