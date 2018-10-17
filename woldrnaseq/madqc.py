@@ -128,9 +128,7 @@ def compute_all_vs_all_scores(fpkms, Acutoff=0):
 
     Returns
     -------
-    pandas.Panel
-        Containing every replicate vs every other replicate by 
-        the pandas.Series of scores from replicate_scores
+    OrderedDict containing each score for rep_i vs rep_j
     """
     if len(fpkms.columns) < 2:
         return None
@@ -156,7 +154,7 @@ def compute_all_vs_all_scores(fpkms, Acutoff=0):
                         columns=fpkms.columns
                     )
                 all_scores[name][rep1][rep2] = scores[name]
-    return pandas.Panel(all_scores)
+    return all_scores
 
 
 def load_genomic_quantifications(experiment, libraries, column='FPKM'):
@@ -253,10 +251,13 @@ def create_quantification_cache(
     if os.path.exists(score_filename):
         os.unlink(score_filename)
 
-    store = pandas.HDFStore(score_filename)
-    for key in scores:
-        store.append(key, scores[key])
-    store.close()
+    if scores is not None:
+        store = pandas.HDFStore(score_filename)
+        for key in scores:
+            logger.info('Writing %s to %s. shape %s',
+                         key, score_filename, scores[key].shape)
+            store.append(key, scores[key])
+        store.close()
 
 
 def main(cmdline=None):

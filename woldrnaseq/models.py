@@ -313,7 +313,7 @@ def load_correlations(experiment):
         scores[key_name] = store[key]
         logger.debug('Loading %s shape %s', key_name, scores[key_name].shape)
     store.close()
-    return pandas.Panel(scores)
+    return scores
 
 
 def load_quantifications(experiment, quantification_name='FPKM'):
