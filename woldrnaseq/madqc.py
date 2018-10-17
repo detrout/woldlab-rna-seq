@@ -132,6 +132,9 @@ def compute_all_vs_all_scores(fpkms, Acutoff=0):
         Containing every replicate vs every other replicate by 
         the pandas.Series of scores from replicate_scores
     """
+    if len(fpkms.columns) < 2:
+        return None
+
     all_scores = collections.OrderedDict()
     shape = (len(fpkms.columns), len(fpkms.columns))
     for i in range(0, len(fpkms.columns)):
