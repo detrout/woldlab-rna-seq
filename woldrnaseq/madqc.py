@@ -264,6 +264,13 @@ def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
 
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    elif args.verbose:
+        logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.WARN)
+
     sep = get_seperator(args.sep)
     if args.experiments:
         experiments = models.load_experiments(args.experiments, sep=sep,
@@ -310,6 +317,12 @@ def make_parser():
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('--root', default=None,
                         help='write analysis files to this directory')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        default=False,
+                        help='Turn on verbose log level')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        default=False,
+                        help='Turn on debug log level')
     return parser
 
 
