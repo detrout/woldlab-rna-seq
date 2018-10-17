@@ -311,6 +311,7 @@ def load_correlations(experiment):
     for key in store.keys():
         key_name = normalize_hdf_key(key)
         scores[key_name] = store[key]
+        logger.debug('Loading %s shape %s', key_name, scores[key_name].shape)
     store.close()
     return pandas.Panel(scores)
 

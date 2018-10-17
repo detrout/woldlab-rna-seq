@@ -240,6 +240,8 @@ def create_quantification_cache(
     if os.path.exists(quant_filename):
         os.unlink(quant_filename)
 
+    logger.info('Writing quantification %s shape %s',
+                 quant_filename, quantifications.shape)
     store = pandas.HDFStore(quant_filename, complevel=9, complib='blosc')
     store.append('quantifications', quantifications)
     store.close()
