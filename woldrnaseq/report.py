@@ -153,10 +153,16 @@ class QCReport:
 
         for experiment_name in sorted(self.experiments.index):
             experiment = self.experiments.loc[experiment_name]
+            library_ids = experiment['replicates']
+
             quantifications = load_quantifications(
                 experiment,
                 self.quantification_name)
-            scores = load_correlations(experiment)
+
+            if len(library_ids) > 1:
+                scores = load_correlations(experiment)
+            else:
+                scores = None
 
             if quantifications is None:
                 raise FileNotFoundError(
@@ -164,7 +170,6 @@ class QCReport:
                         self.quantification_name,
                         experiment_name))
 
-            library_ids = experiment['replicates']
             seen_libraries.update(set(library_ids))
             seen_genomes = set()
             for library_id in library_ids:
@@ -180,7 +185,6 @@ class QCReport:
                                experiment_name, ','.join(seen_genomes))
 
             cur_experiment = {
-                'spearman': scores.rafa_spearman.to_html(na_rep=''),
                 'samstats': self.make_samstats_html(library_ids),
                 'star_stats': self.make_star_stats_html(library_ids),
                 'coverage': self.make_plot_handle(coverage_plots, experiment_name),
@@ -188,6 +192,9 @@ class QCReport:
                 'correlation': self.make_plot_handle(score_correlation_plots, experiment_name),
                 'protein_genes': self.make_plot_handle(genes_detected_plots, experiment_name),
             }
+
+            if scores is not None:
+                cur_experiment['spearman'] = scores['rafa_spearman'].to_html(na_rep='')
 
             self._experiment_report[experiment_name] = cur_experiment
             #handle = self.make_spikein_variance_plot(quantifications, experiment)
