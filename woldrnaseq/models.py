@@ -245,9 +245,12 @@ def load_all_star_final(libraries):
 def load_distribution(filename):
     distribution = collections.OrderedDict()
     with open(filename, 'rt') as instream:
-        for line in read_line_from_stream(instream):
-            name, value = line.split(':\t')
-            distribution[name] = float(value)
+        try:
+            for line in read_line_from_stream(instream):
+                name, value = line.split(':\t')
+                distribution[name] = float(value)
+        except ValueError as e:
+            raise ValueError('Unable to parse {}: {}'.format(filename, str(e)))
     return pandas.Series(distribution, index=distribution.keys())
 
 
