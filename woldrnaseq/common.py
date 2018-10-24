@@ -183,3 +183,7 @@ def find_fastqs_by_glob(fastq_globs):
                 logger.warn("Can't find fastq {}. skipping".format(filename))
 
 
+def add_trailing_slash(path):
+    if path[-1] != '/':
+        path += '/'
+    return path
