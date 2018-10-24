@@ -47,14 +47,13 @@ def main(cmdline=None):
     elif args.experiment_median_summary:
         make_per_experiment_median_normalized_summary(experiments, coverage, args.output_format, args.bare)
     elif args.by_experiment:
-        make_by_experiment_median_summary(experiments, coverage, args.output_format)
+        make_by_experiment_median_summary(experiments, coverage, args.output_format, args.bare)
     elif args.combined_median_summary:
-        make_combined_experiment_median_summary(experiments, coverage, args.output_format)
+        make_combined_experiment_median_summary(experiments, coverage, args.output_format, args.bare)
     else:
-        make_experiment_by_library_coverage_plots(experiments, coverage, args.output_format)
+        make_experiment_by_library_coverage_plots(experiments, coverage, args.output_format, args.bare)
 
-
-def make_experiment_by_library_coverage_plots(experiments, coverage, output_format):
+def make_experiment_by_library_coverage_plots(experiments, coverage, output_format, bare):
     """Coverage plot showing all the libraries for an experiment
     """
     tosave = OrderedDict()
@@ -83,7 +82,7 @@ def make_coverage_plot(experiment, coverage):
     return f
 
 
-def make_by_experiment_median_summary(experiments, coverage, output_format):
+def make_by_experiment_median_summary(experiments, coverage, output_format, bare):
     """Coverage plot showing the median +/-sd of all libraries for an experiment
     """
     tosave = OrderedDict()
@@ -92,7 +91,7 @@ def make_by_experiment_median_summary(experiments, coverage, output_format):
             f = pyplot.figure(dpi=100)
             ax = f.add_subplot(1, 1, 1)
 
-            add_median_plot(ax, experiments, experiment, coverage)
+            add_median_plot(ax, experiments, experiment, coverage, bare)
             
             ax.set_title('Median coverage for {}'.format(experiment))
             ax.set_xlabel("position quantile (5' to 3')")
@@ -106,7 +105,7 @@ def make_by_experiment_median_summary(experiments, coverage, output_format):
         save_fixed_height(tosave)
 
 
-def make_combined_experiment_median_summary(experiments, coverage, output_format):
+def make_combined_experiment_median_summary(experiments, coverage, output_format, bare):
     """Coverage plot showing the median +/-sd of all libraries for an experiment
     """
     tosave = OrderedDict()
@@ -131,7 +130,7 @@ def make_combined_experiment_median_summary(experiments, coverage, output_format
         save_fixed_height(tosave)
 
 
-def add_median_plot(ax, experiments, experiment, coverage):
+def add_median_plot(ax, experiments, experiment, coverage, bare):
     library_ids = experiments['replicates'][experiment]
     median = coverage[library_ids].median(axis=1)
     # TOTAL HACK FOR A GRANT 
@@ -159,6 +158,8 @@ def add_median_plot(ax, experiments, experiment, coverage):
     ax.plot(median+stddev, **errstyle,
             label='+/- one std. deviation')
     ax.plot(median-stddev, **errstyle)
+
+    add_slope(ax, median, coverage.shape[1], bare)
 
 
 def make_combined_median_normalized_summary(experiments, coverage, output_format, bare):
@@ -224,7 +225,16 @@ def make_median_normalized_summary(experiment, library_ids, coverage, bare):
             label='+/- std. dev',
             **errstyle)
 
-        plateau = median[20:81]
+        #ax.set_ylabel(r'$median_{quantile}\left(\frac{coverage}{median_{library} \left(coverage\right)}\right)$')
+        #ax.legend(bbox_to_anchor=(1.05, 1),
+        #          loc=2,
+        #          borderaxespad=0.0)
+        #ax.legend(loc=8, fontsize='small')
+    return f
+
+
+def add_slope(ax, coverage, N, bare):
+        plateau = coverage[20:81]
         m, b = numpy.polyfit(numpy.arange(20, 81), plateau, 1)
         ax.set_xticklabels( ax.get_xticks() / 100 )
         ax.set_yticks([])
@@ -243,12 +253,10 @@ def make_median_normalized_summary(experiment, library_ids, coverage, bare):
             ax.set_xlabel(r"5' $\rightarrow$ 3' normalized position")
             ax.set_ylabel('normalized read coverage')
 
-        #ax.set_ylabel(r'$median_{quantile}\left(\frac{coverage}{median_{library} \left(coverage\right)}\right)$')
-        #ax.legend(bbox_to_anchor=(1.05, 1), 
-        #          loc=2, 
-        #          borderaxespad=0.0)
-        #ax.legend(loc=8, fontsize='small')
-    return f
+            # if debug:
+            x_range = range(20, 81)
+            ax.plot(x_range, [ m*x + b for x in x_range], color='green')
+
 
 #
 # 20/80 find slope needs to be < .3
