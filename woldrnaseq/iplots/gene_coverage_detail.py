@@ -131,13 +131,17 @@ def readGeneTypes(stream):
             gene_type = 'spikein'
         else:
             gene_type = getGFFAttributeValueByKey(fields[8], 'gene_type')
+            if gene_type is None:
+                gene_type = "n/a"
         gene_types.setdefault(gene_type, []).append(geneID)
     LOGGER.debug('Read %d lines from gtf stream', i)
     return gene_types
 
 
 def getGFFAttributeValueByKey(field, name):
-    start = field.index(name)
+    start = field.find(name)
+    if start == -1:
+        return None
     start += len(name)
     start = field.index('"', start)
     start += 1
