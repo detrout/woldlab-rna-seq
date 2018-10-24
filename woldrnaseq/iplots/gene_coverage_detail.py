@@ -57,7 +57,7 @@ def main(cmdline=None):
         counts_by_type[coverage.name] = counts
 
     LOGGER.info('Preparing plot class')
-    plot = GeneCoverageDetail(coverage_by_type, counts_by_type)
+    plot = GeneCoverageDetail(coverage_by_type, counts_by_type, args.gene_normalization)
 
     if args.save:
         for library_id in plot:
@@ -185,12 +185,13 @@ class GeneCoverageDetail:
     :Parameters:
     - gene_types
     """
-    def __init__(self, coverage_by_type, counts_by_type):
+    def __init__(self, coverage_by_type, counts_by_type, normalization):
         self._coverage_by_type = coverage_by_type
         self._counts_by_type = counts_by_type
         self._library_ids = sorted(self._coverage_by_type.keys())
         self._library_id = None
         self._layout = None
+        self._normalization = normalization
 
     @property
     def library_id(self):
@@ -225,10 +226,16 @@ class GeneCoverageDetail:
         coverage = self._coverage_by_type[library_id]
         gene_counts = self._counts_by_type[library_id]
 
+        if self._normalization == 'max':
+            title = "{} normalized to maximum percentile".format(library_id)
+        elif self._normalization in ('None', None):
+            title = "{} raw coverage".format(library_id)
+        else:
+            raise RuntimeError("Unrecognized normalization %s", self._normalization)
         f = figure(x_axis_label="position quantile (5' to 3')",
                    y_axis_label="Read depth",
                    toolbar_location='right',
-                   title=library_id,
+                   title=title,
                    plot_width=800,
                    plot_height=600,
         )
