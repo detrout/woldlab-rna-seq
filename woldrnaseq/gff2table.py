@@ -123,60 +123,74 @@ def parse_phase(x):
     else:
         return int(x)
 
-def convert_gff(inname, outname, table_name, sep):
-    logger.info("Converting %s to %s", inname, outname)
 
-    gtf = read_gff(inname, sep)
+class GFFParser:
+    def __init__(self, sep=' '):
+        self.attribute_parser = AttributesParser(sep=sep)
+        self.gtf = None
 
-    store = pandas.HDFStore(outname, mode='w', complevel=9, complib='bzip2')
-    store.append(table_name, gtf_with_metadata,
-                 min_itemsize = attribute_parser.max_string)
-    tnow = time.monotonic()
-    logger.info("Wrote table in {:.3} seconds".format(tnow-tprev))
-    tprev = tnow
-    store.create_table_index(name, optlevel=9, kind='full')
-    tnow = time.monotonic()
-    logger.info("Wrote index in {:.3} seconds".format(tnow-tprev))
-    store.close()
+    def read_gff(self, inname):
+        tzero = time.monotonic()
+        required_gtf_names=[
+            'chromosome', 'source', 'type', 'start', 'stop',
+            'score', 'strand', 'frame',]
+        column_names = required_gtf_names + ['attributes']
 
-def read_gff(inname, sep):
-    attribute_parser = AttributesParser(sep=sep)
-    tzero = time.monotonic()
-    required_gtf_names=[
-        'chromosome', 'source', 'type', 'start', 'stop',
-        'score', 'strand', 'frame',]
-    column_names = required_gtf_names + ['attributes']
+        gtf = pandas.read_csv(
+            inname,
+            sep='\t',
+            header=None,
+            names=column_names,
+            index_col=False,
+            comment="#",
+            na_values='.',
+            converters={
+                'score': parse_score,
+                'strand': parse_strand,
+                'frame': parse_phase,
+                'attributes': self.attribute_parser,
+            },
+        )
+        tnow = time.monotonic()
+        tprev = tnow
+        logger.info("Parsed in {:.3} seconds".format(tnow-tzero))
+        print('gtf.shape', gtf.shape)
+        for name in ['chromosome', 'type']:
+            self.attribute_parser.max_string[name] = max(gtf[name].map(len))
 
-    gtf = pandas.read_csv(
-        inname, 
-        sep='\t', 
-        header=None,
-        names=column_names,
-        index_col=False,
-        na_values='.',
-        converters={
-            'score': parse_score,
-            'strand': parse_strand,
-            'frame': parse_phase,
-            'attributes': attribute_parser,
-        },
-    )
-    tnow = time.monotonic()
-    tprev = tnow
-    logger.info("Parsed in {:.3} seconds".format(tnow-tzero))
-    for name in ['chromosome', 'type']:
-        attribute_parser.max_string[name] = max(gtf[name].map(len))
+        # drop my synthetic column counting how many records are in the
+        # variant column
+        gtf.drop('attributes', axis=1, inplace=True)
+        # create new table with metadata attributes
+        attributes = pandas.DataFrame(self.attribute_parser.terms)
+        gtf_with_metadata = gtf.merge(attributes, left_index=True, right_index=True)
+        tnow = time.monotonic()
+        logger.info("Merged table in {:.3} seconds".format(tnow-tprev))
+        tprev = tnow
+        self.gtf = gtf_with_metadata
 
-    # drop my synthetic column counting how many records are in the
-    # variant column
-    gtf.drop('attributes', axis=1, inplace=True)
-    # create new table with metadata attributes
-    attributes = pandas.DataFrame(attribute_parser.terms)
-    gtf_with_metadata = gtf.merge(attributes, left_index=True, right_index=True)
-    tnow = time.monotonic()
-    logger.info("Merged table in {:.3} seconds".format(tnow-tprev))
-    tprev = tnow
-    return gtf_with_metadata
+    def write_hdf5(self, outname, table_name):
+        if self.gtf is None:
+            raise RuntimeError('No gtf table to write. Did you call read_gff?')
+        tprev = time.monotonic()
+        store = pandas.HDFStore(outname, mode='w', complevel=9, complib='bzip2')
+        store.append(table_name, self.gtf,
+                     min_itemsize=self.attribute_parser.max_string)
+        tnow = time.monotonic()
+        logger.info("Wrote table in {:.3} seconds".format(tnow-tprev))
+        tprev = tnow
+        store.create_table_index(table_name, optlevel=9, kind='full')
+        tnow = time.monotonic()
+        logger.info("Wrote index in {:.3} seconds".format(tnow-tprev))
+        store.close()
+
+    def write_table(self, outname, sep='\t', columns=None):
+        if self.gtf is None:
+            raise RuntimeError('No gtf table to write. Did you call read_gff?')
+        if columns is not None:
+            gtf = gtf[[columns]]
+        gtf.to_csv(outname, sep=sep)
+
 
 def main(cmdline=None):
     parser = argparse.ArgumentParser()
@@ -204,7 +218,12 @@ def main(cmdline=None):
         args.output = name + '.h5'
 
     for filename in args.filename:
-        convert_gff(filename, args.output, args.name, args.name_value_sep)
+        logger.info("Converting %s to %s", filename, args.output)
+
+        gtf = GFFParser(args.name_value_sep)
+        gtf.read_gff(filename)
+        gtf.write_hdf5(args.output, args.name)
+
 
 if __name__ == '__main__':
     main()
