@@ -91,7 +91,10 @@ class AttributesParser:
                 prev = self.max_string.get(name, 0)
                 self.max_string[name] = max(prev, len(value))
             else:
-                value = int(value)
+                try:
+                    value = int(value)
+                except ValueError:
+                    pass
 
             column = self.terms.setdefault(name, {})
             column[self.index] = value
