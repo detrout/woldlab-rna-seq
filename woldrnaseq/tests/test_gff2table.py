@@ -93,6 +93,14 @@ class TestAttributeParser(TestCase):
             self.assertEqual(p.terms[name], {column: expected})
             self.assertIsInstance(p.terms[name][column], attribute_type)
             column += 1
+
+    def test_ignore(self):
+        p = AttributesParser(' ', ignore=['chromosome', 'junk'])
+        attributes = p('chromsome=1;ID=id0;junk=drawer')
+        self.assertEqual(attributes, 1)
+        self.assertIn('ID', p.terms)
+        self.assertEqual(p.terms['ID'][0], 'id0')
+        self.assertNotIn('chromosome', p.terms)
 class TestAttributeParser(TestCase):
     def test_parse_simple_gtf(self):
         text = StringIO('''chr1	source	exon	1	1000	.	+	.	junk "drawer"''')

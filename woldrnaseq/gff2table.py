@@ -16,11 +16,12 @@ import time
 logger = logging.getLogger('gff2table')
 
 class AttributesParser:
-    def __init__(self, sep=' '):
+    def __init__(self, sep=' ', ignore=None):
         self.index = 0
         self.sep = sep
         self.terms = collections.OrderedDict()
         self.max_string = collections.OrderedDict()
+        self.ignore = ignore if ignore is not None else []
 
     def tokenize(self, cell):
         """Generator returning tokens for gff/gtf attributes
@@ -80,6 +81,9 @@ class AttributesParser:
             
             value = next(tokens)
 
+            if name in self.ignore:
+                continue
+
             if value == '"NULL"':
                 value = None
             elif value[0] == '"':
@@ -125,9 +129,10 @@ def parse_phase(x):
 
 
 class GFFParser:
-    def __init__(self, sep=' '):
+    def __init__(self, sep=' ', ignore=None):
         self.attribute_parser = AttributesParser(sep=sep)
         self.gtf = None
+        self.ignore = ignore
 
     def read_gff(self, inname):
         tzero = time.monotonic()
