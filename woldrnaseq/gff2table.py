@@ -53,10 +53,6 @@ class AttributesParser:
                     yield ''.join(current)
                     current = []
                     yield character
-                elif character.isspace():
-                    state = SEP
-                    yield ''.join(current)
-                    current = []
                 else:
                     current.append(character)
             elif state == QUOTED_STRING:
