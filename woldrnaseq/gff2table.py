@@ -22,6 +22,16 @@ class AttributesParser:
         self.terms = collections.OrderedDict()
         self.max_string = collections.OrderedDict()
         self.ignore = ignore if ignore is not None else []
+        self.reserved = {
+            'chromosome': 0,
+            'source': 0,
+            'type': 0,
+            'start': 0,
+            'stop': 0,
+            'score': 0,
+            'strand': 0,
+            'frame': 0,
+        }
 
     def tokenize(self, cell):
         """Generator returning tokens for gff/gtf attributes
@@ -83,6 +93,11 @@ class AttributesParser:
 
             if name in self.ignore:
                 continue
+
+            if name in self.reserved:
+                suffix = self.reserved[name] + 1
+                self.reserved[name] = suffix
+                name = name + str(suffix)
 
             if value == '"NULL"':
                 value = None

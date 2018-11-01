@@ -101,6 +101,9 @@ class TestAttributeParser(TestCase):
         self.assertIn('ID', p.terms)
         self.assertEqual(p.terms['ID'][0], 'id0')
         self.assertNotIn('chromosome', p.terms)
+        self.assertEqual(p.reserved['chromosome'], 0)
+
+
 class TestAttributeParser(TestCase):
     def test_parse_simple_gtf(self):
         text = StringIO('''chr1	source	exon	1	1000	.	+	.	junk "drawer"''')
@@ -109,3 +112,12 @@ class TestAttributeParser(TestCase):
         self.assertEqual(p.gtf.shape, (1, 9))
         self.assertIn('chromosome', p.gtf.columns)
         self.assertIn('junk', p.gtf.columns)
+
+    def test_parse_collision_gtf(self):
+        text = StringIO('''chr1	source	exon	1	1000	.	+	.	chromosome "drawer"''')
+        p = GFFParser(' ')
+        p.read_gff(text)
+        self.assertEqual(p.gtf.shape, (1, 9))
+        self.assertIn('chromosome', p.gtf.columns)
+        self.assertIn('chromosome1', p.gtf.columns)
+
