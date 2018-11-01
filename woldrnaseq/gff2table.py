@@ -104,7 +104,7 @@ class AttributesParser:
             except StopIteration:
                 break
 
-        self.index += 1
+            self.index += 1
         return attributes_count
     
 def parse_score(x):
