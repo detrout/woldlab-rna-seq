@@ -20,6 +20,8 @@ from woldrnaseq.models import (
     load_experiments,
     load_library_tables,
     find_library_analysis_file,
+    load_gene_coverage,
+    load_all_gene_coverage,
 )
 
 from woldrnaseq.iplots.coverage import Coverage
@@ -97,24 +99,6 @@ def make_parser():
                         help='Use debug logging level')
 
     return parser
-
-
-def load_all_gene_coverage(libraries, gene_list, gene_normalization):
-    if len(libraries) > 0:
-        analysis_files = find_library_analysis_file(libraries, '*.geneList')
-        for library_id, filename in analysis_files:
-            yield load_gene_coverage(filename, library_id, gene_normalization)
-    for filename in gene_list:
-        library_id = os.path.split(filename.replace('.coverage.geneList', ''))[1]
-        yield load_gene_coverage(filename, library_id, gene_normalization)
-
-
-def load_gene_coverage(filename, library_id, gene_normalization):
-    coverage = pandas.read_csv(filename, sep='\t', index_col=0, header=None)
-    if gene_normalization == 'max':
-        coverage = coverage.divide(coverage.max(axis=1), axis=0)
-    coverage.name = library_id
-    return coverage
 
 
 def readGeneTypes(stream):
