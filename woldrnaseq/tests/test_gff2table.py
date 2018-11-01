@@ -1,8 +1,10 @@
 from unittest import TestCase, main
 from pkg_resources import resource_filename
+from io import StringIO
 
 from woldrnaseq.gff2table import (
-    AttributesParser
+    AttributesParser,
+    GFFParser,
 )
 
 class TestAttributeParser(TestCase):
@@ -91,3 +93,11 @@ class TestAttributeParser(TestCase):
             self.assertEqual(p.terms[name], {column: expected})
             self.assertIsInstance(p.terms[name][column], attribute_type)
             column += 1
+class TestAttributeParser(TestCase):
+    def test_parse_simple_gtf(self):
+        text = StringIO('''chr1	source	exon	1	1000	.	+	.	junk "drawer"''')
+        p = GFFParser(' ')
+        p.read_gff(text)
+        self.assertEqual(p.gtf.shape, (1, 9))
+        self.assertIn('chromosome', p.gtf.columns)
+        self.assertIn('junk', p.gtf.columns)
