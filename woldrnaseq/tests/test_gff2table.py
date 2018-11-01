@@ -1,0 +1,93 @@
+from unittest import TestCase, main
+from pkg_resources import resource_filename
+
+from woldrnaseq.gff2table import (
+    AttributesParser
+)
+
+class TestAttributeParser(TestCase):
+    def test_quoting_missing(self):
+        p = AttributesParser(' ')
+        self.assertRaises(ValueError, list, p.tokenize('a "b'))
+
+    def test_embedded_sep(self):
+        p = AttributesParser(' ')
+        t = list(p.tokenize('a "b;c"; d 1'))
+        self.assertEqual(t, ['a', ' ', '"b;c"', ';', 'd', ' ', '1'])
+
+    def test_empty(self):
+        p = AttributesParser()
+        attributes = p('')
+        self.assertEqual(attributes, 0)
+        
+    def test_simple_gtf(self):
+        p = AttributesParser()
+        attributes = p('gene_id "gene1"')
+        self.assertEqual(attributes, 1)
+        self.assertIn('gene_id', p.terms)
+        self.assertEqual(p.terms['gene_id'], {0: 'gene1'})
+        self.assertIsInstance(p.terms['gene_id'][0], str)
+
+    def test_numeric_gtf(self):
+        p = AttributesParser()
+        attributes = p('exon_number 1')
+        self.assertEqual(attributes, 1)
+        self.assertIn('exon_number', p.terms)
+        self.assertEqual(p.terms['exon_number'], {0: 1})
+        self.assertIsInstance(p.terms['exon_number'][0], int)
+        
+    def test_multi_value_gtf(self):
+        p = AttributesParser(' ')
+        attributes = p(
+            'gene_id "gene1"; transcript_id "transcript1"; exon_number 1')
+        self.assertEqual(attributes, 3)
+        column = 0
+        for name, expected, attribute_type in [
+                ('gene_id', 'gene1', str),
+                ('transcript_id', 'transcript1', str),
+                ('exon_number', 1, int)]:
+            
+            self.assertIn(name, p.terms)
+            self.assertEqual(p.terms[name], {column: expected})
+            self.assertIsInstance(p.terms[name][column], attribute_type)
+            column += 1
+        
+    def test_multi_value_gff(self):
+        p = AttributesParser('=')
+        attributes = p('gene_id=gene1;transcript_id=transcript1;exon_number=1')
+        self.assertEqual(attributes, 3)
+        column = 0
+        for name, expected, attribute_type in [
+                ('gene_id', 'gene1', str),
+                ('transcript_id', 'transcript1', str),
+                ('exon_number', 1, int)]:
+            
+            self.assertIn(name, p.terms)
+            self.assertEqual(p.terms[name], {column: expected})
+            self.assertIsInstance(p.terms[name][column], attribute_type)
+            column += 1
+
+    def test_gff_value_with_spaces(self):
+        p = AttributesParser('=')
+        t = list(p.tokenize('mol_type=genomic DNA'))
+        self.assertEqual(t, ['mol_type', '=', 'genomic DNA'])
+
+    def test_grcm38(self):
+        p = AttributesParser('=')
+        attributes = p('ID=id0;Dbxref=taxon:10090;Name=1;chromosome=1;gbkey=Src;genome=chromosome;mol_type=genomic DNA;strain=C57BL/6J')
+        self.assertEqual(attributes, 8)
+        column = 0
+        for name, expected, attribute_type in [
+                ('ID', 'id0', str),
+                ('Dbxref', 'taxon:10090', str),
+                ('Name', 1, int),
+                ('chromosome', 1, int),
+                ('gbkey', 'Src', str),
+                ('genome', 'chromosome', str),
+                ('mol_type', 'genomic DNA', str),
+                ]:
+            
+            self.assertIn(name, p.terms)
+            self.assertEqual(p.terms[name], {column: expected})
+            self.assertIsInstance(p.terms[name][column], attribute_type)
+            column += 1
