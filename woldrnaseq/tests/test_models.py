@@ -127,13 +127,11 @@ class TestModel(TestCase):
         self.assertEqual(len(cwd_files), len(abs_files))
         self.assertEqual(cwd_files[0].filename, abs_files[0].filename)
 
-
     def test_load_all_coverage(self):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
         mm10 = models.load_library_tables([mm10tsv])
         coverage = models.load_all_coverage(mm10)
         self.assertEqual(coverage.shape, (100, 1))
-
 
     def test_load_all_samstats(self):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
@@ -142,14 +140,12 @@ class TestModel(TestCase):
         self.assertEqual(samstats.shape, (1, 10))
         self.assertEqual(samstats.index[0], '12304')
 
-
     def test_load_star_final_log(self):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
         mm10 = models.load_library_tables([mm10tsv])
         final_out = models.load_all_star_final(mm10)
         self.assertEqual(final_out.shape, (1, 27))
         self.assertEqual(final_out.index[0], '12304')
-
 
     def test_load_all_distribution(self):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
@@ -210,6 +206,7 @@ class TestModel(TestCase):
         expected = os.path.join(path, 'expf_FPKM.h5')
         self.assertEqual(filename, expected)
 
+
 @contextmanager
 def chdir(d):
     """Change dir in a context manager"""
@@ -217,6 +214,7 @@ def chdir(d):
     os.chdir(d)
     yield olddir
     os.chdir(olddir)
+
 
 if __name__ == '__main__':
     main()
