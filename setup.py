@@ -14,6 +14,7 @@ setup(
             'madqc = woldrnaseq.madqc:main',
             'make_dag = woldrnaseq.make_dag:main',
             'makersemcsv = woldrnaseq.makersemcsv:main',
+            'make-star-csv = woldrnaseq.makestarcsv:main',
             'qcreport = woldrnaseq.report:main',
         ],
     },
