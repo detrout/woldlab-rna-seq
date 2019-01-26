@@ -140,6 +140,37 @@ class TestModel(TestCase):
         self.assertEqual(samstats.shape, (1, 10))
         self.assertEqual(samstats.index[0], '12304')
 
+    def test_load_one_star_count(self):
+        expected = {
+            'U': {
+                'ENSG00000223972.5': 0,
+                'ENSG00000239945.1': 9,
+            },
+            '+': {
+                'ENSG00000223972.5': 0,
+                'ENSG00000239945.1': 7,
+            },
+            '-': {
+                'ENSG00000223972.5': 0,
+                'ENSG00000239945.1': 2,
+            },
+        }
+        lib12304 = resource_filename(__name__, 'lib_12304/ReadsPerGene.out.tab')
+
+        for column in expected:
+            star_count = models.load_star_counts(lib12304, column)
+            self.assertEquals(star_count.shape, (11, 1))
+            for gene in expected[column]:
+                self.assertEquals(star_count.loc[gene][column], expected[column][gene])
+
+    def test_load_all_star_counts(self):
+        mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
+        mm10 = models.load_library_tables([mm10tsv])
+        scores = models.load_all_star_counts(mm10, '+')
+        self.assertEqual(scores.shape, (11, 2))
+        self.assertEqual(scores.index.name, 'gene_id')
+        self.assertEqual(list(scores.columns), ['12304', '12305'])
+
     def test_load_star_final_log(self):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
         mm10 = models.load_library_tables([mm10tsv])

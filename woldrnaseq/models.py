@@ -192,6 +192,64 @@ def parse_star_final_percent(x):
     return float(x.replace('%', ''))
 
 
+def load_star_counts(filename, column):
+    """Load star count table
+
+    Parameters
+    ----------
+    filename: str
+              Path to a STAR ReadsPerGene.out.tab
+    column: str
+            Which column to return.
+            U for unstranded
+            + for first read
+            - for second read
+    """
+    count_columns = {
+        'U': 1,
+        '+': 2,
+        '-': 3,
+    }
+
+    if column not in count_columns:
+        raise ValueError('Expected quantification column identifier {}'.format(list(count_columns)))
+
+    data = pandas.read_csv(filename,
+                           skiprows=4,
+                           header=None,
+                           index_col=0,
+                           usecols=[0, count_columns[column]],
+                           sep='\t')
+    data.index.name = 'gene_id'
+    data.columns = [column]
+    return data
+
+
+def load_all_star_counts(libraries, column):
+    """Load STAR gene count tables
+
+    Parameters
+    ----------
+    libraries: pandas.DataFrame
+               Table of library metadata to load
+    column: str
+            Which column to return.
+            U for unstranded
+            + for first read
+            - for second read
+    """
+    library_ids = []
+    counts = []
+    analysis_files = find_library_analysis_file(libraries, 'ReadsPerGene.out.tab')
+    for library_id, filename in analysis_files:
+        counts.append(load_star_counts(filename, column))
+        library_ids.append(library_id)
+
+    expression = pandas.concat(counts, axis=1)
+    expression.columns = library_ids
+    return expression
+
+
 def load_star_final_log(filename):
     name_type = {
         'Started job on': str,
