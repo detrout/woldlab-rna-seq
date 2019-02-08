@@ -200,7 +200,7 @@ class TestModel(TestCase):
         path, _ = os.path.split(mm10tsv)
         mm10 = models.load_experiments([mm10tsv])
 
-        filename = models.make_correlation_filename(mm10.ix[0])
+        filename = models.make_correlation_filename(mm10.iloc[0])
         expected = os.path.join(path, 'expf_correlation.h5')
         self.assertEqual(filename, expected)
 
@@ -211,7 +211,7 @@ class TestModel(TestCase):
         path = '/tmp'
         mm10 = models.load_experiments([mm10tsv], analysis_root=path)
 
-        filename = models.make_correlation_filename(mm10.ix[0])
+        filename = models.make_correlation_filename(mm10.iloc[0])
         expected = os.path.join(path, 'expf_correlation.h5')
         self.assertEqual(filename, expected)
 
@@ -222,7 +222,7 @@ class TestModel(TestCase):
         path, _ = os.path.split(mm10tsv)
         mm10 = models.load_experiments([mm10tsv])
 
-        filename = models.make_quantification_filename(mm10.ix[0])
+        filename = models.make_quantification_filename(mm10.iloc[0])
         expected = os.path.join(path, 'expf_FPKM.h5')
         self.assertEqual(filename, expected)
 
@@ -233,7 +233,7 @@ class TestModel(TestCase):
         path = '/tmp'
         mm10 = models.load_experiments([mm10tsv], analysis_root=path)
 
-        filename = models.make_quantification_filename(mm10.ix[0])
+        filename = models.make_quantification_filename(mm10.iloc[0])
         expected = os.path.join(path, 'expf_FPKM.h5')
         self.assertEqual(filename, expected)
 

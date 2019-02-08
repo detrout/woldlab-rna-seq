@@ -17,21 +17,21 @@ class TestMadqc(TestCase):
 
     def test_load_genomic_quantifications(self):
         quantifications = madqc.load_genomic_quantifications(
-            self.experiments.ix[0],
+            self.experiments.iloc[0],
             self.libraries,
             'FPKM'
         )
 
     def test_create_quantification_cache_samedir(self):
         quant = 'FPKM'
-        score_filename = models.make_correlation_filename(self.experiments.ix[0])
-        quant_filename = models.make_quantification_filename(self.experiments.ix[0],
+        score_filename = models.make_correlation_filename(self.experiments.iloc[0])
+        quant_filename = models.make_quantification_filename(self.experiments.iloc[0],
                                                              quant)
 
         assert not os.path.exists(score_filename), 'Unexpected copy of {}'.format(score_filename)
         assert not os.path.exists(quant_filename), 'Unexpected copy of {}'.format(quant_filename)
         cache = madqc.create_quantification_cache(
-            self.experiments.ix[0],
+            self.experiments.iloc[0],
             self.libraries,
             quant)
 
@@ -46,9 +46,9 @@ class TestMadqc(TestCase):
                                                        analysis_root=tempdir)
             quant = 'FPKM'
             score_filename = models.make_correlation_filename(
-                temp_experiments.ix[0])
+                temp_experiments.iloc[0])
             quant_filename = models.make_quantification_filename(
-                temp_experiments.ix[0], quant)
+                temp_experiments.iloc[0], quant)
 
             print(temp_experiments)
             print(tempdir, score_filename)
@@ -58,7 +58,7 @@ class TestMadqc(TestCase):
             assert not os.path.exists(score_filename)
             assert not os.path.exists(quant_filename)
             cache = madqc.create_quantification_cache(
-                temp_experiments.ix[0],
+                temp_experiments.iloc[0],
                 self.libraries,
                 quant)
 

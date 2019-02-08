@@ -58,7 +58,7 @@ class TestMakeRSEMCSV(TestCase):
                 load.assert_called()
                 self.assertEqual(len(load.call_args), 2)
                 args, kwargs = load.call_args
-                self.assertTrue(self.experiments.ix[-1].equals(args[0]))
+                self.assertTrue(self.experiments.iloc[-1].equals(args[0]))
                 self.assertTrue(self.libraries.equals(args[1]))
 
                 save.assert_called()

@@ -181,8 +181,8 @@ def score_upper_triangular(df):
     """Return the cells from the upper triangular indicies of a data frame.
     """
     scores = []
-        scores.append(df.ix[i,j])
     for i, j in zip(*numpy.triu_indices(len(df), k=1)):
+        scores.append(df.iloc[i, j])
     return scores
 
 
