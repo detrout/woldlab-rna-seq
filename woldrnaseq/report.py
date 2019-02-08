@@ -10,9 +10,6 @@ import os
 from jinja2 import Environment, PackageLoader
 import matplotlib
 matplotlib.use('Agg')
-import numpy
-from matplotlib import pyplot
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 import pandas
 import bokeh
 from bokeh.models import HoverTool
@@ -23,15 +20,12 @@ from .models import (
     load_experiments,
     load_library_tables,
     load_correlations,
-    load_all_coverage,
-    load_all_distribution,
     load_all_samstats,
     load_all_star_final,
     load_quantifications,
     get_single_spike_cpc,
     genome_name_from_library,
 )
-from . import madqc
 from .version import get_git_version
 
 from .common import (
