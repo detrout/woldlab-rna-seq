@@ -81,7 +81,7 @@ def make_parser():
     #                    help='Libraries to filter out')
     parser.add_argument('--gene-normalization', choices=['None', 'max'], default=None)
     parser.add_argument('--root', default=None,
-                        help='analysis_dir will be relative to this path '\
+                        help='analysis_dir will be relative to this path '
                         'instead of library.txt file')
     parser.add_argument('--save', default=False, action='store_true',
                         help='save coverage plots')
