@@ -102,7 +102,7 @@ class TestAttributeParser(unittest.TestCase):
                 ('ID', 'id0', str),
                 ('Dbxref', 'taxon:10090', str),
                 ('Name', 1, int),
-                ('chromosome', 1, int),
+                ('chromosome1', 1, int),
                 ('gbkey', 'Src', str),
                 ('genome', 'chromosome', str),
                 ('mol_type', 'genomic DNA', str),
@@ -153,10 +153,13 @@ class TestGFFParser(unittest.TestCase):
         self.assertIn('junk', p.gtf.columns)
 
     def test_parse_collision_gtf(self):
+        """Make sure that the mandatory first 8 columns keep the correct name
+        """
         text = StringIO('''chr1	source	exon	1	1000	.	+	.	chromosome "drawer"''')
         p = GFFParser(' ')
         p.read_gff(text)
         self.assertEqual(p.gtf.shape, (1, 9))
-        self.assertIn('chromosome', p.gtf.columns)
-        self.assertIn('chromosome1', p.gtf.columns)
+        self.assertEqual('chromosome', p.gtf.columns[0])
+        self.assertEqual('chromosome1', p.gtf.columns[8])
+
 
