@@ -126,7 +126,11 @@ def parse_score(x):
     if x == '.':
         return numpy.nan
     else:
-        return x
+        if '.' in x:
+            return float(x)
+        else:
+            return int(x)
+
 
 def parse_strand(x):
     if x == '+':
@@ -141,7 +145,10 @@ def parse_phase(x):
     if x == '.':
         return numpy.nan
     else:
-        return int(x)
+        phase = int(x)
+        if phase < 0 or phase > 2:
+            raise ValueError('Invalid frame: x')
+        return phase
 
 
 class GFFParser:

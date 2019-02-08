@@ -1,10 +1,14 @@
 import unittest
 from pkg_resources import resource_filename
 from io import StringIO
+import numpy
 
 from woldrnaseq.gff2table import (
     AttributesParser,
     GFFParser,
+    parse_score,
+    parse_strand,
+    parse_phase,
 )
 
 
@@ -100,6 +104,27 @@ class TestAttributeParser(unittest.TestCase):
         self.assertEqual(p.terms['ID'][0], 'id0')
         self.assertNotIn('chromosome', p.terms)
         self.assertEqual(p.reserved['chromosome'], 0)
+
+
+class TestParseHelpers(unittest.TestCase):
+    def test_parse_score(self):
+        self.assertIs(parse_score('.'), numpy.nan)
+        self.assertEqual(parse_score('1000'), 1000)
+        self.assertEqual(parse_score('0'), 0)
+        self.assertEqual(parse_score('0.5'), 0.5)
+
+    def test_parse_strand(self):
+        self.assertEqual(parse_strand('+'), 1)
+        self.assertIs(parse_strand('.'), numpy.nan)
+        self.assertEqual(parse_strand('-'), -1)
+        self.assertIs(parse_strand('junk'), numpy.nan)
+
+    def test_parse_phase(self):
+        # should we test for
+        self.assertIs(parse_phase('.'), numpy.nan)
+        for i in ['0', '1', '2']:
+            self.assertEqual(parse_phase(i), int(i))
+        self.assertRaises(ValueError, parse_phase, '5')
 
 
 class TestGFFParser(unittest.TestCase):
