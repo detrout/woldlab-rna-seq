@@ -5,7 +5,6 @@ from collections import OrderedDict
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot
-import os
 import pandas
 import numpy
 
