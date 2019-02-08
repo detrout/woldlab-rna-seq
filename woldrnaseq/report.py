@@ -73,7 +73,7 @@ def main(cmdline=None):
 
 def make_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--quantification', choices=['FPKM', 'TPM'],
+    parser.add_argument('-q', '--quantification', choices=['FPKM', 'TPM'],
                         default='FPKM',
                         help='which quantification value to use')
     parser.add_argument('-l', '--libraries', action='append',
