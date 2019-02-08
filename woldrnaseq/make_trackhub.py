@@ -8,14 +8,11 @@ from urllib.parse import urljoin
 import trackhub
 
 from woldrnaseq.common import (
-    add_default_path_arguments,
     add_trailing_slash,
     add_debug_arguments,
     add_version_argument,
     configure_logging,
-    find_fastqs,
     get_seperator,
-    validate_args
 )
 from woldrnaseq.models import (
     genome_name_from_library,
