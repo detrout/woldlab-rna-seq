@@ -159,9 +159,9 @@ class TestModel(TestCase):
 
         for column in expected:
             star_count = models.load_star_counts(lib12304, column)
-            self.assertEquals(star_count.shape, (11, 1))
+            self.assertEqual(star_count.shape, (11, 1))
             for gene in expected[column]:
-                self.assertEquals(star_count.loc[gene][column], expected[column][gene])
+                self.assertEqual(star_count.loc[gene][column], expected[column][gene])
 
     def test_load_all_star_counts(self):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
