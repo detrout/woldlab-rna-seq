@@ -1,5 +1,3 @@
-import os
-import tempfile
 from pkg_resources import resource_filename
 from unittest import TestCase
 from unittest.mock import MagicMock, patch

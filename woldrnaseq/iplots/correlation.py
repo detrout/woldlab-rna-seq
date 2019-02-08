@@ -5,28 +5,23 @@ from collections import OrderedDict
 import pandas
 import math
 import numpy
-import os
-import sys
 import itertools
 
-from bokeh.io import export_png, save
+from bokeh.io import save
 from bokeh.layouts import row, column, widgetbox
 from bokeh.models import (
     ColorBar,
-    ColumnDataSource,
-    HoverTool,
     LinearColorMapper,
     Select
 )
 from bokeh.plotting import figure, curdoc
-from bokeh import resources, palettes
+from bokeh import palettes
 
 from woldrnaseq.models import (
     load_experiments,
     load_correlations
 )
 
-from woldrnaseq.iplots.coverage import Coverage
 
 def main(cmdline=None):
     parser = make_parser()
