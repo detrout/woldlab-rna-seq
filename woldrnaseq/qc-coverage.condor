@@ -20,9 +20,9 @@ OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET).coverage
 request_cpus=1
 request_memory=14G
 
-executable=/usr/bin/python
+executable=/usr/bin/python3
 transfer_executable=False
 
 initialdir=$(CURDIR)
-arguments="$(GENE_COVERAGE) $(GTF) $(IN) 1000 $(OUT)"
+arguments="$(GENE_COVERAGE) --gtf $(GTF) $(IN) --output $(OUT) --print-list"
 queue

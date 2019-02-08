@@ -25,5 +25,5 @@ executable=/usr/bin/python2
 transfer_executable=False
 
 initialdir=$(CURDIR)
-arguments="$(DISTRIBUTION) $(GTF) $(IN) $(CHROM_INFO) $(OUT) -nomulti"
+arguments="$(DISTRIBUTION) $(GTF) $(IN) $(CHROM_INFO) $(OUT) --nomulti"
 queue
