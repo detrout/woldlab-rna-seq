@@ -20,6 +20,7 @@ from woldrnaseq.models import (
 
 from woldrnaseq.iplots.coverage import Coverage
 
+
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
@@ -66,7 +67,7 @@ class GeneCoverage(Coverage):
             next_color = next(colorcycler)
             line = f.line(x=subset[lib].index, y=subset[lib], line_color=next_color)
             legend_items.append((lib, [line]))
-        legend = Legend(items=legend_items, location=(0,-60))
+        legend = Legend(items=legend_items, location=(0, -60))
         f.add_layout(legend, 'right')
         return f
 
