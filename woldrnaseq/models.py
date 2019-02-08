@@ -284,7 +284,7 @@ def load_star_final_log(filename):
                 index.append((prefix, name))
                 values.append(name_type.get(name, float)(fields[1].strip()))
 
-    index = index=pandas.MultiIndex.from_tuples(index, names=['read_class', 'name'])
+    index = pandas.MultiIndex.from_tuples(index, names=['read_class', 'name'])
     return pandas.Series(values, index)
 
 
