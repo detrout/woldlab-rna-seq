@@ -10,6 +10,7 @@ import numpy
 
 logger = logging.getLogger(__name__)
 
+
 def add_default_path_arguments(parser):
     """Add arguments to allow overriding location of dependencies
     """
@@ -91,6 +92,7 @@ def read_defaults():
             defaults[name] = normalize_path(analysis.get(name))
 
     return defaults
+
 
 def normalize_path(path):
     """Make sure defined paths end with a /
