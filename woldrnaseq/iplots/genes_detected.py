@@ -65,7 +65,8 @@ DEFAULT_BINS = [0.1, 1, 2, 5, 10, 50, 500, 5000, 1e9]
 
 class Quantifications:
     DEFAULT_BINS = {
-        'FPKM': [0.1, 1, 2, 5, 10, 50, 500, 5000, 1e9]
+        'FPKM': [0.1, 1, 2, 5, 10, 50, 500, 5000, 1e9],
+        'TPM': [0.1, 1, 2, 5, 10, 50, 500, 5000, 1e9],
     }
 
     def __init__(self, experiments, sep='\t', analysis_root=None):
@@ -98,19 +99,19 @@ def bin_library_quantification(quantification, quantification_name, bins=None):
 
 
 class GenesDetectedPlot:
-    def __init__(self, experiments, libraries, genome_dir):
+    def __init__(self, experiments, libraries, genome_dir, quantification_name='FPKM'):
         self.experiments = experiments
         self.libraries = libraries
         self.genome_dir = genome_dir
         self._gtf_cache = GTFCache(self.libraries, self.genome_dir)
-        self.quant_name = 'FPKM'
+        self.quantification_name = quantification_name
         self.binned_quantifications = {}
         self.bin_names = {}
         self.load_all_quantifications(self.experiments)
 
     def load_all_quantifications(self, experiments):
         for experiment_name, experiment_row in experiments.iterrows():
-            all_quant = load_quantifications(experiment_row)
+            all_quant = load_quantifications(experiment_row, self.quantification_name)
             if all_quant is None:
                 continue
 
@@ -118,8 +119,8 @@ class GenesDetectedPlot:
             protein_genes = protein_coding_gene_ids(annotation)
 
             protein_quant = all_quant.loc[protein_genes]
-            
-            binned = bin_library_quantification(protein_quant, self.quant_name)
+
+            binned = bin_library_quantification(protein_quant, self.quantification_name)
             self.bin_names[experiment_name] = binned.columns
             binned['total'] = binned.sum(axis=1)
             self.binned_quantifications[experiment_name] = binned
@@ -130,9 +131,9 @@ class GenesDetectedPlot:
             
         binned = self.binned_quantifications[experiment_name]
         bin_names = self.bin_names[experiment_name]
-        friendly_names = ['{} {}'.format(k, self.quant_name) for k in reversed(DEFAULT_BINS[:-1])]
-        tooltips=[('library_id', '@library_id'),
-                  ('Total', '@total')]
+        friendly_names = ['{} {}'.format(k, self.quantification_name) for k in reversed(DEFAULT_BINS[:-1])]
+        tooltips = [('library_id', '@library_id'),
+                    ('Total', '@total')]
         for name, column_name in zip(friendly_names, bin_names):
             tooltips.append((name, '@' + column_name))
         hover = HoverTool(tooltips=tooltips)
