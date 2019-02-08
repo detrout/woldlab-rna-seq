@@ -143,6 +143,7 @@ def validate_library_ids(table):
     if len(duplicates) > 0:
         raise ValueError("Duplicate library ids: {}".format(duplicates))
 
+
 def required_experiment_columns_present(table):
     """Verify that a experiment table contains required columns
     """
