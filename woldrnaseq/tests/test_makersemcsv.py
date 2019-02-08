@@ -12,7 +12,7 @@ class TestMakeRSEMCSV(TestCase):
         self.lib_tsv = resource_filename(__name__, 'library-mm10-se.tsv')
         self.libraries = models.load_library_tables([self.lib_tsv])
         self.experiments = models.load_experiments([self.exp_tsv])
-        
+
     def test_gene_loader_no_annotation(self):
         for quantification_name in ['FPKM', 'TPM', 'expected_count']:
             loader = makersemcsv.GeneRsemLoader(quantification_name, None)
@@ -40,14 +40,14 @@ class TestMakeRSEMCSV(TestCase):
             q.to_csv.assert_called_with(q.name + '.tsv', sep='\t')
 
             loader.save(q, ',')
-            q.to_csv.assert_called_with(q.name + '.csv', sep=',')        
+            q.to_csv.assert_called_with(q.name + '.csv', sep=',')
 
     def test_makersemcsv_invalid_commandline(self):
         # arguments are required
         with self.assertRaises(SystemExit):
             makersemcsv.main([])
 
-    def test_makersemcsv_commandline(self):            
+    def test_makersemcsv_commandline(self):
         with patch.object(makersemcsv.GeneRsemLoader, 'load') as load:
             with patch.object(makersemcsv.GeneRsemLoader, 'save') as save:
                 q = MagicMock()

@@ -137,7 +137,7 @@ class ScoreCorrelationPlot:
         plot.quad(bottom=0, left=edges[:-1], right=edges[1:], top=hist)
 
         return plot
-                      
+
     def app_layout(self):
         controls = widgetbox([self.experiments_combo], width=200)
         plot = self.make_plot(self.experiment_name)
@@ -147,7 +147,7 @@ class ScoreCorrelationPlot:
     def update_experiment(self, attr, old, new):
         if self._layout is not None:
             self._layout.children[0] = self.make_plot()
-    
+
     def make_plot_matplotlib(self):
         score = scores[score_name]
         #score.to_csv(experiment_name + '_' + score_name + '.csv')
@@ -181,8 +181,8 @@ def score_upper_triangular(df):
     """Return the cells from the upper triangular indicies of a data frame.
     """
     scores = []
-    for i,j in zip(*numpy.triu_indices(len(df), k=1)):
         scores.append(df.ix[i,j])
+    for i, j in zip(*numpy.triu_indices(len(df), k=1)):
     return scores
 
 
@@ -196,4 +196,3 @@ elif __name__.startswith('bk_script'):
     plot = main()
     if plot is not None:
         curdoc().add_root(plot.app_layout())
-
