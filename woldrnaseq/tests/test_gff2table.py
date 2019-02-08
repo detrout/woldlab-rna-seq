@@ -1,4 +1,4 @@
-from unittest import TestCase, main
+import unittest
 from pkg_resources import resource_filename
 from io import StringIO
 
@@ -7,7 +7,8 @@ from woldrnaseq.gff2table import (
     GFFParser,
 )
 
-class TestAttributeParser(TestCase):
+
+class TestAttributeParser(unittest.TestCase):
     def test_quoting_missing(self):
         p = AttributesParser(' ')
         self.assertRaises(ValueError, list, p.tokenize('a "b'))
@@ -101,7 +102,7 @@ class TestAttributeParser(TestCase):
         self.assertEqual(p.reserved['chromosome'], 0)
 
 
-class TestAttributeParser(TestCase):
+class TestGFFParser(unittest.TestCase):
     def test_parse_simple_gtf(self):
         text = StringIO('''chr1	source	exon	1	1000	.	+	.	junk "drawer"''')
         p = GFFParser(' ')
