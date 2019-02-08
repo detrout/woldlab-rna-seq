@@ -44,8 +44,8 @@
 
     <h2>{{ name }} Rafa Filtered Spearmans</h2>
     {{experiment_report[name]['spearman']}}
-    <h2>{{ name }} spike-in variance</h2>
-    {{plot_divs[experiment_report[name]['spike_variance']]}}
+    {% if plot_divs[experiment_report[name]['spike_variance']] %}<h2>{{ name }} spike-in variance</h2>
+    {{plot_divs[experiment_report[name]['spike_variance']]}}{% endif %}
     <p><a href="#index">return to index</a></p>
     {% endfor %}
     <!-- h1><a name ="Per_library_reports"
