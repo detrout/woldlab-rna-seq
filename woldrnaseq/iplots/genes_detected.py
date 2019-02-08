@@ -60,14 +60,6 @@ def load_csv_quantification_file(filename):
     return all_quantifications
 
 
-def protein_coding_gene_ids(annotation):
-    """Filter GTF just protein coding genes
-    """
-    entry_type = (annotation['type'] == 'gene')
-    gene_type = (annotation['gene_type'] == 'protein_coding')
-    return annotation[entry_type & gene_type]['gene_id']
-
-
 DEFAULT_BINS = [0.1, 1, 2, 5, 10, 50, 500, 5000, 1e9]
 
 
