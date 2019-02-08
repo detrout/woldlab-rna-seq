@@ -57,8 +57,8 @@ def main(cmdline=None):
         for library_id in plot:
             # avoid names that cause problems for files systems
             assert not library_id.startswith('..')
-            assert not '/' in library_id
-            assert not '\\' in library_id
+            assert '/' not in library_id
+            assert '\\' not in library_id
             filename = '{}_gene_coverage_detail.html'.format(library_id)
             pathname = os.path.join(args.output_dir, filename)
             LOGGER.info("Saving plot for %s to %s", library_id, pathname)
