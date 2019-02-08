@@ -43,31 +43,29 @@ class TestAttributeParser(TestCase):
         attributes = p(
             'gene_id "gene1"; transcript_id "transcript1"; exon_number 1')
         self.assertEqual(attributes, 3)
-        column = 0
+        line_no = 0
         for name, expected, attribute_type in [
                 ('gene_id', 'gene1', str),
                 ('transcript_id', 'transcript1', str),
                 ('exon_number', 1, int)]:
             
             self.assertIn(name, p.terms)
-            self.assertEqual(p.terms[name], {column: expected})
-            self.assertIsInstance(p.terms[name][column], attribute_type)
-            column += 1
+            self.assertEqual(p.terms[name], {line_no: expected})
+            self.assertIsInstance(p.terms[name][line_no], attribute_type)
         
     def test_multi_value_gff(self):
         p = AttributesParser('=')
         attributes = p('gene_id=gene1;transcript_id=transcript1;exon_number=1')
         self.assertEqual(attributes, 3)
-        column = 0
+        line_no = 0
         for name, expected, attribute_type in [
                 ('gene_id', 'gene1', str),
                 ('transcript_id', 'transcript1', str),
                 ('exon_number', 1, int)]:
             
             self.assertIn(name, p.terms)
-            self.assertEqual(p.terms[name], {column: expected})
-            self.assertIsInstance(p.terms[name][column], attribute_type)
-            column += 1
+            self.assertEqual(p.terms[name], {line_no: expected})
+            self.assertIsInstance(p.terms[name][line_no], attribute_type)
 
     def test_gff_value_with_spaces(self):
         p = AttributesParser('=')
@@ -78,7 +76,7 @@ class TestAttributeParser(TestCase):
         p = AttributesParser('=')
         attributes = p('ID=id0;Dbxref=taxon:10090;Name=1;chromosome=1;gbkey=Src;genome=chromosome;mol_type=genomic DNA;strain=C57BL/6J')
         self.assertEqual(attributes, 8)
-        column = 0
+        line_no = 0
         for name, expected, attribute_type in [
                 ('ID', 'id0', str),
                 ('Dbxref', 'taxon:10090', str),
@@ -90,9 +88,8 @@ class TestAttributeParser(TestCase):
                 ]:
             
             self.assertIn(name, p.terms)
-            self.assertEqual(p.terms[name], {column: expected})
-            self.assertIsInstance(p.terms[name][column], attribute_type)
-            column += 1
+            self.assertEqual(p.terms[name], {line_no: expected})
+            self.assertIsInstance(p.terms[name][line_no], attribute_type)
 
     def test_ignore(self):
         p = AttributesParser(' ', ignore=['chromosome', 'junk'])
