@@ -53,6 +53,7 @@ def main(cmdline=None):
     else:
         make_experiment_by_library_coverage_plots(experiments, coverage, args.output_format, args.bare)
 
+
 def make_experiment_by_library_coverage_plots(experiments, coverage, output_format, bare):
     """Coverage plot showing all the libraries for an experiment
     """
@@ -70,15 +71,14 @@ def make_experiment_by_library_coverage_plots(experiments, coverage, output_form
 def make_coverage_plot(experiment, coverage):
     with pyplot.style.context('seaborn-dark-palette'):
         f = pyplot.figure(dpi=100)
-        ax = f.add_subplot(1,1,1)
+        ax = f.add_subplot(1, 1, 1)
         coverage.plot(ax=ax)
         ax.set_title('Coverage for {}'.format(experiment))
         ax.set_xlabel("position quantile (5' to 3')")
         ax.set_ylabel('Read depth')
-        ax.legend(bbox_to_anchor=(1.05, 1), 
-                  loc=2, 
+        ax.legend(bbox_to_anchor=(1.05, 1),
+                  loc=2,
                   borderaxespad=0.0)
-        
     return f
 
 
@@ -92,12 +92,12 @@ def make_by_experiment_median_summary(experiments, coverage, output_format, bare
             ax = f.add_subplot(1, 1, 1)
 
             add_median_plot(ax, experiments, experiment, coverage, bare)
-            
+
             ax.set_title('Median coverage for {}'.format(experiment))
             ax.set_xlabel("position quantile (5' to 3')")
             ax.set_ylabel('Read depth')
-            ax.legend(bbox_to_anchor=(1.05, 1), 
-                      loc=2, 
+            ax.legend(bbox_to_anchor=(1.05, 1),
+                      loc=2,
                       borderaxespad=0.0)
             image_name = experiment + '.median.coverage.' + output_format
             tosave[image_name] = f
@@ -114,15 +114,15 @@ def make_combined_experiment_median_summary(experiments, coverage, output_format
         ax = f.add_subplot(1, 1, 1)
         for experiment in experiments.index:
             add_median_plot(ax, experiments, experiment, coverage)
-            
-            #ax.set_title('Median coverage for {}'.format(experiment))
-            #ax.set_xlabel("position quantile (5' to 3')")
-            #ax.set_ylabel('Read depth')
-            #ax.set_xticklabels( ax.get_xticks() / 100 )
+
+            # ax.set_title('Median coverage for {}'.format(experiment))
+            # ax.set_xlabel("position quantile (5' to 3')")
+            # ax.set_ylabel('Read depth')
+            # ax.set_xticklabels( ax.get_xticks() / 100 )
             ax.set_xticks([])
             ax.set_yticks([])
-            ax.legend(bbox_to_anchor=(1.05, 1), 
-                      loc=2, 
+            ax.legend(bbox_to_anchor=(1.05, 1),
+                      loc=2,
                       borderaxespad=0.0)
             image_name = 'all-experiments.median.coverage.' + output_format
             tosave[image_name] = f
@@ -133,11 +133,11 @@ def make_combined_experiment_median_summary(experiments, coverage, output_format
 def add_median_plot(ax, experiments, experiment, coverage, bare):
     library_ids = experiments['replicates'][experiment]
     median = coverage[library_ids].median(axis=1)
-    # TOTAL HACK FOR A GRANT 
+    # TOTAL HACK FOR A GRANT
     if experiment == 'embryo fibroblasts':
         median[1:99] += 1500
     # END TOTAL HACK
-    stddev = coverage[library_ids].std(axis=1)            
+    stddev = coverage[library_ids].std(axis=1)
     s = ax.plot(median, label='median of {}'.format(experiment))
     errstyle = {
         'alpha': 0.25,
