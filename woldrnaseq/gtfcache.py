@@ -70,7 +70,8 @@ class GTFCache(Mapping):
             logger.error("genome_dir is not specified. Please configure")
             raise ValueError("genome_dir is not set")
         return os.path.join(self._genome_dir, genome_name, genome_name + '.h5')
-        
+
+
 def protein_coding_gene_ids(annotation):
     """Filter GTF just protein coding genes
     """

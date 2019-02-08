@@ -55,7 +55,7 @@ def make_parser():
 def load_csv_quantification_file(filename):
     all_quantifications = pandas.read_csv(filename, header=0, index_col=0)
     if 'gene_name' in all_quantifications.columns:
-        columns = [ c for c in all_quantifications.columns if c != 'gene_name']
+        columns = [c for c in all_quantifications.columns if c != 'gene_name']
         all_quantifications = all_quantifications[columns]
     return all_quantifications
 
@@ -70,17 +70,19 @@ def protein_coding_gene_ids(annotation):
 
 DEFAULT_BINS = [0.1, 1, 2, 5, 10, 50, 500, 5000, 1e9]
 
+
 class Quantifications:
     DEFAULT_BINS = {
         'FPKM': [0.1, 1, 2, 5, 10, 50, 500, 5000, 1e9]
     }
+
     def __init__(self, experiments, sep='\t', analysis_root=None):
         self.name = None
         self.experiments = load_experiments(experiments, sep)
         self.quantification_name = None
         self.quantification = None
 
-        
+
 def bin_library_quantification(quantification, quantification_name, bins=None):
     """Bin a library quantification file
 
@@ -119,7 +121,7 @@ class GenesDetectedPlot:
             all_quant = load_quantifications(experiment_row)
             if all_quant is None:
                 continue
-            
+
             annotation = self._gtf_cache[all_quant.columns[-1]]
             protein_genes = protein_coding_gene_ids(annotation)
 
@@ -141,7 +143,7 @@ class GenesDetectedPlot:
                   ('Total', '@total')]
         for name, column_name in zip(friendly_names, bin_names):
             tooltips.append((name, '@' + column_name))
-        hover = HoverTool(tooltips = tooltips)
+        hover = HoverTool(tooltips=tooltips)
 
         title = 'Genes Detected' if title is None else title
         source = ColumnDataSource(binned)

@@ -39,7 +39,7 @@ class AttributesParser:
         SEP = 0
         STRING = 1
         QUOTED_STRING = 2
-        
+
         state = SEP
         current = []
         for character in cell:
@@ -88,7 +88,7 @@ class AttributesParser:
             name = term
 
             sep = next(tokens)
-            
+
             value = next(tokens)
 
             if name in self.ignore:
@@ -121,7 +121,8 @@ class AttributesParser:
 
             self.index += 1
         return attributes_count
-    
+
+
 def parse_score(x):
     if x == '.':
         return numpy.nan
@@ -135,6 +136,7 @@ def parse_strand(x):
         return -1
     else:
         return numpy.nan
+
 
 def parse_phase(x):
     if x == '.':
@@ -151,7 +153,7 @@ class GFFParser:
 
     def read_gff(self, inname):
         tzero = time.monotonic()
-        required_gtf_names=[
+        required_gtf_names = [
             'chromosome', 'source', 'type', 'start', 'stop',
             'score', 'strand', 'frame',]
         column_names = required_gtf_names + ['attributes']
