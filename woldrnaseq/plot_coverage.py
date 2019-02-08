@@ -3,13 +3,16 @@
 import argparse
 from collections import OrderedDict
 import matplotlib
-matplotlib.use('Agg')
 from matplotlib import pyplot
 import pandas
 import numpy
 
 from woldrnaseq import models
 from woldrnaseq.common import save_fixed_height
+
+
+matplotlib.use('Agg')
+
 
 def main(cmdline=None):
     parser = argparse.ArgumentParser()
