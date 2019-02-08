@@ -3,10 +3,6 @@
 import argparse
 from itertools import cycle
 
-import pandas
-
-from sklearn.manifold import TSNE
-
 from bokeh.io import export_png, save
 from bokeh.layouts import row, column, widgetbox
 from bokeh.models import HoverTool, Legend, LegendItem, Select
