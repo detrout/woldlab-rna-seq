@@ -98,8 +98,8 @@ def readGeneTypes(stream):
     for i, line in enumerate(stream):
         if line.startswith('#'):
             continue
-        fields=line.strip().split('\t')
-        if fields[2]!='exon':
+        fields = line.strip().split('\t')
+        if fields[2] != 'exon':
             continue
         geneID = getGFFAttributeValueByKey(fields[8], 'gene_id')
         source = fields[1]
@@ -226,7 +226,7 @@ class GeneCoverageDetail:
             )
             legend_items.append(("{} ({})".format(category.strip(), gene_counts[category]), [line]))
         legend_y = int(20 - len(category) * 2)
-        legend = Legend(items=legend_items, location=(0,legend_y))
+        legend = Legend(items=legend_items, location=(0, legend_y))
         legend.click_policy = 'hide'
         f.add_layout(legend, 'right')
         return f
@@ -242,11 +242,11 @@ class GeneCoverageDetail:
     def update_library_id(self, attr, old, new):
         if self._layout is not None:
             self._layout.children[0] = self.make_plot()
-        
+
+
 if __name__ == '__main__':
     plot = main()
 elif __name__.startswith('bk_script'):
     plot = main()
     if plot is not None:
         curdoc().add_root(plot.app_layout())
-
