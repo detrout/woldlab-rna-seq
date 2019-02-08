@@ -367,7 +367,7 @@ def find_library_analysis_file(libraries, extension):
         assert analysis_dir is not None
         filenames = glob(os.path.join(analysis_dir, extension))
         if len(filenames) == 0:
-            logger.warn("No files found in {} for {}".format(
+            logger.warning("No files found in {} for {}".format(
                 analysis_dir, extension))
         elif len(filenames) > 1:
             raise RuntimeError("To many files {}".format(filenames))
@@ -604,4 +604,4 @@ def warn_if_spaces(filename):
     with open(filename, 'rt') as instream:
         line = instream.readline()
         if ' ' in line:
-            logger.warn("There are spaces in the header line, is this intentional?")
+            logger.warning("There are spaces in the header line, is this intentional?")

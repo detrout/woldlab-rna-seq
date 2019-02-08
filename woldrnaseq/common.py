@@ -177,12 +177,12 @@ def find_fastqs_by_glob(fastq_globs):
     for fastq in fastq_globs:
         fastq_list = sorted(glob(fastq))
         if len(fastq_list) == 0:
-            logger.warn("No fastqs matched: %s", fastq)
+            logger.warning("No fastqs matched: %s", fastq)
         for filename in fastq_list:
             if os.path.exists(filename):
                 yield os.path.abspath(filename)
             else:
-                logger.warn("Can't find fastq {}. skipping".format(filename))
+                logger.warning("Can't find fastq {}. skipping".format(filename))
 
 
 def add_trailing_slash(path):
