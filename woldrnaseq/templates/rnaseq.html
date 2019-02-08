@@ -26,7 +26,7 @@
   <body>
     <h1>Table of Contents</h1><a name="index"/><ul>{% for name in experiments %}
       <li><a href="#{{ name }}">{{ name }}</a></li>
-      {% endfor %}
+      {% endfor %}</ul>
       <!-- li><a href="#Per_library_reports">Per library reports</a></li></ul -->{% for name in experiments %}
     <h1><a name="{{name}}" href="#{{name}}">{{name}}</a></h1>{% if experiment_report[name]['protein_genes'] %}
     <h2>{{ name }} Detected Protein Coding Genes</h2>
