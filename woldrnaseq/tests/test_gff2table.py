@@ -53,7 +53,7 @@ class TestAttributeParser(unittest.TestCase):
             self.assertIn(name, p.terms)
             self.assertEqual(p.terms[name], {line_no: expected})
             self.assertIsInstance(p.terms[name][line_no], attribute_type)
-        
+
     def test_multi_value_gff(self):
         p = AttributesParser('=')
         attributes = p('gene_id=gene1;transcript_id=transcript1;exon_number=1')
@@ -63,7 +63,7 @@ class TestAttributeParser(unittest.TestCase):
                 ('gene_id', 'gene1', str),
                 ('transcript_id', 'transcript1', str),
                 ('exon_number', 1, int)]:
-            
+
             self.assertIn(name, p.terms)
             self.assertEqual(p.terms[name], {line_no: expected})
             self.assertIsInstance(p.terms[name][line_no], attribute_type)
@@ -87,7 +87,7 @@ class TestAttributeParser(unittest.TestCase):
                 ('genome', 'chromosome', str),
                 ('mol_type', 'genomic DNA', str),
                 ]:
-            
+
             self.assertIn(name, p.terms)
             self.assertEqual(p.terms[name], {line_no: expected})
             self.assertIsInstance(p.terms[name][line_no], attribute_type)
