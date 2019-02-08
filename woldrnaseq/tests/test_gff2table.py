@@ -112,9 +112,34 @@ class TestAttributeParser(unittest.TestCase):
             self.assertEqual(p.terms[name], {line_no: expected})
             self.assertIsInstance(p.terms[name][line_no], attribute_type)
 
-    def test_ignore(self):
+    def test_ignore_space(self):
         p = AttributesParser(' ', ignore=['chromosome', 'junk'])
-        attributes = p('chromsome=1;ID=id0;junk=drawer')
+        record = 'chromosome 1;ID id0;junk drawer'
+
+        t = list(p.tokenize(record))
+        self.assertEqual(t, [
+            'chromosome', ' ', '1', ';',
+            'ID', ' ', 'id0', ';',
+            'junk', ' ', 'drawer'
+        ])
+        attributes = p(record)
+        self.assertEqual(attributes, 1)
+        self.assertIn('ID', p.terms)
+        self.assertEqual(p.terms['ID'][0], 'id0')
+        self.assertNotIn('chromosome', p.terms)
+        self.assertEqual(p.reserved['chromosome'], 0)
+
+    def test_ignore_equal(self):
+        p = AttributesParser('=', ignore=['chromosome', 'junk'])
+        record = 'chromosome=1;ID=id0;junk=drawer'
+
+        t = list(p.tokenize(record))
+        self.assertEqual(t, [
+            'chromosome', '=', '1', ';',
+            'ID', '=', 'id0', ';',
+            'junk', '=', 'drawer'
+        ])
+        attributes = p(record)
         self.assertEqual(attributes, 1)
         self.assertIn('ID', p.terms)
         self.assertEqual(p.terms['ID'][0], 'id0')
