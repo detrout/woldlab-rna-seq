@@ -91,35 +91,34 @@ class AttributesParser:
 
             value = next(tokens)
 
-            if name in self.ignore:
-                continue
+            if name not in self.ignore:
+                if name in self.reserved:
+                    suffix = self.reserved[name] + 1
+                    self.reserved[name] = suffix
+                    name = name + str(suffix)
 
-            if name in self.reserved:
-                suffix = self.reserved[name] + 1
-                self.reserved[name] = suffix
-                name = name + str(suffix)
+                if value == '"NULL"':
+                    value = None
+                elif value[0] == '"':
+                    value = value[1:-1]
+                    prev = self.max_string.get(name, 0)
+                    self.max_string[name] = max(prev, len(value))
+                else:
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        pass
 
-            if value == '"NULL"':
-                value = None
-            elif value[0] == '"':
-                value = value[1:-1]
-                prev = self.max_string.get(name, 0)
-                self.max_string[name] = max(prev, len(value))
-            else:
-                try:
-                    value = int(value)
-                except ValueError:
-                    pass
+                column = self.terms.setdefault(name, {})
+                column[self.index] = value
+                attributes_count += 1
 
-            column = self.terms.setdefault(name, {})
-            column[self.index] = value
-            attributes_count += 1
             try:
                 end_field = next(tokens)
             except StopIteration:
                 break
 
-            self.index += 1
+        self.index += 1
         return attributes_count
 
 
