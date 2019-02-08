@@ -136,6 +136,8 @@ class ScoreCorrelationPlot:
             #y_range=(0, vmax),
             #min_border=10,
             #y_axis_location="right"
+            x_axis_label="Spearman Correlation",
+            y_axis_label="Count of Scores",
         )
         plot.quad(bottom=0, left=edges[:-1], right=edges[1:], top=hist)
 
