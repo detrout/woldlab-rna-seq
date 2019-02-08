@@ -33,16 +33,23 @@ def main(cmdline=None):
     else:
         annotation = None
 
-    if args.transcriptome:
-        # isoforms
-        loader = IsoformRsemLoader(args.quantification, annotation)
+    if len(args.quantification) > 0:
+        quantification_list = args.quantification
     else:
-        # genes
-        loader = GeneRsemLoader(args.quantification, annotation)
+        quantification_list = ['FPKM']
 
-    for i, experiment in experiments.iterrows():
-        quantification = loader.load(experiment, libraries)
-        loader.save(quantification, args.output_format)
+    for quantification in quantification_list:
+        logger.info('Building expression matrix for %s', quantification)
+        if args.transcriptome:
+            # isoforms
+            loader = IsoformRsemLoader(quantification, annotation)
+        else:
+            # genes
+            loader = GeneRsemLoader(quantification, annotation)
+
+        for i, experiment in experiments.iterrows():
+            matrix = loader.load(experiment, libraries)
+            loader.save(matrix, args.output_format)
 
 
 def make_parser():
@@ -51,7 +58,8 @@ def make_parser():
     parser.add_argument('-q', '--quantification',
                         choices=['FPKM', 'TPM', 'expected_count',
                                  'effective_length', 'length'],
-                        default='FPKM',
+                        default=[],
+                        action='append',
                         help='which quantification value to use')
     parser.add_argument('-l', '--libraries', action='append', required=True,
                         help='library information table')
