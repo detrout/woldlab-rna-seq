@@ -9,7 +9,6 @@ import os
 
 from jinja2 import Environment, PackageLoader
 import matplotlib
-matplotlib.use('Agg')
 import pandas
 import bokeh
 from bokeh.models import HoverTool
@@ -40,7 +39,9 @@ from .iplots.genes_detected import GenesDetectedPlot
 from .iplots.gene_coverage import GeneCoverage
 from .iplots.distribution import DistributionPlot
 
+matplotlib.use('Agg')
 logger = logging.getLogger('QC Report')
+
 
 def main(cmdline=None):
     parser = make_parser()
