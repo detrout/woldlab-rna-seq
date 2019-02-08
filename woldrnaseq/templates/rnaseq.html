@@ -34,14 +34,19 @@
     <h2>{{ name }} coverage</h2>
     {{plot_divs[experiment_report[name]['coverage']]}}
     <h2>{{ name }} Samstats</h2>
-    {{experiment_report[name]['samstats']}}{% if experiment_report[name]['star_stats'] %}
+    <div id="{{name}}_samstats">
+      {{experiment_report[name]['samstats']}}{% if experiment_report[name]['star_stats'] %}
+    </div>
     <h2>{{ name }} STAR Stats</h2>
-    {{experiment_report[name]['star_stats']}}{% endif %}
+    <div id="{{name}}_star_stats">
+      {{experiment_report[name]['star_stats']}}{% endif %}
+    </div>
     <h2>{{ name }} distribution</h2>
     {{plot_divs[experiment_report[name]['distribution']]}}
     <h2>{{ name }} Score Correlation</h2>
-    {{plot_divs[experiment_report[name]['correlation']]}}
-
+    <div id="{{name}}_score_correlation">
+      {{plot_divs[experiment_report[name]['correlation']]}}
+    </div>
     <h2>{{ name }} Rafa Filtered Spearmans</h2>
     {{experiment_report[name]['spearman']}}
     {% if plot_divs[experiment_report[name]['spike_variance']] %}<h2>{{ name }} spike-in variance</h2>
