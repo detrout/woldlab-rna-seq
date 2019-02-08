@@ -1,30 +1,22 @@
 #!/usr/bin/python3
 
 import argparse
-from collections import OrderedDict
 from itertools import cycle
 import logging
 import os
 
 import pandas
 
-from sklearn.manifold import TSNE
-
-from bokeh.io import export_png, save
-from bokeh.layouts import row, column, widgetbox
-from bokeh.models import HoverTool, Legend, LegendItem, Select
-from bokeh.plotting import figure, curdoc, ColumnDataSource
+from bokeh.io import save
+from bokeh.layouts import row, widgetbox
+from bokeh.models import Legend
+from bokeh.plotting import figure, curdoc
 from bokeh import resources, palettes
 
 from woldrnaseq.models import (
-    load_experiments,
     load_library_tables,
-    find_library_analysis_file,
-    load_gene_coverage,
     load_all_gene_coverage,
 )
-
-from woldrnaseq.iplots.coverage import Coverage
 
 
 LOGGER = logging.getLogger("gene_coverage_detail")
