@@ -188,3 +188,27 @@ class TestGFFParser(unittest.TestCase):
         self.assertEqual('chromosome1', p.gtf.columns[8])
 
 
+    def test_parse_gtf(self):
+        """Check a minimal realistic gtf file
+        """
+        text = StringIO('''chr1	source	exon	1	1000	.	+	.	gene_id "gene1"; transcript_id "transcript1"
+chr1	source	exon	2000	2100	.	+	.	gene_id "gene2"; transcript_id "transcript1"
+chr1	source	exon	2000	2150	.	+	.	gene_id "gene2"; transcript_id "transcript2"
+''')
+        p = GFFParser(' ')
+        p.read_gff(text)
+        self.assertEqual(p.gtf.shape, (3, 10))
+        self.assertEqual(list(p.gtf.columns), [
+            'chromosome', 'source', 'type', 'start', 'stop',
+            'score', 'strand', 'frame', 'gene_id', 'transcript_id'])
+
+        expected = [
+            {'start':    1, 'stop': 1000, 'gene_id': 'gene1', 'transcript_id': 'transcript1'},
+            {'start': 2000, 'stop': 2100, 'gene_id': 'gene2', 'transcript_id': 'transcript1'},
+            {'start': 2000, 'stop': 2150, 'gene_id': 'gene2', 'transcript_id': 'transcript2'},
+        ]
+        for i, row in p.gtf.iterrows():
+            for key in expected[i]:
+                self.assertEqual(row[key], expected[i][key])
+            self.assertEqual(p.attribute_parser.terms['transcript_id'][i],
+                             expected[i]['transcript_id'])
