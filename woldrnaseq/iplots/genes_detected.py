@@ -128,7 +128,7 @@ class GenesDetectedPlot:
     def make_plot(self, experiment_name=None, title=None):
         if experiment_name not in self.binned_quantifications:
             experiment_name = self.experiments.index[0]
-            
+
         binned = self.binned_quantifications[experiment_name]
         bin_names = self.bin_names[experiment_name]
         friendly_names = ['{} {}'.format(k, self.quantification_name) for k in reversed(DEFAULT_BINS[:-1])]
