@@ -26,6 +26,22 @@ class TestAttributeParser(unittest.TestCase):
         p = AttributesParser()
         attributes = p('')
         self.assertEqual(attributes, 0)
+
+    def test_gtf_extra_spaces(self):
+        p = AttributesParser(' ')
+        t = list(p.tokenize(' a 1;    b   "b"; '))
+        self.assertEqual(t, ['a', ' ', '1', ';', 'b', ' ', '"b"', ';'])
+
+    def test_gff_extra_spaces(self):
+        p = AttributesParser('=')
+        t = list(p.tokenize(' a=1;    b=  "b"; '))
+        self.assertEqual(t, ['a', '=', '1', ';', 'b', '=', '"b"', ';'])
+
+    @unittest.skip('We should suppress extra semicolons')
+    def test_gff_extra_semicolons(self):
+        p = AttributesParser('=')
+        t = list(p.tokenize(' a=1;; b="b"; '))
+        self.assertEqual(t, ['a', '=', '1', ';', 'b', '=', '"b"', ';'])
         
     def test_simple_gtf(self):
         p = AttributesParser()
