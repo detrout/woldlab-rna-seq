@@ -226,6 +226,8 @@ def main(cmdline=None):
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
     parser.add_argument('-d', '--debug', action='store_true', default=False)
     parser.add_argument('-n', '--name', default='gtf', help='table name in hdf5 file')
+    parser.add_argument('--ignore', default=[], action='store_true',
+                        help='do not add listed attributes to output h5 file')
     parser.add_argument('-o', '--output',
                         help='specify output name, defaults to name.h5')
     parser.add_argument('filename', nargs='+',
@@ -249,7 +251,7 @@ def main(cmdline=None):
     for filename in args.filename:
         logger.info("Converting %s to %s", filename, args.output)
 
-        gtf = GFFParser(args.name_value_sep)
+        gtf = GFFParser(args.name_value_sep, ignore=args.ignore)
         gtf.read_gff(filename)
         gtf.write_hdf5(args.output, args.name)
 
