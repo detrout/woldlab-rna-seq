@@ -94,7 +94,7 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
 
         table = pandas.read_csv(library_file, sep=sep,
                                 index_col='library_id',
-                                dtype={'library_id':str,
+                                dtype={'library_id': str,
                                        'analysis_dir': str},
                                 comment='#',
                                 skip_blank_lines=True,
