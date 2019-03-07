@@ -599,6 +599,7 @@ def get_bulk_spike_cpc():
     s.name = 'cpc'
     return s
 
+
 def warn_if_spaces(filename):
     with open(filename, 'rt') as instream:
         line = instream.readline()
