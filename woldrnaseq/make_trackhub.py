@@ -56,7 +56,7 @@ def main(cmdline=None):
     genomes = set(libraries['genome'])
     if len(genomes) > 1:
         raise ValueError('We can only generate tracks for one genome')
-    genome = genomes.pop()
+    genome = ucsc_genome_conversion(genomes.pop())
 
     hub, genomes_file, genome, trackdb = trackhub.default_hub(
         hub_name=args.hub,
@@ -291,6 +291,23 @@ def return_subpath(pathname, analysis_root):
         return pathname.replace(common + '/', '')
     else:
         raise ValueError("Path {} does not start with {}".format(pathname, analysis_root))
+
+
+def ucsc_genome_conversion(genome_name):
+    """Convert genome names to UCSC convention
+
+    :Parameters:
+        genome_name: str our genome names
+    :Returns:
+        str UCSC genome name
+    """
+    conversions = {
+        'GRCh38': 'hg38',
+    }
+    if genome_name in conversions:
+        return conversions[genome_name]
+    else:
+        return genome_name
 
 
 if __name__ == '__main__':
