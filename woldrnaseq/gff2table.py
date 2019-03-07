@@ -15,6 +15,7 @@ import time
 
 logger = logging.getLogger('gff2table')
 
+
 class AttributesParser:
     def __init__(self, sep=' ', ignore=None):
         self.index = 0
