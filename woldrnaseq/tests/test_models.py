@@ -25,13 +25,44 @@ class TestModel(TestCase):
         # add one to mm10 dataframe because the header is not counted in len()
         self.assertEqual(len(lines), len(mm10) + 1)
 
-    def test_required_library_columns_present(self):
+    def test_verify_library_columns_missing_required(self):
         df = pandas.DataFrame({'library_id': ['1'],
                                'genome': ['mm10'],
                                'sex': ['male'],
                                'annotation': ['M4'],
                                'analysis_dir': ['1/']})
-        self.assertRaises(ValueError, models.required_library_columns_present, df)
+        df.set_index('library_id', inplace=True)
+
+        self.assertRaises(ValueError, models.verify_library_columns, df)
+
+    def test_verify_library_columns_optional_present(self):
+        df = pandas.DataFrame({'library_id': ['1'],
+                               'genome': ['mm10'],
+                               'sex': ['male'],
+                               'annotation': ['M4'],
+                               'analysis_dir': ['1/'],
+                               'read_1': ['R1.fastq.gz'],
+                               'read_2': ['R2.fastq.gz']})
+        df.set_index('library_id', inplace=True)
+
+        models.verify_library_columns(df)
+
+    def test_verify_library_columns_misspelled_optional(self):
+        df = pandas.DataFrame({'library_id': ['1'],
+                               'genome': ['mm10'],
+                               'sex': ['male'],
+                               'annotation': ['M4'],
+                               'analysis_dir': ['1/'],
+                               'read_1': ['R1.fastq.gz'],
+                               'read2': ['R2.fastq.gz']})
+        df.set_index('library_id', inplace=True)
+
+        with self.assertLogs(models.__name__, level='WARNING') as log_manager:
+            models.verify_library_columns(df)
+        self.assertEqual(
+            log_manager.output,
+            ['WARNING:{}:Unrecognized columns present. Is this intended?: read2'.format(
+                models.__name__)])
 
     def test_invalid_library(self):
         tsvname = resource_filename(__name__, 'library-invalid.tsv')

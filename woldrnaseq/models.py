@@ -98,8 +98,8 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
                                        'analysis_dir': str},
                                 comment='#',
                                 skip_blank_lines=True,
-        )
-        required_library_columns_present(table)
+                                )
+        verify_library_columns(table)
         table.index = [str(x) for x in table.index]
         table.index.name = 'library id'
         table['analysis_dir'] = table['analysis_dir'].apply(partial(prepend_path, analysis_cur_root))
@@ -117,15 +117,23 @@ def genome_name_from_library(row):
     return '-'.join([row.genome, row.annotation, row.sex])
 
 
-def required_library_columns_present(table):
+def verify_library_columns(table):
     """Verify that a table contains required columns
     """
     missing = []
-    for key in ['genome', 'sex', 'annotation', 'analysis_dir', 'read_1']:
-        if key not in table.columns:
-            missing.append(key)
+    required = {'genome', 'sex', 'annotation', 'analysis_dir', 'read_1'}
+    optional = {'read_2', 'reference_prefix'}
+    known = required.union(optional)
+
+    columns = set(table.columns)
+    missing = required.difference(columns)
     if len(missing) != 0:
         raise ValueError("Required columns missing: {}".format(','.join(missing)))
+
+    unknown = columns.difference(known)
+    if len(unknown) > 0:
+        logger.warning('Unrecognized columns present. Is this intended?: {}'.format(
+            ','.join(unknown)))
 
 
 def validate_library_ids(table):
