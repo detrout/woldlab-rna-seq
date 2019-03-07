@@ -98,7 +98,7 @@ class AttributesParser:
                     self.reserved[name] = suffix
                     name = name + str(suffix)
 
-                if value == '"NULL"':
+                if value in ('"NULL"', 'NULL', 'nan'):
                     value = None
                 elif value[0] == '"':
                     value = value[1:-1]
