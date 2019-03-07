@@ -1,6 +1,16 @@
 Changelog
 =========
 
+Release 1.1
+-----------
+
+  * Requires bokeh ~ 0.12.15
+  * Requires GeorgiScripts 1.0 (available from
+    https://github.com/detrout/GeorgiScripts )
+  * Improved sorting on compute hosts
+  * Support more gff/gtf variants.
+  * Add gene_coverage_detail plot
+
 Release 1.0
 -----------
 
