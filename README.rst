@@ -278,5 +278,5 @@ Steps for our processing pipeline:
 .. _ENCFF742NER: https://www.encodeproject.org/files/ENCFF742NER/@@download/ENCFF742NER.tar.gz
 .. _ENCFF940AZB: https://www.encodeproject.org/files/ENCFF940AZB/@@download/ENCFF940AZB.tar.gz
 .. _ENCFF751OWT: https://www.encodeproject.org/files/ENCFF751OWT/@@download/ENCFF751OWT.tar.gz
-.. _GeorgisScripts: https://github.com/georgimarinov/GeorgiScripts
+.. _GeorgisScripts: https://github.com/detrout/GeorgiScripts
 .. _GENCODE reference files used in ENCODE pipelines: https://www.encodeproject.org/references/ENCSR884DHJ/
