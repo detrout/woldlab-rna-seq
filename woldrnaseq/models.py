@@ -321,7 +321,6 @@ def load_all_distribution(libraries):
         distribution.append(load_distribution(filename))
         library_ids.append(library_id)
     return pandas.DataFrame(distribution, index=library_ids)
-    #return libraries.merge(distribution_df, left_index=True, right_index=True)
 
 
 def load_coverage(filename, library_id=None):
