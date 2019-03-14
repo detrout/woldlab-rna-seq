@@ -332,6 +332,7 @@ def load_all_distribution(libraries):
 
 
 def load_coverage(filename, library_id=None):
+    logger.info('loading {}'.format(filename))
     with open(filename, 'rt') as instream:
         coverage = []
         for line in instream:
