@@ -6,11 +6,13 @@ import matplotlib
 from matplotlib import pyplot
 import pandas
 import numpy
+import logging
 
 from woldrnaseq import models
 from woldrnaseq.common import save_fixed_height
 
 
+logger = logging.getLogger(__name__)
 matplotlib.use('Agg')
 
 
@@ -35,10 +37,16 @@ def main(cmdline=None):
     parser.add_argument('--output-format', default='png', choices=['png', 'svg'])
     parser.add_argument('--bare', default=False, action='store_true',
                         help='leave off text annotations')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Turn on INFO level logging')
     #parser.add_argument('filename', nargs=1)
     #parser.add_argument('-o', '--output')
 
     args = parser.parse_args(cmdline)
+
+    if args.verbose:
+        logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.ERROR)
 
     experiments = models.load_experiments(args.experiments)
     libraries = models.load_library_tables(args.libraries)
