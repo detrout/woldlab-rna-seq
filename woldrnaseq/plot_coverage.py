@@ -86,6 +86,8 @@ def make_coverage_plot(experiment, coverage):
         ax.set_title('Coverage for {}'.format(experiment))
         ax.set_xlabel("position quantile (5' to 3')")
         ax.set_ylabel('Read depth')
+        ylim_bottom, ylim_top = ax.get_ylim()
+        ax.set_ylim(0, ylim_top)
         ax.legend(bbox_to_anchor=(1.05, 1),
                   loc=2,
                   borderaxespad=0.0)
