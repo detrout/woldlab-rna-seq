@@ -17,12 +17,13 @@ from common import (
 
 logger = logging.getLogger('make_fastqc')
 
+
 def main(cmdline=None):
     parser = ArgumentParser()
     parser.add_argument('-l', '--library', action='append')
     parser.add_argument('-c', '--contamination',
                         help='contamination filename')
-    parser.add_argument('-s', '--sep', choices=['TAB',','], default='TAB')
+    parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     add_debug_arguments(parser)
     args = parser.parse_args(cmdline)
 
@@ -45,6 +46,7 @@ def main(cmdline=None):
         fastqs.update(lib_fastqs)
 
     generate_fastqc_condor(fastqs, args.contamination)
+
 
 def generate_fastqc_condor(fastqs, contamination):
     header = """universe=vanilla
