@@ -7,8 +7,8 @@ import logging
 import os
 import re
 
-import models
-from common import (
+from . import models
+from .common import (
     add_debug_arguments,
     configure_logging,
     find_fastqs,
