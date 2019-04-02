@@ -126,6 +126,7 @@ class AnalysisDAG:
             sort_samtools_sh=resource_filename(__name__, 'sort-samtools.sh'),
             bedgraph_bedsort_sh=resource_filename(__name__, 'bedsort.sh'),
             picard_markdup=resource_filename(__name__, 'picard-markdup.condor'),
+            picard_multimetrics=resource_filename(__name__, 'picard-multi-metrics.condor'),
             genome_dir=self.genome_dir,
             star_dir=self.star_dir,
             rsem_dir=self.rsem_dir,
