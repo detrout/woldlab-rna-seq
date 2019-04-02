@@ -36,7 +36,7 @@ def main(cmdline=None):
         png_name = basename + '.png'
         csv_name = 'genes-detected_' + basename + '.csv'
 
-        binned_quantifications = bin_library_quantification(protein_quantifications, 'FPKM')
+        binned_quantifications = bin_library_quantification(protein_quantifications, args.quantification)
         binned_quantifications.to_csv(csv_name)
 
         f = plot_gene_detection_histogram(binned_quantifications,
@@ -52,6 +52,7 @@ def make_parser():
     parser.add_argument('--gtf-cache', required=True, help='name of HDF5 GTF file')
     parser.add_argument('--hide-detected-sum', default=False,
                         help='hide the total genes detected')
+    parser.add_argument('-q', '--quantification', default='TPM', help='Quantification column to use')
     parser.add_argument('filenames', nargs='+',
                         help='Combined quantification file: libraries by genes')
     return parser
