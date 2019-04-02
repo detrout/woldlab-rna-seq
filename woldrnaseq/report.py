@@ -260,7 +260,7 @@ class QCReport:
         )
         plot = figure(
             title="Spike-in for library {}".format(library_id),
-            tools=["pan","wheel_zoom","reset",hover]
+            tools=["pan", "wheel_zoom", "reset", hover]
         )
         plot.xaxis.axis_label = "transcripts spiked in"
         plot.yaxis.axis_label = "RNA-Seq RSEM ({})".format(self.quantification_name)
