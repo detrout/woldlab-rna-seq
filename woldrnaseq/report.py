@@ -250,13 +250,6 @@ class QCReport:
 
         copies_vs_quant = pandas.concat([spikein_cpc, spikes], axis=1)
 
-        source = ColumnDataSource(
-            data=dict(
-                copies = copies_vs_quant['cpc'],
-                fpkms = copies_vs_quant[library_id],
-                desc = copies_vs_quant.index,
-            )
-        )
         hover = HoverTool(
             tooltips=[
                 ('index', '$index'),
@@ -271,7 +264,6 @@ class QCReport:
         )
         plot.xaxis.axis_label = "transcripts spiked in"
         plot.yaxis.axis_label = "RNA-Seq RSEM ({})".format(self.quantification_name)
-        #plot.circle('copies', 'fpkms', source=source)
         plot.circle(x=copies_vs_quant['cpc'], y=copies_vs_quant[library_id])
 
         handle = self.next_plot_handle
