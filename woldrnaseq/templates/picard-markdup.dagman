@@ -1,0 +1,14 @@
+###########################################
+# Processing {{job_id}} in {{analysis_dir}} with
+# Username: {{username}}
+# Timestamp: {{timestamp}}
+# Version: {{woldrnaseq_version}}
+
+JOB {{job_id}}_picard-markdup {{picard_markdup}}
+
+
+VARS {{job_id}}_picard-markdup  analysis_name="{{analysis_name}}"
+VARS {{job_id}}_picard-markdup  curdir="{{analysis_dir}}"
+VARS {{job_id}}_picard-markdup  genome_root="{{genome_dir}}"
+VARS {{job_id}}_picard-markdup  genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}" 
+

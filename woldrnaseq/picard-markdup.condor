@@ -1,0 +1,32 @@
+universe=vanilla
+
+log=$(CURDIR)/picard-markdup-$(Process).log
+output=$(CURDIR)/picard-markdup-$(Process).out
+error=$(CURDIR)/picard-markdup-$(Process).out
+
+PICARD=/woldlab/loxcyc/home/diane/proj/flowcells/HT2CVBCX2/picard.jar
+GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
+DUPS=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_picard_markdup.bam
+METRICS=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_picard_markdup.metrics
+
+MEMORY=8G
+request_cpus=1
+request_memory=$(MEMORY)
+
+#executable=$(PICARD)
+#jar_files=$(PICARD)
+transfer_executable=False
+
+executable=/usr/bin/java
+JAVAOPTS=-Xmx$(MEMORY)
+
+should_transfer_files=always
+when_to_transfer_oput=ON_EXIT
+
+transfer_output_files=$(METRICS),$(DUPS)
+transfer_output_remaps="$(METRICS)=$(CURDIR)/$(METRICS);$(DUPS)=$(CURDIR)/$(DUPS)"
+
+arguments="$(JAVAOPTS) -jar $(PICARD) MarkDuplicates I=$(CURDIR)/$(IN) O=$(DUPS) M=$(METRICS) TAGGING_POLICY=All"
+#arguments="picard.cmdline.PicardCommandLine MarkDuplicates I=$(CURDIR)/$(IN) O=$(DUPS) M=$(METRICS)"
+queue
