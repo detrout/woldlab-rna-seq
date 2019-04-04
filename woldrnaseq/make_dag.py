@@ -27,6 +27,7 @@ from woldrnaseq.common import (
 
 logger = logging.getLogger(__name__)
 
+
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
@@ -52,20 +53,22 @@ def main(cmdline=None):
 
     dag = generate_star_rsem_analysis(args, libraries, read1, read2)
     print(dag)
-    
+
     return 0
+
 
 def make_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--sep', choices=['TAB',','], default='TAB')
+    parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('-l', '--libraries', action='append', default=[])
     parser.add_argument('other_libraries', nargs='*')
     add_default_path_arguments(parser)
     add_version_argument(parser)
     add_debug_arguments(parser)
     parser.add_argument('--template', help='override default dagman template')
-    
+
     return parser
+
 
 def get_reference_prefix(libraries, library_id):
     """Get optional reference_prefix from model.
@@ -82,6 +85,7 @@ def get_reference_prefix(libraries, library_id):
         return prefix_default
 
     return prefix
+
 
 def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
     dag = []
@@ -115,6 +119,6 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
 
     return os.linesep.join(dag)
 
+
 if __name__ == '__main__':
     main()
-    
