@@ -133,6 +133,8 @@ class AnalysisDAG:
             bedgraph_bedsort_sh=resource_filename(__name__, 'bedsort.sh'),
             picard_markdup=resource_filename(__name__, 'picard-markdup.condor'),
             picard_multi_metrics=resource_filename(__name__, 'picard-multi-metrics.condor'),
+            rrna_premap=resource_filename(__name__, 'rrna-premap.condor'),
+            rrna_premap_sh=resource_filename(__name__, 'rrna-premap.sh'),
             genome_dir=self.genome_dir,
             star_dir=self.star_dir,
             rsem_dir=self.rsem_dir,

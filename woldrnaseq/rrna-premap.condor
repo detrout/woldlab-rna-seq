@@ -1,0 +1,22 @@
+universe=vanilla
+log=$(CURDIR)/rrna-premap.log
+output=$(CURDIR)/rrna-premap.out
+error=$(CURDIR)/rrna-premap.out
+
+GENOME_ROOT=$$($(genome_root):/woldlab/castor/home/diane/proj/genome)
+GENOME=$(genome)
+ANNOTATION=$(annotation)
+SEX=$(sex)
+GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+
+executable=$(rrna_premap_sh)
+transfer_executable=false
+
+THREADS=4
+
+# add a couple threads for samtools processes
+request_cpus=8
+request_memory=16G
+
+arguments="$(GENOME_ROOT) $(GENOME) $(THREADS) $(READ_1) $(CURDIR)/$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_rrna.counts"
+queue
