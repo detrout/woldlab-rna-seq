@@ -15,6 +15,7 @@ from .common import (add_default_path_arguments,
 
 logger = logging.getLogger(__name__)
 
+
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
@@ -41,6 +42,7 @@ def main(cmdline=None):
     if analysis.is_valid():
         print(str(analysis))
 
+
 def make_parser():
     parser = ArgumentParser()
     parser.add_argument('-g', '--genome')
@@ -59,6 +61,7 @@ def make_parser():
     add_debug_arguments(parser)
 
     return parser
+
 
 class AnalysisDAG:
     def __init__(self):
