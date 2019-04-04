@@ -10,8 +10,11 @@ from pkg_resources import resource_filename
 from jinja2 import Environment, PackageLoader
 
 from woldrnaseq.version import get_git_version
-from .common import (add_default_path_arguments,
-                     add_debug_arguments)
+from .common import (
+    add_default_path_arguments,
+    add_debug_arguments,
+    configure_logging,
+)
 
 logger = logging.getLogger(__name__)
 
