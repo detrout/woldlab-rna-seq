@@ -17,18 +17,9 @@ executable=$(PICARD)
 jar_files=$(PICARD)
 transfer_executable=False
 
-#executable=/usr/bin/java
-#JAVAOPTS=-Xmx$(MEMORY)
-
-#should_transfer_files=always
-#when_to_transfer_oput=ON_EXIT
-#transfer_output_files=$(METRICS)
-#transfer_output_remaps="$(METRICS)=$(CURDIR)/$(METRICS)"
-
 arguments="picard.cmdline.PicardCommandLine CollectMultipleMetrics \
   I=$(CURDIR)/$(IN) \
   O=$(CURDIR)/$(METRICS) \
-  R=/woldlab/castor/home/sau/genomes/GRCh38-V29-male/GRCh38.p12.genome.fa \
   PROGRAM=CollectAlignmentSummaryMetrics \
   PROGRAM=CollectInsertSizeMetrics \
   PROGRAM=QualityScoreDistribution \
@@ -36,7 +27,8 @@ arguments="picard.cmdline.PicardCommandLine CollectMultipleMetrics \
   PROGRAM=CollectBaseDistributionByCycle \
   PROGRAM=CollectQualityYieldMetrics \
 "
-#   PROGRAM=CollectSequencingArtifactMetrics \
-#  PROGRAM=CollectGcBiasMetrics \
+# R=/woldlab/castor/home/sau/genomes/GRCh38-V29-male/GRCh38.p12.genome.fa \
+# PROGRAM=CollectSequencingArtifactMetrics \
+# PROGRAM=CollectGcBiasMetrics \
 
 queue
