@@ -299,7 +299,9 @@ def main(cmdline=None):
 
 
 def make_parser():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Generate intermediate caches of quantifications and correlations"
+    )
     parser.add_argument('-q', '--quantification', choices=['FPKM', 'TPM'],
                         default='FPKM',
                         help='which quantification value to use')
@@ -311,9 +313,10 @@ def make_parser():
                         help='library information table')
     parser.add_argument('-e', '--experiments', action='append',
                         help='experiments tables')
-    parser.add_argument('-n', '--experiment-name', help='experiment name')
+    parser.add_argument('-n', '--experiment-name',
+                        help='specify experiment name when using replicates')
     parser.add_argument('replicates', nargs='*',
-                        help='list of replicates for this experiment')
+                        help='list of replicate library_ids to use. Not needed of -e is provided.')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('--root', default=None,
                         help='write analysis files to this directory')

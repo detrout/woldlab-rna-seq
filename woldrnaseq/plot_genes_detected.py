@@ -48,13 +48,16 @@ def main(cmdline=None):
 
 
 def make_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--gtf-cache', required=True, help='name of HDF5 GTF file')
+    parser = argparse.ArgumentParser(
+        description="Generate a static Genes detected histogram from a combined quantification CSV file."
+    )
+    parser.add_argument('--gtf-cache', required=True, help='name of GTF cache file produced by gff2table')
     parser.add_argument('--hide-detected-sum', default=False,
-                        help='hide the total genes detected')
-    parser.add_argument('-q', '--quantification', default='TPM', help='Quantification column to use')
+                        help='hide the total number of genes detected at the top of a histogram bar.')
+    parser.add_argument('-q', '--quantification', default='TPM',
+                        help='Specify name of the quantification column used.')
     parser.add_argument('filenames', nargs='+',
-                        help='Combined quantification file: libraries by genes')
+                        help='Name of a combined quantification file produced by make_rsem_csv.')
     return parser
 
 

@@ -54,7 +54,7 @@ def main(cmdline=None):
 
 def make_parser():
     parser = argparse.ArgumentParser(
-        description="Write combined CSV for a specific quantification.")
+        description="Write combined CSV for a specific quantification produced by RSEM.")
     parser.add_argument('-q', '--quantification',
                         choices=['FPKM', 'TPM', 'expected_count',
                                  'effective_length', 'length'],
@@ -62,16 +62,16 @@ def make_parser():
                         action='append',
                         help='which quantification value to use')
     parser.add_argument('-l', '--libraries', action='append', required=True,
-                        help='library information table')
+                        help='library metadata table')
     parser.add_argument('-e', '--experiments', action='append', required=True,
-                        help='experiment information table')
+                        help='experiment metadata table')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('--output-format', choices=['TAB', ','], default=',')
     parser.add_argument('--transcriptome', action='store_true', default=False,
                         help='Use RSEM transcriptome quantifications instead of genomic quantifications')
-    parser.add_argument('--gtf-cache', help='Specify name of GTF cache file')
+    parser.add_argument('--gtf-cache', help='Specify name of GTF cache file built with gff2table')
     parser.add_argument('--add-names', action='store_true', default=False,
-                        help='Add names to ouptut quantification file')
+                        help='Add names to ouptut quantification file, requires --gtf-cache')
     add_debug_arguments(parser)
     return parser
 

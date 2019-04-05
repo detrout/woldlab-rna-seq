@@ -58,10 +58,22 @@ def main(cmdline=None):
 
 
 def make_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
-    parser.add_argument('-l', '--libraries', action='append', default=[])
-    parser.add_argument('other_libraries', nargs='*')
+    parser = argparse.ArgumentParser(
+        description="Generates a condor dagman script from a provided "
+                    "library metadata file."
+    )
+    parser.add_argument(
+        '-l', '--libraries', action='append', default=[],
+        help="Specify a library metadata file name (repeatable)"
+    )
+    parser.add_argument(
+        'other_libraries', nargs='*',
+        help="(Deprecated) specify a list of library metadata file names."
+    )
+    parser.add_argument(
+        '-s', '--sep', choices=['TAB', ','], default='TAB',
+        help="Specify the field separator character in the library metadata file"
+    )
     add_default_path_arguments(parser)
     add_version_argument(parser)
     add_debug_arguments(parser)

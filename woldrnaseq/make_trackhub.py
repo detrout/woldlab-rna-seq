@@ -92,16 +92,19 @@ def main(cmdline=None):
 
 
 def make_parser():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description='Generate a track hub of bigwigs or bam files for '
+                    'visualization with the UCSC Genome Browser'
+    )
     email = os.environ.get('EMAIL', None)
     parser.add_argument('--hub', help='hub name', required=True)
     parser.add_argument('-n', '--short-name', required=True)
     parser.add_argument('--long-name')
     parser.add_argument('--email', default=email)
     parser.add_argument('-w', '--web-root', required=True,
-                        help='base url for tracks')
-    parser.add_argument('-o', '--output', default=os.getcwd(),
-                        help='base directory to write hub to')
+                        help='base URL for the track hub. ')
+    parser.add_argument('-o', '--output', default='./',
+                        help='base directory to write the track hub to')
     parser.add_argument('--bigwig', action='store_true', default=False,
                         help='generate track blocks for bigwigs')
     parser.add_argument('--bam', action='store_true', default=False,

@@ -42,7 +42,7 @@ def main(cmdline=None):
 
 def make_parser():
     parser = argparse.ArgumentParser(
-        description="Write combined CSV for a specific quantification.")
+        description="Write combined CSV for gene counts produced by STAR.")
     parser.add_argument('-c', '--strand',
                         choices=['U', '+', '-'],
                         default='U',

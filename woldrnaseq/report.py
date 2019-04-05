@@ -72,20 +72,24 @@ def main(cmdline=None):
 
 
 def make_parser():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Generate combined quality-control report. "
+                    "Requires combined tables produced by madqc.")
     parser.add_argument('-q', '--quantification', choices=['FPKM', 'TPM'],
-                        default='FPKM',
+                        default='TPM',
                         help='which quantification value to use')
     parser.add_argument('-l', '--libraries', action='append',
-                        help='library information table')
+                        help='library metadata table')
     parser.add_argument('-e', '--experiments', action='append',
-                        help='experiment information table')
+                        help='experiment metadata table')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('-o', '--output', default='report.html',
                         help='output html filename')
     parser.add_argument('--root', default=None,
-                        help='analysis_dir will be relative to this path '\
-                        'instead of library.txt file')
+                        help='analysis_dir will be relative to this path '
+                             'instead of library.txt file. This enables making '
+                             'customized library files using analysis directories '
+                             'from paths you lack permissions to modify.')
     add_default_path_arguments(parser)
     add_version_argument(parser)
     add_debug_arguments(parser)

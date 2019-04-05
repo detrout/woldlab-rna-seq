@@ -221,8 +221,10 @@ class GFFParser:
         gtf.to_csv(outname, sep=sep)
 
 
-def main(cmdline=None):
-    parser = argparse.ArgumentParser()
+def make_parser():
+    parser = argparse.ArgumentParser(
+        description="Convert GTF/GFF file to a binary cache file"
+    )
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
     parser.add_argument('-d', '--debug', action='store_true', default=False)
     parser.add_argument('-n', '--name', default='gtf', help='table name in hdf5 file')
@@ -233,8 +235,13 @@ def main(cmdline=None):
     parser.add_argument('filename', nargs='+',
                         help='specify input GFF/GTF filename')
     parser.add_argument('--name-value-sep', default=" ",
-                        help='name value seperator in attribute column')
+                        help='Specify name value separator in the attribute column. '
+                             '(GTF and GFF use different delimiters.)')
+    return parser
 
+
+def main(cmdline=None):
+    parser = make_parser()
     args = parser.parse_args(cmdline)
 
     if args.debug:
