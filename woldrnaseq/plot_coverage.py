@@ -17,6 +17,31 @@ matplotlib.use('Agg')
 
 
 def main(cmdline=None):
+    parser = make_parser()
+    args = parser.parse_args(cmdline)
+
+    if args.verbose:
+        logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.ERROR)
+
+    experiments = models.load_experiments(args.experiments)
+    libraries = models.load_library_tables(args.libraries)
+    coverage = models.load_all_coverage(libraries)
+
+    if args.all_experiments:
+        make_combined_median_normalized_summary(experiments, coverage, args.output_format, args.bare)
+    elif args.experiment_median_summary:
+        make_per_experiment_median_normalized_summary(experiments, coverage, args.output_format, args.bare)
+    elif args.by_experiment:
+        make_by_experiment_median_summary(experiments, coverage, args.output_format, args.bare)
+    elif args.combined_median_summary:
+        make_combined_experiment_median_summary(experiments, coverage, args.output_format, args.bare)
+    else:
+        make_experiment_by_library_coverage_plots(experiments, coverage, args.output_format, args.bare)
+
+
+def make_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--libraries',
                         action='append',
@@ -40,28 +65,7 @@ def main(cmdline=None):
     parser.add_argument('-v', '--verbose', action='store_true', help='Turn on INFO level logging')
     #parser.add_argument('filename', nargs=1)
     #parser.add_argument('-o', '--output')
-
-    args = parser.parse_args(cmdline)
-
-    if args.verbose:
-        logging.basicConfig(level=logging.INFO)
-    else:
-        logging.basicConfig(level=logging.ERROR)
-
-    experiments = models.load_experiments(args.experiments)
-    libraries = models.load_library_tables(args.libraries)
-    coverage = models.load_all_coverage(libraries)
-
-    if args.all_experiments:
-        make_combined_median_normalized_summary(experiments, coverage, args.output_format, args.bare)
-    elif args.experiment_median_summary:
-        make_per_experiment_median_normalized_summary(experiments, coverage, args.output_format, args.bare)
-    elif args.by_experiment:
-        make_by_experiment_median_summary(experiments, coverage, args.output_format, args.bare)
-    elif args.combined_median_summary:
-        make_combined_experiment_median_summary(experiments, coverage, args.output_format, args.bare)
-    else:
-        make_experiment_by_library_coverage_plots(experiments, coverage, args.output_format, args.bare)
+    return parser
 
 
 def make_experiment_by_library_coverage_plots(experiments, coverage, output_format, bare):
