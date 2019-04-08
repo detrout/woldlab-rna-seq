@@ -10,7 +10,7 @@ class TestMakeDag(TestCase):
     def setUp(self):
         self.home_fd, self.home_pathname = tempfile.mkstemp(
             suffix='wold-rna-seq-home')
-        self.old_home_variable = os.environ['HOME']
+        self.old_home_variable = os.environ.get('HOME', tempfile.gettempdir())
         os.environ['HOME'] = self.home_pathname
 
     def tearDown(self):
