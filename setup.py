@@ -13,9 +13,11 @@ setup(
         'console_scripts': [
             'madqc = woldrnaseq.madqc:main',
             'make_dag = woldrnaseq.make_dag:main',
-            'makersemcsv = woldrnaseq.makersemcsv:main',
-            'make-star-csv = woldrnaseq.makestarcsv:main',
-            'qcreport = woldrnaseq.report:main',
+            'make_rsem_csv = woldrnaseq.makersemcsv:main',
+            'make_star_csv = woldrnaseq.makestarcsv:main',
+            'qc_report = woldrnaseq.report:main',
+            'make_trackhub = woldrnaseq.make_trackhub:main',
+            'plot_genes_detected = woldrnaseq.plot_genes_detected:main',
         ],
     },
     install_requires=[
