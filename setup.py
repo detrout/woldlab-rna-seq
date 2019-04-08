@@ -4,7 +4,7 @@ from woldrnaseq.version import get_git_version
 setup(
     name='long-rna-seq-condor',
     version=get_git_version(),
-    packages = find_packages(),
+    packages=find_packages(),
     package_data={
         'woldrnaseq': ['RELEASE-VERSION'],
         'woldrnaseq.templates': ['*.dagman', '*.html']
