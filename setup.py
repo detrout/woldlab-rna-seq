@@ -21,7 +21,7 @@ setup(
         ],
     },
     install_requires=[
-        'bokeh>=0.11.3,<1.0',
+        'bokeh>=0.12.10,<1.0',
         'jinja2>=2.8',
         'matplotlib>=3.0',
         'numpy>=1.16',
