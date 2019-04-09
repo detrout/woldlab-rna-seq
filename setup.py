@@ -28,6 +28,7 @@ setup(
         'pandas>=0.23',
         'scipy>=1.1',
         'tables>=3.4',
+        'xopen',
     ],
     author='Diane Trout',
     author_email='diane@caltech.edu',
