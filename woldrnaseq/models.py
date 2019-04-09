@@ -64,7 +64,6 @@ def load_experiments(experiment_filenames, sep='\t', analysis_root=None):
         table['analysis_dir'] = analysis_cur_root
         tables.append(table)
 
-    experiments = {}
     return pandas.concat(tables)
 
 
@@ -436,7 +435,6 @@ def find_library_analysis_file(libraries, extension):
 def load_correlations(experiment):
     """Load correlation panel for an experiment
     """
-    correlations = collections.OrderedDict()
     correlation_filename = make_correlation_filename(experiment)
 
     if not os.path.exists(correlation_filename):
