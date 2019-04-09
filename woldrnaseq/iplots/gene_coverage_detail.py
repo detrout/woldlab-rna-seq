@@ -230,8 +230,6 @@ class GeneCoverageDetail:
         legend.click_policy = 'hide'
         f.add_layout(legend, 'right')
         return f
-        #layout = row([f], sizing_mode='scale_height')
-        #return layout
 
     def app_layout(self):
         controls = widgetbox([self.experiments_combo], width=200)
