@@ -77,6 +77,15 @@ def make_parser():
 
 
 class RsemLoader:
+    """Help generate the combined quantification files
+
+    Parameters
+    ----------
+    quantification_name: str
+        the name of the quantification, such as, FPKM, TPM, effective_count.
+    annotation: pandas.DataFrame
+        A GTF cache file to help map gene_ids to gene_names.
+    """
     def __init__(self, quantification_name, annotation):
         self.quantification_name = quantification_name
         self.annotation = annotation

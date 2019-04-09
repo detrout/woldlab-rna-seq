@@ -128,11 +128,17 @@ def getGFFAttributeValueByKey(field, name):
 def sum_gene_coverage_by_type(gene_types, gene_coverage):
     """Compute the coverage by gene type.
 
-    :Parameters:
-    - gene_types: (dict) gene_id to gene_type
-    - gene_coverage: (DataFrame) gene_id by gene coverage percentile.
-    :Returns:
-    - sums of gene type bins, number of genes per bin.
+    Parameters
+    ----------
+    gene_types: dict
+        gene_id to gene_type
+    gene_coverage: pandas.DataFrame
+        gene_id by gene coverage percentile.
+
+    Returns
+    -------
+    tuple of pandas.Series and pandas.DataFrame
+        a tupple with the sums of gene type bins and the number of genes per bin.
     """
     LOGGER.info("Computing coverage for %s", gene_coverage.name)
     sums = {}
@@ -158,8 +164,11 @@ def sum_gene_coverage_by_type(gene_types, gene_coverage):
 class GeneCoverageDetail:
     """Plot showing the coverage distribution for gene type classes
 
-    :Parameters:
-    - gene_types
+    Parameters
+    ----------
+    coverage_by_type
+    counts_by_type
+    normalization
     """
     def __init__(self, coverage_by_type, counts_by_type, normalization):
         self._coverage_by_type = coverage_by_type

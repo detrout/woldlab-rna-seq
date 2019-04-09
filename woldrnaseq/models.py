@@ -15,7 +15,7 @@ AnalysisFile = collections.namedtuple('AnalysisFile', ['library_id', 'filename']
 
 
 def read_line_from_stream(stream):
-    """Read a line filtering out blank lines and comments.
+    """Read a line filtering out blank lines and comments
     """
     for line in stream:
         line = line.strip()
@@ -24,16 +24,21 @@ def read_line_from_stream(stream):
 
 
 def load_experiments(experiment_filenames, sep='\t', analysis_root=None):
-    """Load table describing experiments
+    """Load metadata table describing a set of experiments
 
-    Parameters:
-      experiment_filenames - list of filenames to load
-         the tables need to have a experiment name and list of
-         library ids that are intended to be treated as related
-         replicates
-      sep - separator character to use for table defaults to TAB
+    Parameters
+    ----------
+      experiment_filenames: list of str
+         list of filenames to load the tables need to have a
+         experiment name and list of library ids that are intended to
+         be treated as related replicates
+      sep: str
+         separator character to use for table defaults to TAB
 
-    Returns a dictionary mapping experiment names to list of replicates
+    Returns
+    -------
+    pandas.DataFrame
+      A table of experiment names and a list of replicates
     """
     tables = []
     for experiment_filename in experiment_filenames:
@@ -66,19 +71,31 @@ def load_experiments(experiment_filenames, sep='\t', analysis_root=None):
 def load_library_tables(table_filenames, sep='\t', analysis_root=None):
     """Load table describing libraries to be analyized
 
-    Parameters:
-      table_filenames - list of filenames to load
-         the tables need to have a library_id, genome, sex, annotation,
-         analysis_dir and fastq read_1 columns.
-      sep - separator character to use for table defaults to TAB
-      analysis_root - analysis_dirs are relative to this path, defaults to location
-                      of library.txt file
+    Parameters
+    ----------
+    table_filenames: list of str
+        a list of filenames to load the tables. The tables are
+        required to have library_id, genome, sex, annotation,
+        analysis_dir and read_1 column headings.
 
-    Returns: a pandas dataframe containing required information
+    sep: str
+        separator character to use for table defaults to TAB
+    analysis_root: str
+         analysis_dirs are relative to this path, defaults to location
+         of library.txt file
 
-    Raises:
-      ValueError if a required column is missing
-      ValueError if there are duplicated library ids.
+    Returns
+    -------
+    pandas.DataFrame
+         Containing the columns from the input library and a inferred columns
+         analysis_dir and analysis_name
+
+    Raises
+    ------
+    ValueError
+        if a required column is missing
+    ValueError
+        if there are duplicated library ids.
     """
     assert not isinstance(table_filenames, str)
     tables = []
@@ -111,12 +128,33 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
 
 def genome_name_from_library(row):
     """Generate genome name triple from a library row
+
+    Parameters
+    ----------
+    row: pandas.Series
+        row of a library metadata table.
+
+    Returns
+    -------
+    str
+        Combined genome, annotation, and sex string.
     """
     return '-'.join([row.genome, row.annotation, row.sex])
 
 
 def verify_library_columns(table):
     """Verify that a table contains required columns
+
+    Parameters
+    ----------
+    table : pandas.DataFrame
+        Verify that a library metadata table contains the required
+        fields. Additionally we also check and warn if there are any
+        unrecognized optional columns present.
+
+    Raises
+    ------
+    ValueError : if a required column is missing
     """
     missing = []
     required = {'genome', 'sex', 'annotation', 'analysis_dir', 'read_1'}
@@ -136,6 +174,15 @@ def verify_library_columns(table):
 
 def validate_library_ids(table):
     """Validate that library ids are unique
+
+    Parameters
+    ----------
+    table : pandas.DataFrame
+        A library metadata table
+
+    Raises
+    ------
+    ValueError : if there are duplicate library_ids present
     """
     library_ids = collections.Counter()
     for library_id in table.index:
@@ -205,12 +252,17 @@ def load_star_counts(filename, column):
     Parameters
     ----------
     filename: str
-              Path to a STAR ReadsPerGene.out.tab
+        Path to a STAR ReadsPerGene.out.tab
     column: str
-            Which column to return.
-            U for unstranded
-            + for first read
-            - for second read
+        Which column to return.
+        U for unstranded
+        + for first read
+        - for second read
+
+    Returns
+    -------
+    pandas.DataFrame
+        Containing the annotation id and the requested column.
     """
     count_columns = {
         'U': 1,
@@ -238,12 +290,12 @@ def load_all_star_counts(libraries, column):
     Parameters
     ----------
     libraries: pandas.DataFrame
-               Table of library metadata to load
+        Table of library metadata to load
     column: str
-            Which column to return.
-            U for unstranded
-            + for first read
-            - for second read
+        Which column to return.
+        U for unstranded
+        + for first read
+        - for second read
     """
     library_ids = []
     counts = []
