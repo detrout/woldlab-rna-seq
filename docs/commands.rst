@@ -88,3 +88,9 @@ gff2table
    :func: make_parser
    :nodefault:
           
+merge_encode_annotation
+
+.. argparse::
+   :module: woldrnaseq.merge_encode_annotation
+   :func: make_parser
+   :nodefault:
