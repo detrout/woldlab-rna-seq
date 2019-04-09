@@ -207,7 +207,6 @@ class GeneCoverageDetail:
         if library_id is None:
             library_id = self.library_id
 
-
         coverage = self._coverage_by_type[library_id]
         gene_counts = self._counts_by_type[library_id]
 

@@ -471,7 +471,7 @@ def load_quantifications(experiment, quantification_name='FPKM'):
                          quantification_filename)
         else:
             for key in store.keys():
-                quantifications =  store[key]
+                quantifications = store[key]
         store.close()
         return quantifications
     else:
