@@ -12,7 +12,11 @@ Contents:
    :maxdepth: 2
 
    overview
-
+   installation
+   howto
+   commands
+   api
+   ../ChangeLog
 
 Indices and tables
 ==================
