@@ -7,13 +7,14 @@ import pandas
 import numpy
 import os
 import matplotlib
-matplotlib.use('Agg')
 
 from matplotlib import pyplot
 
 from woldrnaseq.common import save_fixed_height
 from woldrnaseq.models import load_gtf_cache
 from woldrnaseq.gtfcache import protein_coding_gene_ids
+
+matplotlib.use('Agg')
 
 
 def main(cmdline=None):
