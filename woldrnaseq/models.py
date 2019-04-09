@@ -12,8 +12,6 @@ logger = logging.getLogger(__name__)
 AnalysisFile = collections.namedtuple('AnalysisFile', ['library_id', 'filename'])
 
 
-def prepend_path(path, file_name):
-    return os.path.join(path, file_name)
 
 
 def read_line_from_stream(stream):
@@ -102,7 +100,7 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
         verify_library_columns(table)
         table.index = [str(x) for x in table.index]
         table.index.name = 'library id'
-        table['analysis_dir'] = table['analysis_dir'].apply(partial(prepend_path, analysis_cur_root))
+        table['analysis_dir'] = table['analysis_dir'].apply(partial(os.path.join, analysis_cur_root))
         table['analysis_name'] = table['analysis_dir'].apply(os.path.basename)
         tables.append(table)
 
