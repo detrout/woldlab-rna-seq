@@ -9,9 +9,6 @@ from functools import partial
 import pandas
 
 logger = logging.getLogger(__name__)
-AnalysisFile = collections.namedtuple('AnalysisFile', ['library_id', 'filename'])
-
-
 
 
 def read_line_from_stream(stream):
@@ -416,6 +413,10 @@ def load_all_gene_coverage(libraries, gene_list, gene_normalization):
     for filename in gene_list:
         library_id = os.path.split(filename.replace('.coverage.geneList', ''))[1]
         yield load_gene_coverage(filename, library_id, gene_normalization)
+
+
+AnalysisFile = collections.namedtuple('AnalysisFile', ['library_id', 'filename'])
+AnalysisFile.__doc__ = "Tuple of library_ids and the full path to a particular generated file type."
 
 
 def find_library_analysis_file(libraries, extension):
