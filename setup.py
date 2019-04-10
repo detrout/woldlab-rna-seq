@@ -6,7 +6,11 @@ setup(
     version=get_git_version(),
     packages=find_packages(),
     package_data={
-        'woldrnaseq': ['RELEASE-VERSION', '*.condor'],
+        'woldrnaseq': ['RELEASE-VERSION',
+                       '*.condor',
+                       '*.sh',
+                       'pre_star',
+                       'post_star'],
         'woldrnaseq.templates': ['*.dagman', '*.html']
     },
     entry_points={
