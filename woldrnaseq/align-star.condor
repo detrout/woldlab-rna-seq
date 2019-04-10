@@ -32,7 +32,7 @@ transfer_executable=false
 
 should_transfer_files=Always
 when_to_transfer_output=ON_EXIT
-transfer_input_files=/woldlab/castor/home/diane/proj/long-rna-seq-condor/woldrnaseq/pre_star,/woldlab/castor/home/diane/proj/long-rna-seq-condor/woldrnaseq/post_star
+transfer_input_files=$(pre_star),$(post_star)
 
 +PreCmd="pre_star"
 +PreArguments="--genome-dir $(GENOME_DIR) --library-id $(library_id) --output-dir $(CURDIR)"
