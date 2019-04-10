@@ -18,6 +18,7 @@ setup(
             'qc_report = woldrnaseq.report:main',
             'make_trackhub = woldrnaseq.make_trackhub:main',
             'plot_genes_detected = woldrnaseq.plot_genes_detected:main',
+            'merge_encode_annotations = woldrnaseq.merge_encode_annotations:main',
         ],
     },
     install_requires=[
