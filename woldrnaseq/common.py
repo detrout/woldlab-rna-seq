@@ -120,7 +120,7 @@ def normalize_path(path):
     elif len(path) == 0:
         return path
     else:
-        return os.path.join(path, '')
+        return os.path.join(os.path.expanduser(path), '')
 
 
 def get_fixed_range(limits):
