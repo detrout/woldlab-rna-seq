@@ -31,6 +31,7 @@ setup(
         'matplotlib>=3.0',
         'numpy>=1.16',
         'pandas>=0.23',
+        'pysam',
         'scipy>=1.1',
         'tables>=3.4',
         'xopen',
