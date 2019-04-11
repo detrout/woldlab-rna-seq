@@ -21,7 +21,7 @@ OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET).sam_reads_genes
 request_cpus=1
 request_memory=12G
 
-executable=/usr/bin/python2
+executable=/usr/bin/python3
 transfer_executable=False
 
 initialdir=$(CURDIR)
