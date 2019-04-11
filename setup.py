@@ -34,6 +34,7 @@ setup(
         'pysam',
         'scipy>=1.1',
         'tables>=3.4',
+        'trackhub',
         'xopen',
     ],
     author='Diane Trout',
