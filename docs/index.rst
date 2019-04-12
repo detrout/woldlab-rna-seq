@@ -13,9 +13,11 @@ Contents:
 
    overview
    installation
-   howto
+   example
+   reference
    commands
    api
+   development
    ../ChangeLog
 
 Indices and tables

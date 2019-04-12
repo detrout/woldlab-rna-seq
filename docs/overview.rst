@@ -2,12 +2,16 @@ Introduction
 ============
 
 This is our RNA-Seq processing pipeline based on the work of the
-ENCODE3 RNA-Seq working group. The official pipeline is designed to
-run on DNA-Nexus, and is available at `long-rna-seq-pipeline`_.
+ENCODE3 RNA-Seq working group. The official pipeline was designed to
+run on DNA-Nexus, and is available at `long-rna-seq-pipeline`_. There
+is a newer pipeline designed to run with `cromwell`_ on several common
+environments available at `rna-seq pipeline`_
 
 We already had a compute cluster and running `HT-Condor`_ and so I
 ported logic and arguments of the official pipeline to use the
-HT-Condor dagman workflow manager.
+HT-Condor's `DAGMan`_ workflow language. We believe that DAGMan offers some
+advantages over what is possible with `cromwell`_'s WDL workflow
+language.
 
 We have primarily used this software to process Illumina style short
 reads ranging from 30 to 150 bases in either single or paired end
@@ -22,9 +26,9 @@ The default pipeline provided by this package is not appropriate for
 processing full length RNA reads such as those produced by the Pacifc
 Biosystems Sequel or the Oxford Nanopore MinION.
 
-In addition, as time has progressed, this pipeline has a few
-additional quality control reports added after ENCODE 3
-development completed.
+In addition, as time has progressed, we have added a few additional
+quality control metrics to this pipeline after the ENCODE 3
+development was completed.
 
 Workflow
 --------
@@ -57,4 +61,6 @@ Workflow
 
 .. _long-rna-seq-pipeline: https://github.com/ENCODE-DCC/long-rna-seq-pipeline
 .. _HT-Condor: https://research.cs.wisc.edu/htcondor/
-   
+.. _rna-seq pipeline: https://github.com/ENCODE-DCC/rna-seq-pipeline   
+.. _cromwell: https://software.broadinstitute.org/wdl/
+.. _DAGMan: http://research.cs.wisc.edu/htcondor/manual/latest/DAGManApplications.html

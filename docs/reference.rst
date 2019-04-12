@@ -1,11 +1,14 @@
-.. _howto.example_rna-seq_analysis:
+.. _reference.example_rna-seq_analysis:
 
-Example RNA-Seq Analysis
-========================
+RNA-Seq Analysis Reference
+==========================
 
 Assuming everything is setup correctly, and after you've downloaded
-your fastq files. You'll need to generate a :ref:`howto.library.tsv`
+your fastq files. You'll need to generate a :ref:`reference.library.tsv`
 file.
+
+Example Runfolder
+-----------------
 
 Assuming you are working with the contents of an Illumina runfolder
 you will start with a directory tree like::
@@ -41,12 +44,12 @@ systems that you can connect to via ssh, or lftp for systems exporting
 the runfolder via http or ftp to work well.
 
 
-.. _howto.library.tsv:
+.. _reference.library.tsv:
 
 library.tsv
 -----------
 
-The :ref:`howto.library.tsv` is the work horse metadata file
+The :ref:`reference.library.tsv` is the work horse metadata file
 describing the analysis destination directory, the identifier for the
 genome and annotations being used and to describe the locations of the
 fastqs.
@@ -111,11 +114,11 @@ library_id analysis_dir genome annotation sex    read_1
       to investigate the spike ins)
 
 
-Once your :ref:`howto.library.tsv` is generated, you can then run
+Once your :ref:`reference.library.tsv` is generated, you can then run
 :ref:`commands.make_dag` now, before starting to make the experiment
 file if you'd like.
 
-.. _howto.experiment.tsv:
+.. _reference.experiment.tsv:
    
 experiments.tsv
 ---------------
@@ -144,33 +147,97 @@ human       12348
     
       library_ids can be repeated in the experiments.tsv
 
-.. _howto.starting_mapping:
+.. _reference.building_indexes:
 
-Starting Mapping
+Building Indexes
 ----------------
 
-make_dag -l library.tsv -o run.dagman
-condor_submit_dag run.dagman
+Some times you'll need to build your own indexes. Perhaps you want to
+use a genome build and annotation set that hasn't isn't prebuilt or
+perhaps you have an experiment with a customized genome.
 
-<wait a while>
+The best reference for building `STAR`_ and `rsem`_ indexes are of
+course their own documentation, but these example submit scripts might
+be a helpful starting point.
 
-.. _howto.qc_report:
+The submit files do assume that there will be a subdirectory named
+log/ to store log files in.
 
-Quality Control Report
-----------------------
+It assumes your combined GTF file built with
+:ref:`commands.merge_encode_annotations` will be called
+gencode.v$(Version)-tRNAs-ERCC.gff and that your combined genome file
+and spike in file will be located in the target genome directory.
+     
+.. code-block:: ini
 
-madqc -l library.tsv -e experiment.tsv
-qc_report -l library.tsv -e experiment.tsv
+  # Generate STAR indexes
+  #
+  # Based on https://github.com/ENCODE-DCC/long-rna-seq-pipeline/blob/master/dnanexus/prep-star/resources/usr/bin/lrna_index_star.sh
+  # Commit a678b54
+  #
+  # STAR Documentation: https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf
+  
+  universe=vanilla
+  log=log/prep-star-$(Process).log
+  output=log/prep-star-$(Process).out
+  error=log/prep-star-$(Process).out
+  
+  STAR_DIR=     #directory containing STAR exexutable
+  GENOME_ROOT=  # path to where to genome index files should be written
+  GENOME=       # reference genome name
+  ANNOTATION=   # annotation version number
+  SEX=          # Sex of genome
+  GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+  GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)/
+  GTF=$(GENOME_DIR)gencode.v$(ANNOTATION)-tRNAs-ERCC.gff
 
-Gene Quantification Table
--------------------------
+  THREADS=8
+  # RSEM docs suggest that 100 bp will usually work
+  READ_LENGTH=100
+  
+  request_cpus=$(THREADS)
+  executable=$(STAR_DIR)/STAR
+  arguments="--runThreadN $(THREADS) \
+             --runMode genomeGenerate \
+             --genomeDir $(GENOME_DIR) \
+             --genomeFastaFiles $(GENOME_DIR)/$(GENOME).fa \
+	                        $(GENOME_DIR)/ERCC.fa \
+             --sjdbOverhang $(READ_LENGTH) \
+             --sjdbGTFfile $(GTF)"
+   queue
+     
+.. code-block:: ini
 
-make_rsem_csv -l library.tsv -e experiment.tsv
-
-Trackhub
---------
-
-make_trackhub --hub run7 -n run7 --email you@example.org \
-              -w http://example.org/~user/analysis/ \
-              --bigwig \
-              -l library.tsv -e experiment.tsv
+  # Generate RSEM indexes
+  #
+  # From https://github.com/ENCODE-DCC/long-rna-seq-pipeline/blob/master/dnanexus/prep-rsem/resources/usr/bin/lrna_index_rsem.sh
+  # commit a678b54
+  #
+  # 
+  universe=vanilla
+  log=log/prep-rsem-$(Process).log
+  output=log/prep-rsem-$(Process).out
+  error=log/prep-rsem-$(Process).out
+  ENVIRONMENT="PATH=/bin:/usr/bin"
+  
+  RSEM_DIR=     # directory containing rsem-prepare-reference
+  GENOME_ROOT=  # Root for built index directories
+  GENOME=       # reference genome name
+  ANNOTATION=   # annotation version number
+  SEX=          # referencne genome sex
+  GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+  GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)/
+  GTF=$(GENOME_DIR)gencode.v$(ANNOTATION)-tRNAs-ERCC.gff
+  
+  THREADS=8
+  
+  request_cpus=$(THREADS)
+  executable=$(RSEM_DIR)/rsem-prepare-reference
+  arguments="--gtf $(GTF) \
+             $(GENOME_DIR)/$(GENOME).fa,$(GENOME_DIR)/ERCC.fa \
+             $(GENOME_DIR)rsem \
+  "
+  queue
+		
+.. _STAR: https://github.com/alexdobin/STAR
+.. _rsem: https://deweylab.github.io/RSEM/
