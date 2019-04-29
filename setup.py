@@ -1,9 +1,10 @@
 from setuptools import setup, find_packages
-from woldrnaseq.version import get_git_version
+import versioneer
 
 setup(
     name='long-rna-seq-condor',
-    version=get_git_version(),
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     packages=find_packages(),
     package_data={
         'woldrnaseq': ['RELEASE-VERSION',
