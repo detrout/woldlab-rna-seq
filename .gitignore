@@ -3,6 +3,7 @@
 *.py[co]
 /__pycache__/
 /build/
+/docs/_build/
 /dist/
 /*.egg-info
 /woldrnaseq/RELEASE-VERSION
@@ -11,3 +12,4 @@
 .coverage
 /.eggs/
 /htmlcov/
+/.tox/
