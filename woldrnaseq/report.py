@@ -12,7 +12,7 @@ import matplotlib
 import pandas
 import bokeh
 from bokeh.models import HoverTool
-from bokeh.plotting import figure, ColumnDataSource
+from bokeh.plotting import figure
 from bokeh.embed import components
 
 from .models import (

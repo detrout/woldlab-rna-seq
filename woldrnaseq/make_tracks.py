@@ -3,14 +3,12 @@ from __future__ import print_function, absolute_import
 import argparse
 import os
 import logging
-from urllib.parse import urljoin
 
 from woldrnaseq.common import (
     add_default_path_arguments,
     add_debug_arguments,
     add_version_argument,
     configure_logging,
-    find_fastqs,
     get_seperator,
     validate_args
 )
