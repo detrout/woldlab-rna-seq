@@ -13,7 +13,6 @@ import pandas
 
 from woldrnaseq import make_star_rsem_dag
 from woldrnaseq import models
-from woldrnaseq.version import get_git_version
 
 from woldrnaseq.common import (
     add_default_path_arguments,
@@ -33,9 +32,6 @@ def main(cmdline=None):
     args = parser.parse_args(cmdline)
 
     configure_logging(args)
-
-    if args.version:
-        parser.exit(0, 'version: %s\n' % (get_git_version(),))
 
     if not validate_args(args):
         parser.error("Please set required parameters")

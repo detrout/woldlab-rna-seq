@@ -9,10 +9,11 @@ import logging
 from pkg_resources import resource_filename
 from jinja2 import Environment, PackageLoader
 
-from woldrnaseq.version import get_git_version
+from woldrnaseq import __version__
 from .common import (
     add_default_path_arguments,
     add_debug_arguments,
+    add_version_argument,
     configure_logging,
 )
 
@@ -61,6 +62,7 @@ def make_parser():
                         help='Override default dagman template')
 
     add_default_path_arguments(parser)
+    add_version_argument(parser)
     add_debug_arguments(parser)
 
     return parser
@@ -153,7 +155,7 @@ class AnalysisDAG:
             reference_prefix=self.reference_prefix,
             username=os.getlogin(),
             timestamp=datetime.datetime.now().isoformat(),
-            woldrnaseq_version=get_git_version(),
+            woldrnaseq_version=__version__,
         )
 
 

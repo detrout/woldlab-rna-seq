@@ -8,6 +8,8 @@ import os
 import pandas
 import numpy
 
+from . import __version__
+
 logger = logging.getLogger(__name__)
 
 
@@ -60,8 +62,7 @@ def add_version_argument(parser):
     """Add Version argument
     """
     parser.add_argument(
-        '--version', default=False, action='store_true',
-        help="Report software version and exit"
+        '--version', action='version', version=__version__
     )
     return parser
 

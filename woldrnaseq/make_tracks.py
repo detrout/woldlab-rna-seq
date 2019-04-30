@@ -18,7 +18,6 @@ from woldrnaseq.models import (
     genome_name_from_library,
     load_library_tables,
 )
-from woldrnaseq.version import get_git_version
 
 logger = logging.getLogger('make_tracks')
 
@@ -27,9 +26,6 @@ def main(cmdline=None):
     args = parser.parse_args(cmdline)
 
     configure_logging(args)
-
-    if args.version:
-        parser.exit(0, 'version: %s\n' % (get_git_version(),))
 
     sep = get_seperator(args.sep)
 

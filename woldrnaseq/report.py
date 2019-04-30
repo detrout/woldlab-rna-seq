@@ -25,7 +25,7 @@ from .models import (
     get_single_spike_cpc,
     genome_name_from_library,
 )
-from .version import get_git_version
+from . import __version__
 
 from .common import (
     add_default_path_arguments,
@@ -46,9 +46,6 @@ logger = logging.getLogger('QC Report')
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
-
-    if args.version:
-        parser.exit(0, 'Version: %s' % (get_git_version(),))
 
     configure_logging(args)
 
@@ -137,7 +134,7 @@ class QCReport:
             bokeh_script=script,
             username=os.getlogin(),
             timestamp=datetime.datetime.now().isoformat(),
-            woldrnaseq_version=get_git_version(),
+            woldrnaseq_version=__version__,
             bokeh_version=bokeh.__version__,
             )
         return page
