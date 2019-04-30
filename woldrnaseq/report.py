@@ -144,7 +144,11 @@ class QCReport:
 
         coverage_plots = GeneCoverage(self.experiments, self.libraries)
         distribution_plots = DistributionPlot(self.experiments, self.libraries)
-        genes_detected_plots = GenesDetectedPlot(self.experiments, self.libraries, self.genome_dir, self.quantification_name)
+        genes_detected_plots = GenesDetectedPlot(
+            self.experiments,
+            self.libraries,
+            self.genome_dir,
+            self.quantification_name)
         score_correlation_plots = ScoreCorrelationPlot(self.experiments)
 
         for experiment_name in sorted(self.experiments.index):

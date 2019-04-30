@@ -76,7 +76,8 @@ def make_bam_custom_track(library, web_root, analysis_root):
     :param str web_root: base url to be prepended to paths
     :param str analysis_root: base directory to look for track files
     """
-    track_template = 'track type=bam name={library_id} description={description} visibility=dense db={genome} bigDataUrl={url}'
+    track_template = 'track type=bam name={library_id} description={description} '\
+        'visibility=dense db={genome} bigDataUrl={url}'
 
     pathname = make_bam_track_name(library, analysis_root)
     url = web_root + pathname.replace(analysis_root, '')
@@ -123,7 +124,8 @@ def make_bigwig_custom_tracks(library, web_root, analysis_root):
     :param str web_root: base url to be prepended to paths
     :param str analysis_root: base directory to look for track files
     """
-    track_template = 'track type=bigWig name={library_id} description={description} visibility=full color=255,0,0 db={genome} bigDataUrl={url}'
+    track_template = 'track type=bigWig name={library_id} '\
+        'description={description} visibility=full color=255,0,0 db={genome} bigDataUrl={url}'
 
     tracks = []
     for signal_type in ['uniq', 'all']:
