@@ -19,6 +19,7 @@ from woldrnaseq.models import (
 
 logger = logging.getLogger('make_tracks')
 
+
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
@@ -32,7 +33,7 @@ def main(cmdline=None):
         parser.error('Need library information table')
 
     libraries = load_library_tables(library_filenames, sep)
-    
+
     custom_tracks = []
     for library_id, library in libraries.iterrows():
         if args.bigwig:
@@ -56,8 +57,8 @@ def make_parser():
                         help='generate track blocks for bigwigs')
     parser.add_argument('--bam', action='store_true', default=False,
                         help='generate track blocks for bam files')
-    
-    parser.add_argument('-s', '--sep', choices=['TAB',','], default='TAB')
+
+    parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('-l', '--libraries', action='append', default=[])
 
     add_version_argument(parser)
@@ -78,7 +79,7 @@ def make_bam_custom_track(library, web_root, analysis_root):
     track_template = 'track type=bam name={library_id} description={description} visibility=dense db={genome} bigDataUrl={url}'
 
     pathname = make_bam_track_name(library, analysis_root)
-    url = web_root +  pathname.replace(analysis_root, '')
+    url = web_root + pathname.replace(analysis_root, '')
     track = track_template.format(library_id=library.name,
                                   description=library.analysis_name,
                                   url=url,
@@ -127,7 +128,7 @@ def make_bigwig_custom_tracks(library, web_root, analysis_root):
     tracks = []
     for signal_type in ['uniq', 'all']:
         pathname = make_bigwig_track_name(library, signal_type, analysis_root)
-        url = web_root +  pathname.replace(analysis_root, '')
+        url = web_root + pathname.replace(analysis_root, '')
         track = track_template.format(library_id=library.name,
                                       description=library.analysis_name,
                                       url=url,
@@ -147,12 +148,12 @@ def make_bigwig_track_name(library, signal_type, analysis_root):
     :returns: list of paths of bigWig files relative to analysis_root
     """
     assert signal_type in ('uniq', 'all')
-    
+
     genome_triplet = genome_name_from_library(library)
     track_name = library.analysis_name + '-' + genome_triplet + '_' + signal_type + '.bw'
 
-    for pathname in [ os.path.join(library.analysis_dir, track_name),
-                      os.path.join(analysis_root, track_name)]:
+    for pathname in [os.path.join(library.analysis_dir, track_name),
+                     os.path.join(analysis_root, track_name)]:
         if os.path.exists(pathname):
             return return_subpath(pathname, analysis_root)
 
@@ -173,6 +174,6 @@ def return_subpath(pathname, analysis_root):
     else:
         raise ValueError("Path {} does not start with {}".format(pathname, analysis_root))
 
+
 if __name__ == '__main__':
     main()
-    
