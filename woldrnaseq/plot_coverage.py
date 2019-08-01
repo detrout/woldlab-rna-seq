@@ -3,6 +3,7 @@
 import argparse
 from collections import OrderedDict
 import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot
 import pandas
 import numpy
@@ -13,7 +14,6 @@ from woldrnaseq.common import save_fixed_height
 
 
 logger = logging.getLogger(__name__)
-matplotlib.use('Agg')
 
 
 def main(cmdline=None):
