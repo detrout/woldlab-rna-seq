@@ -55,6 +55,8 @@ class GeneCoverage(Coverage):
         f = figure(x_axis_label="position quantile (5' to 3')",
                    y_axis_label="Read depth",
                    toolbar_location='above',
+                   width=900,
+                   sizing_mode='scale_width',
         )
         colors = palettes.Category10[10]
         colorcycler = cycle(colors)
