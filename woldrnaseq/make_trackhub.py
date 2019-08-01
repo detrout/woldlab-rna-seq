@@ -157,8 +157,13 @@ def make_bigwig_trackhub(experiments, libraries, trackdb, baseurl):
 
     priority = 0
     for experiment_name, experiment in experiments.iterrows():
+        extra = {}
+        if 'color' in experiment.keys():
+            extra['color'] = experiment['color']
         for library_id in experiment['replicates']:
             row = libraries.loc[library_id]
+            if 'color' in row:
+                extra['color'] = row.color
             for track_type in ['uniq', 'all']:
                 track = trackhub.Track(
                     url=make_bigwig_url(baseurl, row, track_type),
@@ -169,6 +174,7 @@ def make_bigwig_trackhub(experiments, libraries, trackdb, baseurl):
                         'experiment': experiment_name,
                         'multi': track_type},
                     priority=priority,
+                    **extra
                 )
                 signal_view.add_tracks(track)
                 priority += 1

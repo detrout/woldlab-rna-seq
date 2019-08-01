@@ -147,6 +147,12 @@ human       12348
     
       library_ids can be repeated in the experiments.tsv
 
+    color
+      (optional) Set the RGB color for a particular experiment
+      to the specifed value such as green, 0,255,0. It is
+      used by make_trackhub to set the color for all the
+      tracks associated with an experiment.
+
 .. _reference.building_indexes:
 
 Building Indexes
