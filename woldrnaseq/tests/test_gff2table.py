@@ -3,6 +3,8 @@ from io import StringIO
 import numpy
 
 from woldrnaseq.gff2table import (
+    tokenize,
+    parse_attributes,
     AttributesParser,
     GFFParser,
     parse_score,
@@ -26,14 +28,26 @@ class TestAttributeParser(unittest.TestCase):
         attributes = p('')
         self.assertEqual(attributes, 0)
 
+    def test_function_empty(self):
+        attributes = list(parse_attributes('', sep=' '))
+        self.assertEqual(len(attributes), 0)
+
     def test_gtf_extra_spaces(self):
         p = AttributesParser(' ')
         t = list(p.tokenize(' a 1;    b   "b"; '))
         self.assertEqual(t, ['a', ' ', '1', ';', 'b', ' ', '"b"', ';'])
 
+    def test_tokenize_gtf_extra_spaces(self):
+        t = list(tokenize(' a 1;    b   "b"; ', sep=' '))
+        self.assertEqual(t, ['a', ' ', '1', ';', 'b', ' ', '"b"', ';'])
+
     def test_gff_extra_spaces(self):
         p = AttributesParser('=')
         t = list(p.tokenize(' a=1;    b=  "b"; '))
+        self.assertEqual(t, ['a', '=', '1', ';', 'b', '=', '"b"', ';'])
+
+    def test_tokenize_gff_extra_spaces(self):
+        t = list(tokenize(' a=1;    b=  "b"; ', sep='='))
         self.assertEqual(t, ['a', '=', '1', ';', 'b', '=', '"b"', ';'])
 
     @unittest.skip('We should suppress extra semicolons')
@@ -144,6 +158,15 @@ class TestAttributeParser(unittest.TestCase):
         self.assertEqual(p.terms['ID'][0], 'id0')
         self.assertNotIn('chromosome', p.terms)
         self.assertEqual(p.reserved['chromosome'], 0)
+
+    def test_no_stop_iteration(self):
+        g = parse_attributes('chromosome 1;ID id0;junk drawer', sep=' ')
+
+        try:
+            attributes = dict(g)
+            self.assertEqual(len(attributes), 3)
+        except StopIteration:
+            raise RuntimeError('Should not raise stop iteration')
 
 
 class TestParseHelpers(unittest.TestCase):

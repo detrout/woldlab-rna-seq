@@ -16,6 +16,85 @@ import time
 logger = logging.getLogger('gff2table')
 
 
+def tokenize(cell, sep):
+    """Generator returning tokens for gff/gtf attributes
+    """
+    SEP = 0
+    STRING = 1
+    QUOTED_STRING = 2
+
+    state = SEP
+    current = []
+    for character in cell:
+        if state == SEP:
+            if character.isspace():
+                continue
+            elif character == sep:
+                state = SEP
+                yield character
+            elif character == '"':
+                current.append(character)
+                state = QUOTED_STRING
+            elif character == ';':
+                state = SEP
+                yield character
+            else:
+                current.append(character)
+                state = STRING
+        elif state == STRING:
+            if character in (sep, ';'):
+                state = SEP
+                yield ''.join(current)
+                current = []
+                yield character
+            else:
+                current.append(character)
+        elif state == QUOTED_STRING:
+            if character == '"':
+                state = SEP
+                current.append('"')
+                yield ''.join(current)
+                current = []
+            else:
+                current.append(character)
+
+    if len(current) > 0:
+        if state == QUOTED_STRING:
+            raise ValueError('Unclosed quote')
+        else:
+            yield ''.join(current)
+
+
+def parse_attributes(cell, sep, ignore={}, reserved={}):
+    tokens = tokenize(cell, sep)
+    for term in tokens:
+        name = term
+
+        sep = next(tokens)
+
+        value = next(tokens)
+
+        if name not in ignore:
+            if name in reserved:
+                suffix = reserved[name] + 1
+                reserved[name] = suffix
+                name = name + str(suffix)
+
+            if value in ('"NULL"', 'NULL', 'nan'):
+                value = None
+            elif value[0] == '"':
+                value = value[1:-1]
+            elif value[0].isdigit():
+                value = int(value)
+
+            yield name, value
+
+        try:
+            next(tokens)
+        except StopIteration:
+            break
+
+
 class AttributesParser:
     def __init__(self, sep=' ', ignore=None):
         self.index = 0
@@ -35,54 +114,23 @@ class AttributesParser:
         }
 
     def tokenize(self, cell):
-        """Generator returning tokens for gff/gtf attributes
-        """
-        SEP = 0
-        STRING = 1
-        QUOTED_STRING = 2
-
-        state = SEP
-        current = []
-        for character in cell:
-            if state == SEP:
-                if character.isspace():
-                    continue
-                elif character == self.sep:
-                    state = SEP
-                    yield character
-                elif character == '"':
-                    current.append(character)
-                    state = QUOTED_STRING
-                elif character == ';':
-                    state = SEP
-                    yield character
-                else:
-                    current.append(character)
-                    state = STRING
-            elif state == STRING:
-                if character in (self.sep, ';'):
-                    state = SEP
-                    yield ''.join(current)
-                    current = []
-                    yield character
-                else:
-                    current.append(character)
-            elif state == QUOTED_STRING:
-                if character == '"':
-                    state = SEP
-                    current.append('"')
-                    yield ''.join(current)
-                    current = []
-                else:
-                    current.append(character)
-
-        if len(current) > 0:
-            if state == QUOTED_STRING:
-                raise ValueError('Unclosed quote')
-            else:
-                yield ''.join(current)
+        yield from tokenize(cell, self.sep)
 
     def __call__(self, cell):
+        attributes_count = 0
+        for name, value in parse_attributes(cell, self.sep, self.ignore, self.reserved):
+            if isinstance(value, str):
+                prev = self.max_string.get(name, 0)
+                self.max_string[name] = max(prev, len(value))
+
+            column = self.terms.setdefault(name, {})
+            column[self.index] = value
+            attributes_count += 1
+
+        self.index += 1
+        return attributes_count
+
+    def __callold__(self, cell):
         tokens = self.tokenize(cell)
         attributes_count = 0
         for term in tokens:
