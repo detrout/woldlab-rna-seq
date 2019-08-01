@@ -159,8 +159,8 @@ class GenesDetectedPlot:
         for label, color in zip(friendly_names, palettes.Oranges8):
             legend_items.append(
                 LegendItem(
-                    label=label, 
-                    renderers=[f.square([1],[1],color=color, line_color='black' )]))
+                    label=label,
+                    renderers=[f.square([1], [1], color=color, line_color='black')]))
         legend = Legend(items=legend_items, location=(30, 0))
         f.add_layout(legend, 'right')
         f.y_range.start = 0
@@ -173,7 +173,7 @@ class GenesDetectedPlot:
         f.xaxis.major_label_orientation = numpy.pi/4
 
         return f
-        
+
     def update_plot(self, attr, old, new):
         if self._layout is not None:
             experiment_name = self.experiments_combo.value
@@ -196,9 +196,10 @@ class GenesDetectedPlot:
         experiments_names = list(self.experiments.index)
         name = experiments_names[0]
         f = self.make_plot(name, title=name + ' genes detected')
-        
+
         return f
-    
+
+
 if __name__ == '__main__':
     plot = main()
     if plot is not None:
