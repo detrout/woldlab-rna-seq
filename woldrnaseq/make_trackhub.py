@@ -150,7 +150,7 @@ def make_bigwig_trackhub(experiments, libraries, trackdb, baseurl):
     signal_view = trackhub.ViewTrack(
         name='signalviewtrack',
         view='signal',
-        visibility='dense',
+        visibility='full',
         tracktype='bigWig',
         short_label='Signal')
     composite.add_view(signal_view)
