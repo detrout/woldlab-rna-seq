@@ -234,8 +234,9 @@ class QCReport:
             })
 
     def make_star_stats_html(self, library_ids):
-        if len(library_ids) > 0:
-            return self._star_stats.loc[library_ids].to_html()
+        available_libraries = set(self._star_stats.index).intersection(library_ids)
+        if len(available_libraries) > 0:
+            return self._star_stats.loc[available_libraries].to_html()
         else:
             return None
 
