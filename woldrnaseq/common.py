@@ -13,6 +13,13 @@ from . import __version__
 logger = logging.getLogger(__name__)
 
 
+def add_metadata_arguments(parser):
+    parser.add_argument('-l', '--libraries', action='append',
+                        help='library information table')
+    parser.add_argument('-e', '--experiments', action='append',
+                        help='experiments tables')
+
+
 def add_default_path_arguments(parser):
     """Add arguments to allow overriding location of dependencies
     """
