@@ -42,7 +42,7 @@ class TestAttributeParser(unittest.TestCase):
         p = AttributesParser('=')
         t = list(p.tokenize(' a=1;; b="b"; '))
         self.assertEqual(t, ['a', '=', '1', ';', 'b', '=', '"b"', ';'])
-        
+
     def test_simple_gtf(self):
         p = AttributesParser()
         attributes = p('gene_id "gene1"')
@@ -58,7 +58,7 @@ class TestAttributeParser(unittest.TestCase):
         self.assertIn('exon_number', p.terms)
         self.assertEqual(p.terms['exon_number'], {0: 1})
         self.assertIsInstance(p.terms['exon_number'][0], int)
-        
+
     def test_multi_value_gtf(self):
         p = AttributesParser(' ')
         attributes = p(
