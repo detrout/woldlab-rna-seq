@@ -162,8 +162,8 @@ def make_bigwig_trackhub(experiments, libraries, trackdb, baseurl):
             for track_type in ['uniq', 'all']:
                 track = trackhub.Track(
                     url=make_bigwig_url(baseurl, row, track_type),
-                    name="{:02d}".format(priority) + '_' + row.analysis_name + '_' + track_type,
-                    visibility='dense',
+                    name="{:03d}".format(priority) + '_' + row.analysis_name + '_' + track_type,
+                    visibility='full',
                     tracktype='bigWig',
                     subgroups={
                         'experiment': experiment_name,
