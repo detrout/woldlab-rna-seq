@@ -433,6 +433,41 @@ def find_library_analysis_file(libraries, extension):
             yield AnalysisFile(library_id, filenames[0])
 
 
+def find_library_bam_file(library, reference_type='genome', analysis_root=None):
+    """Generate the path to where the bam for this library is
+
+    :param Series library: row from a library table DataFrame
+    :param str reference_type: bam reference type, genome, transcriptome
+    :param str analysis_root: root directory to be searching for track files
+    :returns: path of bam file relative to analysis_root
+    """
+    assert reference_type in ['genome', 'transcriptome'], "bam type is either genome or transcriptome"
+
+    if 'genome' == reference_type:
+        extension = '_genome.bam'
+    else:
+        extension = '_anno.bam'
+
+    genome_triplet = genome_name_from_library(library)
+    bam_name = library.analysis_name + '-' + genome_triplet + extension
+    to_check = [
+        os.path.join(library.analysis_dir, bam_name),
+    ]
+    if analysis_root is not None:
+        to_check.append(os.path.join(analysis_root, bam_name))
+
+    if 'genome' == reference_type:
+        to_check.append(os.path.join(library.analysis_dir, 'Aligned.sortedByCoord.out.bam'))
+
+    for pathname in to_check:
+        if os.path.exists(pathname):
+            if 'genome' == reference_type:
+                bai = pathname + '.bai'
+                if not os.path.exists(bai):
+                    logger.warning('Missing index file for {}'.format(pathname))
+            return pathname
+
+
 def load_correlations(experiment):
     """Load correlation panel for an experiment
     """
