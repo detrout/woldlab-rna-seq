@@ -39,8 +39,10 @@ def load_experiments(experiment_filenames, sep='\t', analysis_root=None):
     """
     tables = []
     for experiment_filename in experiment_filenames:
-        warn_if_spaces(experiment_filename)
-        experiment_filename = os.path.abspath(experiment_filename)
+        # Maybe I need a better test for handling remote urls
+        if os.path.exists(experiment_filename):
+            warn_if_spaces(experiment_filename)
+            experiment_filename = os.path.abspath(experiment_filename)
         if analysis_root is None:
             analysis_cur_root, name = os.path.split(experiment_filename)
         else:
@@ -96,8 +98,10 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
     assert not isinstance(table_filenames, str)
     tables = []
     for library_file in table_filenames:
-        library_file = os.path.abspath(library_file)
-        warn_if_spaces(library_file)
+        # Maybe I need a better test for handling remote urls
+        if os.path.exists(library_file):
+            warn_if_spaces(library_file)
+            library_file = os.path.abspath(library_file)
         if analysis_root is None:
             analysis_cur_root, name = os.path.split(library_file)
         else:
