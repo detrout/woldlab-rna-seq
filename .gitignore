@@ -9,6 +9,7 @@
 /.cache/
 /.pytest_cache/
 .coverage
+.buildinfo
 /.eggs/
 /htmlcov/
 /.tox/
