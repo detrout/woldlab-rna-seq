@@ -115,6 +115,7 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
         analysis.analysis_name = libraries.loc[library_id, 'analysis_name']
         analysis.read_1_fastqs = read_1_fastqs[library_id]
         analysis.read_2_fastqs = read_2_fastqs.get(library_id, [])
+        analysis.stranded = libraries.loc[library_id, 'stranded']
 
         analysis.reference_prefix = get_reference_prefix(libraries, library_id)
         if args.template:

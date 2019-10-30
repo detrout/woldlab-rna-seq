@@ -61,6 +61,7 @@ VARS {{job_id}}_bedgraph-star   star_dir="{{star_dir}}"
 
 VARS {{job_id}}_quant-rsem      rsem_dir="{{rsem_dir}}"
 VARS {{job_id}}_quant-rsem      paired_end="{{rsem_paired_argument}}"
+VARS {{job_id}}_quant-rsem      strand_probability="{{rsem_strand_probability}}"
 
 VARS {{job_id}}_qc-samstats     georgi_dir="{{georgi_dir}}"
 VARS {{job_id}}_qc-coverage     georgi_dir="{{georgi_dir}}"

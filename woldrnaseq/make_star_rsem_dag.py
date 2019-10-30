@@ -83,6 +83,7 @@ class AnalysisDAG:
         self._analysis_name = None
         self.read_1_fastqs = []
         self.read_2_fastqs = []
+        self.stranded = 'unstranded'
         self.reference_prefix = 'chr'
         self.dagman_template = 'star_rsem.dagman'
 
@@ -121,6 +122,13 @@ class AnalysisDAG:
         template = env.get_template(self.dagman_template)
 
         rsem_paired_argument = '--paired-end' if len(self.read_2_fastqs) > 0 else ''
+        if self.stranded == 'forward':
+            rsem_strand_probability = '--forward-prob 1'
+        elif self.stranded == 'reverse':
+            rsem_strand_probability = '--forward-prob 0'
+        else:
+            rsem_strand_probability = '--forward-prob 0.5'
+
         return template.render(
             align_star=resource_filename(__name__, 'align-star.condor'),
             pre_star=resource_filename(__name__, 'pre_star'),
@@ -154,6 +162,7 @@ class AnalysisDAG:
             read_2_fastqs=",".join(self.read_2_fastqs),
             reference_prefix=self.reference_prefix,
             rsem_paired_argument=rsem_paired_argument,
+            rsem_strand_probability=rsem_strand_probability,
             username=os.getlogin(),
             timestamp=datetime.datetime.now().isoformat(),
             woldrnaseq_version=__version__,
