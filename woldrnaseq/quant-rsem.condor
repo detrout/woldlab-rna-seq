@@ -31,7 +31,7 @@ transfer_output_files=$(OUT).genes.results,$(OUT).isoforms.results
 initial_dir=$(CURDIR)
 
 arguments="--bam --estimate-rspd --calc-ci $(RND_SEED) -p $(THREADS) \
-           --no-bam-output --ci-memory 30000 --paired-end --forward-prob 0.5 \
+           --no-bam-output --ci-memory 30000 $(PAIRED_END) --forward-prob 0.5 \
            --temporary-folder ./$(OUT).temp \
 	   $(CURDIR)/$(IN) \
 	   $(GENOME_DIR) \

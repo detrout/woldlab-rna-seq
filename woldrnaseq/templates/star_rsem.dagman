@@ -5,9 +5,8 @@
 # Version: {{woldrnaseq_version}}
 
 JOB {{job_id}}_align-star {{align_star}}
-JOB {{job_id}}_sort-samtools {{sort_samtools}}{% if read_2_fastqs %}
-JOB {{job_id}}_quant-rsem {{quant_rsem_pe}}{% else %}
-JOB {{job_id}}_quant-rsem {{quant_rsem_se}}{% endif %}
+JOB {{job_id}}_sort-samtools {{sort_samtools}}
+JOB {{job_id}}_quant-rsem {{quant_rsem}}
 JOB {{job_id}}_index-samtools {{index_samtools}}
 JOB {{job_id}}_qc-samstats {{qc_samstats}}
 JOB {{job_id}}_bedgraph-star {{bedgraph_star}}
@@ -61,6 +60,7 @@ VARS {{job_id}}_align-star      star_dir="{{star_dir}}"
 VARS {{job_id}}_bedgraph-star   star_dir="{{star_dir}}"
 
 VARS {{job_id}}_quant-rsem      rsem_dir="{{rsem_dir}}"
+VARS {{job_id}}_quant-rsem      paired_end="{{rsem_paired_argument}}"
 
 VARS {{job_id}}_qc-samstats     georgi_dir="{{georgi_dir}}"
 VARS {{job_id}}_qc-coverage     georgi_dir="{{georgi_dir}}"

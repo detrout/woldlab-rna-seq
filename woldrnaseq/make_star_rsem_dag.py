@@ -120,13 +120,13 @@ class AnalysisDAG:
         env = Environment(loader=PackageLoader('woldrnaseq', 'templates'))
         template = env.get_template(self.dagman_template)
 
+        rsem_paired_argument = '--paired-end' if len(self.read_2_fastqs) > 0 else ''
         return template.render(
             align_star=resource_filename(__name__, 'align-star.condor'),
             pre_star=resource_filename(__name__, 'pre_star'),
             post_star=resource_filename(__name__, 'post_star'),
             sort_samtools=resource_filename(__name__, 'sort-samtools.condor'),
-            quant_rsem_se=resource_filename(__name__, 'quant-rsem-se.condor'),
-            quant_rsem_pe=resource_filename(__name__, 'quant-rsem-pe.condor'),
+            quant_rsem=resource_filename(__name__, 'quant-rsem.condor'),
             index_samtools=resource_filename(__name__, 'index-samtools.condor'),
             qc_samstats=resource_filename(__name__, 'qc-samstats.condor'),
             bedgraph_star=resource_filename(__name__, 'bedgraph-star.condor'),
@@ -153,6 +153,7 @@ class AnalysisDAG:
             read_1_fastqs=",".join(self.read_1_fastqs),
             read_2_fastqs=",".join(self.read_2_fastqs),
             reference_prefix=self.reference_prefix,
+            rsem_paired_argument=rsem_paired_argument,
             username=os.getlogin(),
             timestamp=datetime.datetime.now().isoformat(),
             woldrnaseq_version=__version__,
