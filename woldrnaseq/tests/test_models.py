@@ -41,6 +41,7 @@ class TestModel(TestCase):
                                'sex': ['male'],
                                'annotation': ['M4'],
                                'analysis_dir': ['1/'],
+                               'stranded': ['forward'],
                                'read_1': ['R1.fastq.gz'],
                                'read_2': ['R2.fastq.gz']})
         df.set_index('library_id', inplace=True)
@@ -80,6 +81,17 @@ class TestModel(TestCase):
     def test_load_duplicate_libraries(self):
         hg38tsv = resource_filename(__name__, 'library-hg38-se.tsv')
         self.assertRaises(ValueError, models.load_library_tables, [hg38tsv, hg38tsv])
+
+    def test_load_stranded_library(self):
+        mm10tsv = resource_filename(__name__, 'library-mm10-stranded.tsv')
+        mm10 = models.load_library_tables([mm10tsv])
+        expected = ['forward', 'reverse', 'unstranded', 'forward', 'reverse', 'unstranded']
+        for strand, (library_id, row) in zip(expected, mm10.iterrows()):
+            self.assertEqual(strand, row.stranded)
+
+    def test_load_stranded_invalid_library(self):
+        mm10tsv = resource_filename(__name__, 'library-mm10-stranded-invalid.tsv')
+        self.assertRaises(ValueError, models.load_library_tables, [mm10tsv])
 
     def test_load_invalid_experiment(self):
         invalid = resource_filename(__name__, 'experiments-invalid.tsv')

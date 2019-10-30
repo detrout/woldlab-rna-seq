@@ -111,6 +111,9 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
                                 index_col='library_id',
                                 dtype={'library_id': str,
                                        'analysis_dir': str},
+                                converters={
+                                    'stranded': _normalize_stranded
+                                },
                                 comment='#',
                                 skip_blank_lines=True,
                                 )
@@ -124,6 +127,30 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
     libraries = pandas.concat(tables)
     validate_library_ids(libraries)
     return libraries
+
+
+def _normalize_stranded(value):
+    """Return standardized strand names from library control file
+
+    This is intended to be used internally by load_library_tables
+
+    Parameters
+    ----------
+    value: str
+      string containing forward/+, reverse/-, or unstranded/blank
+
+    Returns
+    -------
+      forward, reverse, or unstranded
+    """
+    if pandas.isnull(value) or value.lower() in ('unstranded'):
+        return 'unstranded'
+    elif value.lower() in ('forward', '+'):
+        return 'forward'
+    elif value.lower() in ('reverse', '-'):
+        return 'reverse'
+    else:
+        raise ValueError("Unrecognized strand {}".format(value))
 
 
 def genome_name_from_library(row):
@@ -158,7 +185,7 @@ def verify_library_columns(table):
     """
     missing = []
     required = {'genome', 'sex', 'annotation', 'analysis_dir', 'read_1'}
-    optional = {'read_2', 'reference_prefix'}
+    optional = {'read_2', 'reference_prefix', 'stranded'}
     known = required.union(optional)
 
     columns = set(table.columns)

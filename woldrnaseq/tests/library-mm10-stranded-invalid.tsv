@@ -1,0 +1,11 @@
+library_id	analysis_dir	genome	annotation	sex	stranded	read_1	read_2
+12304	lib_12304	mm10	M4	female	forward	lib_12304/*.fastq.gz
+12305	lib_12305	mm10	M4	female	reverse	lib_12305/*.fastq.gz
+12306	lib_12306	mm10	M4	female	unstranded	lib_12306/*_R1.fastq.gz	lib_12306/*_R2.fastq.gz
+12307	lib_12307	mm10	M4	male	+	lib_12307/*.fastq.gz
+12308	lib_12308	mm10	M4	male	-	lib_12308/*.fastq.gz
+12309	lib_12309	mm10	M4	male	third	lib_12309/*_R1.fastq.gz	lib_12309/lib_12309/*_R2.fastq.gz
+
+
+
+
