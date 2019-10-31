@@ -1,0 +1,19 @@
+###########################################
+# Username: {{username}}
+# Timestamp: {{timestamp}}
+# Version: {{woldrnaseq_version}}
+
+JOB madqc       {{madqc}}
+JOB makersemcsv {{makersemcsv}}
+JOB report      {{report}}
+{% for dag in dags %}
+SPLICE {{dag.library_id}}_splice {{dag.subdag}}{% endfor %}
+
+PARENT {% for dag in dags %}{{dag.library_id}}_splice {% endfor %} CHILD madqc
+PARENT madqc CHILD makersemcsv 
+PARENT madqc CHILD report
+
+VARS all_nodes    experiments="{{experiments}}"
+VARS all_nodes    libraries="{{libraries}}"
+
+VARS makersemcsv  genome_dir="{{genome_dir}}"

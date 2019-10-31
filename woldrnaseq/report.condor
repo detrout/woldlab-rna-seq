@@ -1,0 +1,14 @@
+universe=vanilla
+
+log=report-$(Process).log
+output=report-$(Process).out
+error=report-$(Process).out
+
+request_cpus=1
+request_memory=10G
+
+executable=/usr/bin/python3
+transfer_executable=False
+
+arguments="-m woldrnaseq.report -q TPM $(libraries) $(experiments)"
+queue

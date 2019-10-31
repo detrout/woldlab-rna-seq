@@ -23,68 +23,33 @@ PARENT {{job_id}}_sort-samtools  CHILD {{job_id}}_quant-rsem
 PARENT {{job_id}}_bedgraph-star  CHILD {{job_id}}_qc-coverage
 PARENT {{job_id}}_bedgraph-star  CHILD {{job_id}}_bedgraph2bigwig
 
-VARS {{job_id}}_align-star      library_id="{{job_id}}"
-VARS {{job_id}}_align-star      analysis_name="{{analysis_name}}"
-VARS {{job_id}}_sort-samtools   analysis_name="{{analysis_name}}"
-VARS {{job_id}}_index-samtools  analysis_name="{{analysis_name}}"
-VARS {{job_id}}_quant-rsem      analysis_name="{{analysis_name}}"
-VARS {{job_id}}_qc-samstats     analysis_name="{{analysis_name}}"
-VARS {{job_id}}_bedgraph-star   analysis_name="{{analysis_name}}"
-VARS {{job_id}}_qc-coverage     analysis_name="{{analysis_name}}"
-VARS {{job_id}}_qc-distribution analysis_name="{{analysis_name}}"
-VARS {{job_id}}_bedgraph2bigwig analysis_name="{{analysis_name}}"
+# Common to all analysis
+VARS ALL_NODES                  ucsc_tools_dir="{{ucsc_tools_dir}}"
+VARS ALL_NODES                  star_dir="{{star_dir}}"
+VARS ALL_NODES                  georgi_dir="{{georgi_dir}}"
+VARS ALL_NODES                  rsem_dir="{{rsem_dir}}"
+VARS ALL_NODES                  genome_root="{{genome_dir}}"
 
-VARS {{job_id}}_align-star      curdir="{{analysis_dir}}"
+# Common to this analysis
+VARS ALL_NODES                  analysis_name="{{analysis_name}}"
+VARS ALL_NODES                  curdir="{{analysis_dir}}"
+VARS ALL_NODES                  genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
+
+
+VARS {{job_id}}_align-star      library_id="{{job_id}}"
 VARS {{job_id}}_align-star      pre_star="{{pre_star}}"
 VARS {{job_id}}_align-star      post_star="{{post_star}}"
-VARS {{job_id}}_sort-samtools   curdir="{{analysis_dir}}"
+VARS {{job_id}}_align-star read1="{{read_1_fastqs}}"{% if read_2_fastqs %}
+VARS {{job_id}}_align-star read2="{{read_2_fastqs}}"
+
+VARS {{job_id}}_sort-samtools paired_end="1"
+{% endif %}
 VARS {{job_id}}_sort-samtools   sort_samtools="{{sort_samtools_sh}}"
-VARS {{job_id}}_quant-rsem      curdir="{{analysis_dir}}"
-VARS {{job_id}}_index-samtools  curdir="{{analysis_dir}}"
-VARS {{job_id}}_qc-samstats     curdir="{{analysis_dir}}"
-VARS {{job_id}}_bedgraph-star   curdir="{{analysis_dir}}"
-VARS {{job_id}}_qc-coverage     curdir="{{analysis_dir}}"
-VARS {{job_id}}_qc-distribution curdir="{{analysis_dir}}"
-VARS {{job_id}}_bedgraph2bigwig curdir="{{analysis_dir}}"
 
-VARS {{job_id}}_align-star      genome_root="{{genome_dir}}"
-VARS {{job_id}}_quant-rsem      genome_root="{{genome_dir}}"
-VARS {{job_id}}_index-samtools  genome_root="{{genome_dir}}"
-VARS {{job_id}}_qc-samstats     genome_root="{{genome_dir}}"
-VARS {{job_id}}_bedgraph-star   genome_root="{{genome_dir}}"
-VARS {{job_id}}_qc-coverage     genome_root="{{genome_dir}}"
-VARS {{job_id}}_qc-distribution genome_root="{{genome_dir}}"
-VARS {{job_id}}_bedgraph2bigwig genome_root="{{genome_dir}}"
-
-VARS {{job_id}}_align-star      star_dir="{{star_dir}}"
-VARS {{job_id}}_bedgraph-star   star_dir="{{star_dir}}"
-
-VARS {{job_id}}_quant-rsem      rsem_dir="{{rsem_dir}}"
 VARS {{job_id}}_quant-rsem      paired_end="{{rsem_paired_argument}}"
 VARS {{job_id}}_quant-rsem      strand_probability="{{rsem_strand_probability}}"
 
-VARS {{job_id}}_qc-samstats     georgi_dir="{{georgi_dir}}"
-VARS {{job_id}}_qc-coverage     georgi_dir="{{georgi_dir}}"
-VARS {{job_id}}_qc-distribution georgi_dir="{{georgi_dir}}"
-
-VARS {{job_id}}_bedgraph2bigwig ucsc_tools_dir="{{ucsc_tools_dir}}"
-
 VARS {{job_id}}_bedgraph-star   reference_prefix="{{reference_prefix}}"
-VARS {{job_id}}_bedgraph-star   ucsc_tools_dir="{{ucsc_tools_dir}}"
 VARS {{job_id}}_bedgraph-star   bedsort_sh="{{bedgraph_bedsort_sh}}"
 
-VARS {{job_id}}_align-star      genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
-VARS {{job_id}}_sort-samtools   genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
-VARS {{job_id}}_quant-rsem      genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
-VARS {{job_id}}_index-samtools  genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}" 
-VARS {{job_id}}_qc-samstats     genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}" 
-VARS {{job_id}}_bedgraph-star   genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
-VARS {{job_id}}_qc-coverage     genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}" 
-VARS {{job_id}}_qc-distribution genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}" 
-VARS {{job_id}}_bedgraph2bigwig genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
-
-VARS {{job_id}}_align-star read1="{{read_1_fastqs}}"{% if read_2_fastqs %}
-VARS {{job_id}}_align-star read2="{{read_2_fastqs}}"
-VARS {{job_id}}_sort-samtools paired_end="1"
-{% endif %}
 

@@ -7,16 +7,21 @@ and some quality control metrics.
 from __future__ import absolute_import
 
 import argparse
+import datetime
 import os
 import logging
 import pandas
+from pkg_resources import resource_filename
+from jinja2 import Environment, PackageLoader
 
 from woldrnaseq import make_star_rsem_dag
 from woldrnaseq import models
+from woldrnaseq import __version__
 
 from woldrnaseq.common import (
     add_default_path_arguments,
     add_debug_arguments,
+    add_metadata_arguments,
     add_version_argument,
     configure_logging,
     find_fastqs,
@@ -47,8 +52,8 @@ def main(cmdline=None):
     else:
         read2 = {}
 
-    dag = generate_star_rsem_analysis(args, libraries, read1, read2)
-    print(dag)
+    dags = generate_star_rsem_analysis(args, libraries, read1, read2)
+    generate_combined_analysis(args, dags)
 
     return 0
 
@@ -58,10 +63,9 @@ def make_parser():
         description="Generates a condor dagman script from a provided "
                     "library metadata file."
     )
-    parser.add_argument(
-        '-l', '--libraries', action='append', default=[],
-        help="Specify a library metadata file name (repeatable)"
-    )
+    parser.add_argument('-o', '--output', default='run.dagman',
+                        help='Name to save master dagman too')
+    add_metadata_arguments(parser)
     parser.add_argument(
         'other_libraries', nargs='*',
         help="(Deprecated) specify a list of library metadata file names."
@@ -73,7 +77,7 @@ def make_parser():
     add_default_path_arguments(parser)
     add_version_argument(parser)
     add_debug_arguments(parser)
-    parser.add_argument('--template', help='override default dagman template')
+    #parser.add_argument('--template', help='override default dagman template')
 
     return parser
 
@@ -96,6 +100,19 @@ def get_reference_prefix(libraries, library_id):
 
 
 def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
+    """Generate dagmans for each analysis
+
+    Parameters
+    ----------
+    args: Parsed Arguments from make_parser
+    libraries: pandas.DataFrame containing library metadata
+    read_1_fastqs: list of read 1 fastqs
+    read_2_fastqs: list of read 2 fastqs
+
+    Returns
+    -------
+    List of filenames to created per-analysis dagmans
+    """
     dag = []
     for library_id in libraries.index:
         logger.debug("Creating script for %s", library_id)
@@ -118,15 +135,41 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
         analysis.stranded = libraries.loc[library_id, 'stranded']
 
         analysis.reference_prefix = get_reference_prefix(libraries, library_id)
-        if args.template:
-            analysis.dagman_template = args.template
+        #if args.template:
+        #    analysis.dagman_template = args.template
 
         if analysis.is_valid():
-            dag.append(str(analysis))
+            target = os.path.join(analysis.analysis_dir, library_id + '.dagman')
+            with open(target, 'wt') as outstream:
+                outstream.write(str(analysis))
+            dag.append({'library_id': library_id,
+                        'subdag': target})
         else:
             raise ValueError("Unable to generate dagman script for {}".format(library_id))
 
-    return os.linesep.join(dag)
+    return dag
+
+
+def generate_combined_analysis(args, dags):
+    with open(args.output, 'wt') as outstream:
+        env = Environment(loader=PackageLoader('woldrnaseq', 'templates'))
+        template = env.get_template('full-encode.dagman')
+
+        library_tsv = ' '.join(['-l '+l for l in args.libraries])
+        experiment_tsv = ' '.join(['-e '+e for e in args.experiments])
+
+        outstream.write(template.render(
+            madqc=resource_filename(__name__, 'madqc.condor'),
+            makersemcsv=resource_filename(__name__, 'makersemcsv.condor'),
+            report=resource_filename(__name__, 'report.condor'),
+            libraries=library_tsv,
+            experiments=experiment_tsv,
+            genome_dir=args.genome_dir,
+            dags=dags,
+            username=os.getlogin(),
+            timestamp=datetime.datetime.now().isoformat(),
+            woldrnaseq_version=__version__,
+        ))
 
 
 if __name__ == '__main__':

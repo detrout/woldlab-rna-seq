@@ -1,0 +1,14 @@
+universe=vanilla
+
+log=makersemcsv-$(Process).log
+output=makersemcsv-$(Process).out
+error=makersemcsv-$(Process).out
+
+request_cpus=1
+request_memory=10G
+
+executable=/usr/bin/python3
+transfer_executable=False
+
+arguments="-m woldrnaseq.makersemcsv -q FPKM -q TPM --genome-dir $(genome_dir) --add-names $(libraries) $(experiments)"
+queue

@@ -1,0 +1,14 @@
+universe=vanilla
+
+log=madqc-$(Process).log
+output=madqc-$(Process).out
+error=madqc-$(Process).out
+
+request_cpus=1
+request_memory=10G
+
+executable=/usr/bin/python3
+transfer_executable=False
+
+arguments="-m woldrnaseq.madqc -q TPM $(libraries) $(experiments)"
+queue
