@@ -4,6 +4,7 @@ import logging
 
 from woldrnaseq import models
 from woldrnaseq import madqc
+from woldrnaseq.gtfcache import GTFCache
 
 from woldrnaseq.common import (
     add_debug_arguments,
@@ -24,31 +25,31 @@ def main(cmdline=None):
     experiments = models.load_experiments(args.experiments, sep=sep)
     libraries = models.load_library_tables(args.libraries, sep=sep)
 
+
+    gtf_cache = None
     if args.add_names:
-        if args.gtf_cache is None:
-            parser.error('GTF-cache is needed to add names to the quantification file')
+        if args.genome_dir is None:
+            parser.error('genome-dir is needed to add names to the quantification file')
         else:
-            logger.info('Loading GTF Cache %s', args.gtf_cache)
-            annotation = models.load_gtf_cache(args.gtf_cache)
-    else:
-        annotation = None
+            gtf_cache = GTFCache(libraries, args.genome_dir)
 
     if len(args.quantification) > 0:
         quantification_list = args.quantification
     else:
         quantification_list = ['FPKM']
 
+    if args.transcriptome:
+        # isoforms
+        RsemLoader = IsoformRsemLoader
+    else:
+        # genes
+        RsemLoader = GeneRsemLoader
+
     for quantification in quantification_list:
         logger.info('Building expression matrix for %s', quantification)
-        if args.transcriptome:
-            # isoforms
-            loader = IsoformRsemLoader(quantification, annotation)
-        else:
-            # genes
-            loader = GeneRsemLoader(quantification, annotation)
-
         for i, experiment in experiments.iterrows():
-            matrix = loader.load(experiment, libraries)
+            loader = RsemLoader(quantification, gtf_cache)
+            matrix = loader.load(experiment, libraries, gtf_cache)
             loader.save(matrix, args.output_format)
 
 
@@ -69,7 +70,7 @@ def make_parser():
     parser.add_argument('--output-format', choices=['TAB', ','], default=',')
     parser.add_argument('--transcriptome', action='store_true', default=False,
                         help='Use RSEM transcriptome quantifications instead of genomic quantifications')
-    parser.add_argument('--gtf-cache', help='Specify name of GTF cache file built with gff2table')
+    parser.add_argument('--genome-dir', help='Specify genome directory root')
     parser.add_argument('--add-names', action='store_true', default=False,
                         help='Add names to ouptut quantification file, requires --gtf-cache')
     add_debug_arguments(parser)
@@ -104,32 +105,32 @@ class RsemLoader:
 
 
 class IsoformRsemLoader(RsemLoader):
-    def load(self, experiment, libraries):
+    def load(self, experiment, libraries, gtf_cache):
         replicates = experiment['replicates']
         logger.info("%s %s: %s",
                     experiment.name, self.quantification_name, ','.join(replicates))
         quantifications = madqc.load_transcriptome_quantifications(
             experiment, libraries, self.quantification_name)
 
-        if self.annotation is not None:
+        if gtf_cache is not None:
             quantifications = models.lookup_gene_name_by_transcript_id(
-                self.annotation, quantifications)
+                gtf_cache[replicates[0]], quantifications)
 
         quantifications.name = experiment.name + '_isoform_' + self.quantification_name
         return quantifications
 
 
 class GeneRsemLoader(RsemLoader):
-    def load(self, experiment, libraries):
+    def load(self, experiment, libraries, gtf_cache):
         replicates = experiment['replicates']
         logger.info("%s %s: %s",
                     experiment.name, self.quantification_name, ','.join(replicates))
         quantifications = madqc.load_genomic_quantifications(
             experiment, libraries, self.quantification_name)
 
-        if self.annotation is not None:
+        if gtf_cache is not None:
             quantifications = models.lookup_gene_name_by_gene_id(
-                self.annotation, quantifications)
+                gtf_cache[replicates[0]], quantifications)
 
         quantifications.name = experiment.name + '_gene_' + self.quantification_name
         return quantifications

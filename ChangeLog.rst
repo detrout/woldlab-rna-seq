@@ -10,6 +10,8 @@ Release 1.1
   * Improved sorting on compute hosts
   * Support more gff/gtf variants.
   * Add gene_coverage_detail plot
+  * Convert makersemcsv to use --genome-dir instead of
+    needing to provide path to a genome cache file
 
 Release 1.0
 -----------
