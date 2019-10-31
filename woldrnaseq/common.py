@@ -248,3 +248,19 @@ def add_trailing_slash(path):
     if path[-1] != '/':
         path += '/'
     return path
+
+
+def get_username():
+    """Return username
+
+    Return a useful username even if we are running under HT-Condor.
+
+    Returns
+    -------
+    str : username
+    """
+    batch_system = os.environ.get('BATCH_SYSTEM')
+    if batch_system == 'HTCondor':
+        return os.environ.get('USER', '*Unknown user*')
+
+    return os.getlogin()

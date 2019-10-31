@@ -5,7 +5,6 @@ import argparse
 import datetime
 import itertools
 import logging
-import os
 
 from jinja2 import Environment, PackageLoader
 import matplotlib
@@ -33,6 +32,7 @@ from .common import (
     add_version_argument,
     configure_logging,
     get_seperator,
+    get_username,
 )
 from .iplots.correlation import ScoreCorrelationPlot
 from .iplots.genes_detected import GenesDetectedPlot
@@ -132,7 +132,7 @@ class QCReport:
             transcript_library_plots=self._transcript_library_plots,
             plot_divs=plot_divs,
             bokeh_script=script,
-            username=os.getlogin(),
+            username=get_username(),
             timestamp=datetime.datetime.now().isoformat(),
             woldrnaseq_version=__version__,
             bokeh_version=bokeh.__version__,
