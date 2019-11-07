@@ -206,9 +206,12 @@ class QCReport:
         spare_libraries = set(self.libraries.index).difference(seen_libraries)
 
     def make_plot_handle(self, plot, experiment):
-        handle = self.next_plot_handle
+        handle = None
+        bokeh = plot.make_plot(experiment)
+        if bokeh is not None:
+            handle = self.next_plot_handle
+            self._plots[handle] = bokeh
         logger.debug('%s plot handle %s: %s', type(plot), experiment, handle)
-        self._plots[handle] = plot.make_plot(experiment)
         return handle
 
     def make_samstats_html(self, library_ids):
