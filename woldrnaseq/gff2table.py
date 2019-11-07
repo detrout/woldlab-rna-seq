@@ -250,7 +250,7 @@ class GFFParser:
         if self.gtf is None:
             raise RuntimeError('No gtf table to write. Did you call read_gff?')
         tprev = time.monotonic()
-        store = pandas.HDFStore(outname, mode='w', complevel=9, complib='bzip2')
+        store = pandas.HDFStore(outname, mode='w', complevel=9, complib='blosc:zstd')
         store.append(table_name, self.gtf,
                      min_itemsize=self.attribute_parser.max_string)
         tnow = time.monotonic()
