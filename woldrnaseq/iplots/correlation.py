@@ -2,6 +2,7 @@ from __future__ import print_function, unicode_literals, division
 
 import argparse
 from collections import OrderedDict
+import logging
 import pandas
 import math
 import numpy
@@ -21,6 +22,8 @@ from woldrnaseq.models import (
     load_experiments,
     load_correlations
 )
+
+logger = logging.getLogger(__name__)
 
 
 def main(cmdline=None):
@@ -72,9 +75,13 @@ class ScoreCorrelationPlot:
         if experiment_name is not None:
             self.experiment_name = experiment_name
 
-        score = self._scores.get(
-            self.experiment_name,
-            load_correlations(self.experiments.loc[self.experiment_name]))
+        try:
+            correlations = load_correlations(self.experiments.loc[self.experiment_name])
+        except FileNotFoundError as e:
+            logger.warn("Unable to load file: {}".format(e))
+            return None
+
+        score = self._scores.get(self.experiment_name, correlations)
         spearman = score['rafa_spearman']
         
         factors = list(spearman.index)
