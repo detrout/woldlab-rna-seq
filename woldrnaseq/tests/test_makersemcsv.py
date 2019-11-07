@@ -16,7 +16,7 @@ class TestMakeRSEMCSV(TestCase):
     def test_gene_loader_no_annotation(self):
         for quantification_name in ['FPKM', 'TPM', 'expected_count']:
             loader = makersemcsv.GeneRsemLoader(quantification_name, None)
-            q = loader.load(self.experiments.loc['expf'], self.libraries)
+            q = loader.load(self.experiments.loc['expf'], self.libraries, None)
 
             self.assertEqual(q.name, 'expf_gene_{}'.format(quantification_name))
             self.assertEqual(q.shape, (144, 2))
@@ -24,7 +24,7 @@ class TestMakeRSEMCSV(TestCase):
     def test_isoform_loader_no_annotation(self):
         for quantification_name in ['FPKM', 'TPM', 'expected_count']:
             loader = makersemcsv.IsoformRsemLoader(quantification_name, None)
-            q = loader.load(self.experiments.loc['expf'], self.libraries)
+            q = loader.load(self.experiments.loc['expf'], self.libraries, None)
 
             self.assertEqual(q.name, 'expf_isoform_{}'.format(quantification_name))
             self.assertEqual(q.shape, (144, 2))
