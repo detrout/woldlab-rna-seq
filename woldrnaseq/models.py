@@ -603,9 +603,12 @@ def normalize_hdf_key(key):
     return key.replace('/', '')
 
 
-def make_correlation_filename(experiment):
+def make_correlation_filename(experiment, model='gene'):
     assert isinstance(experiment, pandas.Series)
-    name = experiment.name + '_correlation.h5'
+    components = [experiment.name]
+    if model == 'transcriptome':
+        components.append(model)
+    name = '_'.join(components) + '.h5'
     return os.path.join(experiment['analysis_dir'], name)
 
 

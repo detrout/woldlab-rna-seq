@@ -1,4 +1,5 @@
 import os
+import pandas
 import tempfile
 from pkg_resources import resource_filename
 from unittest import TestCase
@@ -25,16 +26,22 @@ class TestMadqc(TestCase):
     def test_create_quantification_cache_samedir(self):
         quant = 'FPKM'
         score_filename = models.make_correlation_filename(self.experiments.iloc[0])
-        quant_filename = models.make_quantification_filename(self.experiments.iloc[0],
-                                                             quant)
+        quant_filename = models.make_quantification_filename(
+            self.experiments.iloc[0],
+            quant,
+            'gene')
 
         assert not os.path.exists(score_filename), 'Unexpected copy of {}'.format(score_filename)
         assert not os.path.exists(quant_filename), 'Unexpected copy of {}'.format(quant_filename)
         cache = madqc.create_quantification_cache(
             self.experiments.iloc[0],
             self.libraries,
-            quant)
+            quant,
+            'gene')
 
+        self.assertIsInstance(cache['rafa_spearman'], pandas.DataFrame)
+        replicates = self.experiments.iloc[0]['replicates']
+        self.assertEqual(cache['rafa_spearman'].shape, (len(replicates), len(replicates)))
         self.assertTrue(os.path.exists(score_filename))
         os.remove(score_filename)
         self.assertTrue(os.path.exists(quant_filename))
@@ -48,7 +55,7 @@ class TestMadqc(TestCase):
             score_filename = models.make_correlation_filename(
                 temp_experiments.iloc[0])
             quant_filename = models.make_quantification_filename(
-                temp_experiments.iloc[0], quant)
+                temp_experiments.iloc[0], quant, 'gene')
 
             print(temp_experiments)
             print(tempdir, score_filename)
@@ -60,8 +67,10 @@ class TestMadqc(TestCase):
             cache = madqc.create_quantification_cache(
                 temp_experiments.iloc[0],
                 self.libraries,
-                quant)
+                quant,
+                'gene')
 
+            self.assertIsInstance(cache['rafa_spearman'], pandas.DataFrame)
             self.assertTrue(os.path.exists(score_filename))
             os.remove(score_filename)
             self.assertTrue(os.path.exists(quant_filename))

@@ -224,25 +224,36 @@ def load_rsem_replicates(extension, experiment, libraries, column):
     quantifications = load_rsem_quantifications(
         analysis_files, index=library_ids, column=column
     )
+    print('quantifications', experiment.name, quantifications.shape)
     return quantifications
 
 
 def create_quantification_cache(
         experiment, libraries, quantification_name,
+        model,
         sep='\t'):
     score_filename = models.make_correlation_filename(experiment)
     quant_filename = models.make_quantification_filename(experiment,
                                                          quantification_name)
 
-    quantifications = load_genomic_quantifications(
-        experiment,
-        libraries,
-        quantification_name)
+    if model == 'gene':
+        quantifications = load_genomic_quantifications(
+            experiment,
+            libraries,
+            quantification_name)
+    elif model == 'transcriptome':
+        quantifications = load_transcriptome_quantifications(
+            experiment,
+            libraries,
+            quantification_name)
+    else:
+        raise ValueError('Unrecognized model type {}'.format(model))
+
     if os.path.exists(quant_filename):
         os.unlink(quant_filename)
 
     logger.info('Writing quantification %s shape %s',
-                 quant_filename, quantifications.shape)
+                quant_filename, quantifications.shape)
     store = pandas.HDFStore(quant_filename, complevel=9, complib='blosc')
     store.append('quantifications', quantifications)
     store.close()
@@ -255,9 +266,11 @@ def create_quantification_cache(
         store = pandas.HDFStore(score_filename)
         for key in scores:
             logger.info('Writing %s to %s. shape %s',
-                         key, score_filename, scores[key].shape)
+                        key, score_filename, scores[key].shape)
             store.append(key, scores[key])
         store.close()
+
+    return scores
 
 
 def main(cmdline=None):
@@ -295,6 +308,7 @@ def main(cmdline=None):
             experiment,
             libraries,
             args.quantification,
+            args.model,
             sep)
 
 
@@ -305,10 +319,9 @@ def make_parser():
     parser.add_argument('-q', '--quantification', choices=['FPKM', 'TPM'],
                         default='FPKM',
                         help='which quantification value to use')
-    # parser.add_argument('--model', choices=['gene', 'transcriptome'],
-    #                     default='gene',
-    #                     help="Quantify on genes or transcripts")
-
+    parser.add_argument('--model', choices=['gene', 'transcriptome'],
+                        default='gene',
+                        help="Quantify on genes or transcripts")
     parser.add_argument('-l', '--libraries', action='append',
                         help='library information table')
     parser.add_argument('-e', '--experiments', action='append',
