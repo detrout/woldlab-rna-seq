@@ -125,6 +125,8 @@ class GenesDetectedPlot:
             value=self.experiment_names[0],
             options=self.experiment_names)
         self.experiments_combo.on_change('value', self.update_plot)
+        self._layout = None
+
         self.load_all_quantifications(self.experiments)
 
     @property
