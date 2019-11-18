@@ -54,7 +54,7 @@ class Coverage:
             raise ValueError("{} not a valid experiment name".format(value))
 
     def make_plot(self, experiment_name, library_id=None):
-        raise NotImpelementedError("This is a base class")
+        raise NotImplementedError("This is a base class")
 
     def static_layout(self):
         self._layout = self.make_plot(self.experiment_name)
