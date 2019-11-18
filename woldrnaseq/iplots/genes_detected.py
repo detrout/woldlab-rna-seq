@@ -52,8 +52,6 @@ def make_parser():
     parser.add_argument('-l', '--libraries', action='append', default=[], help='library information tables')
     parser.add_argument('-n', '--use-experiment', help='plot specific experiment name')
     parser.add_argument('-q', '--quantification', default='TPM', help='Specify quantification type to use')
-    #parser.add_argument('-r', '--remove', nargs='*', action='append',
-    #                    help='Libraries to filter out')
     parser.add_argument('filenames', nargs='*',
                         help='Combined quantification file: libraries by genes')
     add_debug_arguments(parser)
