@@ -107,13 +107,29 @@ def bin_library_quantification(quantification, quantification_name, bins=None):
 class GenesDetectedPlot:
     def __init__(self, experiments, libraries, genome_dir, quantification_name='FPKM'):
         self.experiments = experiments
+        self.experiment_names = sorted(self.experiments.index)
         self.libraries = libraries
         self.genome_dir = genome_dir
         self._gtf_cache = GTFCache(self.libraries, self.genome_dir)
         self.quantification_name = quantification_name
         self.binned_quantifications = {}
         self.bin_names = {}
+        self.experiments_combo = Select(
+            title='Experiments',
+            value=self.experiment_names[0],
+            options=self.experiment_names)
+        self.experiments_combo.on_change('value', self.update_plot)
         self.load_all_quantifications(self.experiments)
+
+    @property
+    def experiment_name(self):
+        """Return name of the currently selected experiment
+        """
+        return self.experiments_combo.value
+
+    @experiment_name.setter
+    def experiment_name(self, value):
+        self.experiments_combo.value = value
 
     def load_all_quantifications(self, experiments):
         for experiment_name, experiment_row in experiments.iterrows():
@@ -132,11 +148,10 @@ class GenesDetectedPlot:
             self.binned_quantifications[experiment_name] = binned
 
     def make_plot(self, experiment_name=None, title=None):
-        if experiment_name not in self.binned_quantifications:
-            experiment_name = self.experiments.index[0]
+        self.experiment_name = experiment_name if experiment_name is not None else self.experiment_names[0]
 
-        binned = self.binned_quantifications[experiment_name]
-        bin_names = self.bin_names[experiment_name]
+        binned = self.binned_quantifications[self.experiment_name]
+        bin_names = self.bin_names[self.experiment_name]
         friendly_names = ['{} {}'.format(k, self.quantification_name) for k in reversed(DEFAULT_BINS[:-1])]
         tooltips = [('library_id', '@library_id'),
                     ('Total', '@total')]
@@ -185,11 +200,6 @@ class GenesDetectedPlot:
             self._layout.children[1] = self.make_plot(experiment_name)
 
     def app_layout(self):
-        experiments_names = sorted(self.experiments.index)
-        self.experiments_combo = Select(title='Experiments',
-                                        value=experiments_names[0],
-                                        options=list(sorted(experiments_names)))
-        self.experiments_combo.on_change('value', self.update_plot)
         controls = widgetbox([self.experiments_combo])
         f = self.make_plot(self.experiments_combo.value)
         if f is not None:
@@ -198,9 +208,8 @@ class GenesDetectedPlot:
         return self._layout
 
     def static_layout(self):
-        experiments_names = list(self.experiments.index)
-        name = experiments_names[0]
-        f = self.make_plot(name, title=name + ' genes detected')
+        name = self.experiment_name
+        f = self.make_plot(name)
 
         return f
 
