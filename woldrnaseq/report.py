@@ -148,7 +148,8 @@ class QCReport:
             self.experiments,
             self.libraries,
             self.genome_dir,
-            self.quantification_name)
+            self.quantification_name,
+            ['protein_coding'])
         score_correlation_plots = ScoreCorrelationPlot(self.experiments)
 
         for experiment_name in sorted(self.experiments.index):
