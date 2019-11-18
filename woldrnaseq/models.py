@@ -614,7 +614,10 @@ def make_correlation_filename(experiment, model='gene'):
 
 def make_quantification_filename(experiment, quantification='FPKM'):
     assert isinstance(experiment, pandas.Series)
-    name = experiment.name + '_' + quantification + '.h5'
+    components = [experiment.name]
+    components.append(quantification)
+
+    name = '_'.join(components) + '.h5'
     return os.path.join(experiment['analysis_dir'], name)
 
 
