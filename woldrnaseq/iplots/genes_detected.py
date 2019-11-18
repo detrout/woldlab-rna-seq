@@ -21,7 +21,7 @@ from woldrnaseq.models import (
     load_library_tables,
     load_quantifications,
 )
-from woldrnaseq.gtfcache import GTFCache, protein_coding_gene_ids
+from woldrnaseq.gtfcache import GTFCache
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,20 @@ def main(cmdline=None):
         except KeyError:
             logger.error('{} was not found in {}'.format(args.use_experiment, ', '.join(list(experiments.index))))
             return None
-    plot = GenesDetectedPlot(experiments, libraries, args.genome_dir, args.quantification)
+
+    if len(args.gene_type_filter) > 0:
+        logger.info('Limiting to the following gene types {}'.format(','.join(args.gene_type_filter)))
+    else:
+        logger.info('Using all gene types')
+
+    # ids will be None if args.gene_list_filter is None
+    ids = load_gene_id_list(args.gene_list_filter)
+
+    plot = GenesDetectedPlot(
+        experiments, libraries, args.genome_dir, args.quantification,
+        gene_type_filter=args.gene_type_filter,
+        gene_list_filter=ids,
+    )
 
     if __name__ == '__main__':
         curdoc().add_root(plot.static_layout())
@@ -58,10 +71,27 @@ def make_parser():
     parser.add_argument('-n', '--use-experiment', help='plot specific experiment name')
     parser.add_argument('-q', '--quantification', default='TPM', help='Specify quantification type to use')
     parser.add_argument('-o', '--output', default='genesdetected.html', help='output filename')
+    parser.add_argument('--gene-type-filter', default=[], action='append',
+                        help='GENCODE gene_types to include')
+    parser.add_argument('--gene-list-filter', default=None,
+                        help='Filename to load a list of IDs to filter on')
     parser.add_argument('filenames', nargs='*',
                         help='Combined quantification file: libraries by genes')
     add_debug_arguments(parser)
     return parser
+
+
+def load_gene_id_list(filename):
+    if filename is None:
+        logger.info('Not filtering by gene id')
+        return None
+
+    ids = []
+    with open(filename, 'rt') as instream:
+        for line in instream:
+            ids.append(line.rstrip())
+    logger.info('Filtering to only include {} genes'.format(ids))
+    return ids
 
 
 def load_csv_quantification_file(filename):
@@ -111,7 +141,11 @@ def bin_library_quantification(quantification, quantification_name, bins=None):
 
 
 class GenesDetectedPlot:
-    def __init__(self, experiments, libraries, genome_dir, quantification_name='FPKM'):
+    def __init__(self, experiments, libraries,
+                 genome_dir,
+                 quantification_name='FPKM',
+                 gene_type_filter=[],
+                 gene_list_filter=None):
         self.experiments = experiments
         self.experiment_names = sorted(self.experiments.index)
         self.libraries = libraries
@@ -120,6 +154,8 @@ class GenesDetectedPlot:
         self.quantification_name = quantification_name
         self.binned_quantifications = {}
         self.bin_names = {}
+        self.gene_type_filter = gene_type_filter
+        self.gene_list_filter = gene_list_filter
         self.experiments_combo = Select(
             title='Experiments',
             value=self.experiment_names[0],
@@ -150,11 +186,28 @@ class GenesDetectedPlot:
                 continue
 
             annotation = self._gtf_cache[all_quant.columns[-1]]
-            protein_genes = protein_coding_gene_ids(annotation)
 
-            protein_quant = all_quant.loc[protein_genes]
+            known_gene_types = set(annotation['gene_type'].fillna('Unknown'))
+            invalid_gene_type = False
+            for gene_type in self.gene_type_filter:
+                if gene_type not in known_gene_types:
+                    invalid_gene_type = True
+                    logger.warn('{} not found in known gene types'.format(gene_type))
 
-            binned = bin_library_quantification(protein_quant, self.quantification_name)
+            if invalid_gene_type:
+                logger.warn('Known gene types are: '.format(' '.join(sorted(known_gene_types))))
+                #raise ValueError('Unrecognized gene type')
+
+            regions_of_interest = (annotation['type'] == 'gene')
+            if len(self.gene_type_filter) > 0:
+                regions_of_interest &= annotation['gene_type'].isin(self.gene_type_filter)
+            if self.gene_list_filter is not None:
+                regions_of_interest &= annotation['gene_id'].isin(self.gene_list_filter)
+
+            gene_ids = annotation[regions_of_interest]['gene_id']
+            filtered_quant = all_quant.loc[gene_ids]
+
+            binned = bin_library_quantification(filtered_quant, self.quantification_name)
             self.bin_names[experiment_name] = binned.columns
             binned['total'] = binned.sum(axis=1)
             self.binned_quantifications[experiment_name] = binned
