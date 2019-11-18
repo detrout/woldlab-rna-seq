@@ -12,6 +12,10 @@ from bokeh.models import HoverTool, Legend, LegendItem, Select
 from bokeh.plotting import figure, curdoc, ColumnDataSource
 from bokeh import palettes
 
+from woldrnaseq.common import (
+    add_debug_arguments,
+    configure_logging,
+)
 from woldrnaseq.models import (
     load_experiments,
     load_library_tables,
@@ -25,6 +29,8 @@ logger = logging.getLogger(__name__)
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
+
+    configure_logging(args)
 
     experiments = load_experiments(args.experiments)
     libraries = load_library_tables(args.libraries)
@@ -50,6 +56,7 @@ def make_parser():
     #                    help='Libraries to filter out')
     parser.add_argument('filenames', nargs='*',
                         help='Combined quantification file: libraries by genes')
+    add_debug_arguments(parser)
     return parser
 
 
