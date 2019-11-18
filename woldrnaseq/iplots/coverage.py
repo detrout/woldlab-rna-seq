@@ -52,7 +52,7 @@ class Coverage:
             self.experiment_name = value
         else:
             raise ValueError("{} not a valid experiment name".format(value))
-        
+
     def make_plot(self, experiment_name, library_id=None):
         raise NotImpelementedError("This is a base class")
 
