@@ -41,6 +41,11 @@ def main(cmdline=None):
             logger.error('{} was not found in {}'.format(args.use_experiment, ', '.join(list(experiments.index))))
             return None
     plot = GenesDetectedPlot(experiments, libraries, args.genome_dir, args.quantification)
+
+    if __name__ == '__main__':
+        curdoc().add_root(plot.static_layout())
+        save(curdoc(), args.output, title=plot.title)
+
     return plot
 
 
@@ -52,6 +57,7 @@ def make_parser():
     parser.add_argument('-l', '--libraries', action='append', default=[], help='library information tables')
     parser.add_argument('-n', '--use-experiment', help='plot specific experiment name')
     parser.add_argument('-q', '--quantification', default='TPM', help='Specify quantification type to use')
+    parser.add_argument('-o', '--output', default='genesdetected.html', help='output filename')
     parser.add_argument('filenames', nargs='*',
                         help='Combined quantification file: libraries by genes')
     add_debug_arguments(parser)
@@ -131,6 +137,10 @@ class GenesDetectedPlot:
     def experiment_name(self, value):
         self.experiments_combo.value = value
 
+    @property
+    def title(self):
+        return self.experiment_name + ' genes detected'
+
     def load_all_quantifications(self, experiments):
         for experiment_name, experiment_row in experiments.iterrows():
             all_quant = load_quantifications(experiment_row, self.quantification_name)
@@ -159,7 +169,7 @@ class GenesDetectedPlot:
             tooltips.append((name, '@' + column_name))
         hover = HoverTool(tooltips=tooltips)
 
-        title = 'Genes Detected' if title is None else title
+        title = self.title if title is None else title
         source = ColumnDataSource(binned)
         f = figure(title=title,
                    x_range=list(binned.index),
@@ -216,9 +226,6 @@ class GenesDetectedPlot:
 
 if __name__ == '__main__':
     plot = main()
-    if plot is not None:
-        curdoc().add_root(plot.static_layout())
-        save(curdoc(), 'genesdetected.html')
 elif __name__.startswith('bk_script'):
     plot = main()
     if plot is not None:
