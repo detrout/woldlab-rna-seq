@@ -217,6 +217,8 @@ class QCReport:
 
     def make_samstats_html(self, library_ids):
         def reads_format(x):
+            if pandas.isnull(x):
+                return 'NaN'
             return "{:,}".format(int(x))
 
         def fraction_mapped(x):
