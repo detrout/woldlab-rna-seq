@@ -63,7 +63,7 @@ def main(cmdline=None):
 
     tracks_added = False
     if args.bigwig:
-        make_bigwig_trackhub(experiments, libraries, trackdb, args.web_root)
+        make_bigwig_trackhub(experiments, libraries, trackdb, args.web_root, args.stranded)
         tracks_added = True
     if args.bam:
         make_bam_trackhub(experiments, libraries, trackdb, args.web_root)
@@ -105,7 +105,8 @@ def make_parser():
                         help='generate track blocks for bigwigs')
     parser.add_argument('--bam', action='store_true', default=False,
                         help='generate track blocks for bam files')
-
+    parser.add_argument('--stranded', action='store_true', default='False',
+                        help='hack to force generation of stranded tracks')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
     parser.add_argument('-l', '--libraries', action='append', default=[])
     parser.add_argument('-e', '--experiments', action='append', default=[])
@@ -116,7 +117,7 @@ def make_parser():
     return parser
 
 
-def make_bigwig_trackhub(experiments, libraries, trackdb, baseurl):
+def make_bigwig_trackhub(experiments, libraries, trackdb, baseurl, stranded=False):
     experiment_mapping = {}
     for key in experiments.index:
         experiment_mapping[key] = key
@@ -126,15 +127,28 @@ def make_bigwig_trackhub(experiments, libraries, trackdb, baseurl):
             label='Experiment',
             mapping=experiment_mapping)
 
+    if stranded:
+        mapping = {
+            'minusUniq': 'minusUniq',
+            'minusAll': 'minusAll',
+            'plusUniq': 'plusUniq',
+            'plusAll': 'plusAll',
+        }
+        track_types = ['minusUniq', 'plusUniq', 'minusAll', 'plusAll']
+    else:
+        mapping = {
+            'uniq': 'uniq',
+            'all': 'all',
+        }
+        track_types = ['uniq', 'all']
+
     subgroups = [
         experiment_group,
         trackhub.SubGroupDefinition(
             name='multi',
             label='multi',
-            mapping={
-                'uniq': 'uniq',
-                'all': 'all',
-            }),
+            mapping=mapping,
+        )
     ]
 
     composite = trackhub.CompositeTrack(
@@ -164,7 +178,7 @@ def make_bigwig_trackhub(experiments, libraries, trackdb, baseurl):
             row = libraries.loc[library_id]
             if 'color' in row:
                 extra['color'] = row.color
-            for track_type in ['uniq', 'all']:
+            for track_type in track_types:
                 track = trackhub.Track(
                     url=make_bigwig_url(baseurl, row, track_type),
                     name="{:03d}".format(priority) + '_' + row.analysis_name + '_' + track_type,
