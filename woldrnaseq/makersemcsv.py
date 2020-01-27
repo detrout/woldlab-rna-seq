@@ -49,7 +49,7 @@ def main(cmdline=None):
         logger.info('Building expression matrix for %s', quantification)
         for i, experiment in experiments.iterrows():
             loader = RsemLoader(quantification, gtf_cache)
-            matrix = loader.load(experiment, libraries, gtf_cache)
+            matrix = loader.load(experiment, libraries)
             loader.save(matrix, args.output_format)
 
 
@@ -87,7 +87,7 @@ class RsemLoader:
     annotation: pandas.DataFrame
         A GTF cache file to help map gene_ids to gene_names.
     """
-    def __init__(self, quantification_name, annotation):
+    def __init__(self, quantification_name, annotation=None):
         self.quantification_name = quantification_name
         self.annotation = annotation
 
@@ -105,32 +105,32 @@ class RsemLoader:
 
 
 class IsoformRsemLoader(RsemLoader):
-    def load(self, experiment, libraries, gtf_cache):
+    def load(self, experiment, libraries):
         replicates = experiment['replicates']
         logger.info("%s %s: %s",
                     experiment.name, self.quantification_name, ','.join(replicates))
         quantifications = madqc.load_transcriptome_quantifications(
             experiment, libraries, self.quantification_name)
 
-        if gtf_cache is not None:
+        if self.annotation is not None:
             quantifications = models.lookup_gene_name_by_transcript_id(
-                gtf_cache[replicates[0]], quantifications)
+                self.annotation[replicates[0]], quantifications)
 
         quantifications.name = experiment.name + '_isoform_' + self.quantification_name
         return quantifications
 
 
 class GeneRsemLoader(RsemLoader):
-    def load(self, experiment, libraries, gtf_cache):
+    def load(self, experiment, libraries):
         replicates = experiment['replicates']
         logger.info("%s %s: %s",
                     experiment.name, self.quantification_name, ','.join(replicates))
         quantifications = madqc.load_genomic_quantifications(
             experiment, libraries, self.quantification_name)
 
-        if gtf_cache is not None:
+        if self.annotation is not None:
             quantifications = models.lookup_gene_name_by_gene_id(
-                gtf_cache[replicates[0]], quantifications)
+                self.annotation[replicates[0]], quantifications)
 
         quantifications.name = experiment.name + '_gene_' + self.quantification_name
         return quantifications
