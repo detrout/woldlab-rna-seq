@@ -220,8 +220,8 @@ class GeneCoverageDetail:
                    y_axis_label="Read depth",
                    toolbar_location='right',
                    title=title,
-                   plot_width=800,
-                   plot_height=600,
+                   width=900,
+                   sizing_mode='scale_width',
         )
         colors = palettes.Category20[20]
         colorcycler = cycle(colors)
