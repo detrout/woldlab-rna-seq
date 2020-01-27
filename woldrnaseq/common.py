@@ -188,6 +188,16 @@ def validate_args(args):
         logger.error('Path to "GeorgiScripts" python scripts not provided.')
         can_continue = False
 
+    for lib in args.libraries:
+        if not os.path.exists(lib):
+            logger.error('{} does not exist'.format(lib))
+            can_continue = False
+
+    for exp in args.experiments:
+        if not os.path.exists(exp):
+            logger.error('{} does not exist'.format(exp))
+            can_continue = False
+
     return can_continue
 
 
