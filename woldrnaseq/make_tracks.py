@@ -10,7 +10,7 @@ from woldrnaseq.common import (
     add_version_argument,
     configure_logging,
     get_seperator,
-    validate_args
+    validate_library_file_existance,
 )
 from woldrnaseq.models import (
     genome_name_from_library,
@@ -27,6 +27,9 @@ def main(cmdline=None):
     configure_logging(args)
 
     sep = get_seperator(args.sep)
+
+    if not validate_library_file_existance(args):
+        parser.error('Fix incorrect library file names')
 
     library_filenames = args.libraries
     if len(library_filenames) == 0:

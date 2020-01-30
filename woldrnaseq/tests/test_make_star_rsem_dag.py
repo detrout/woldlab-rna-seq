@@ -23,7 +23,7 @@ class TestMakeDag(TestCase):
 
         args = parser.parse_args(['-g', 'genome', '-a', 'annotation','--read1', 'a.fastq.gz','b.fastq.gz'])
         with self.assertLogs(common.logger, logging.INFO) as log:
-            common.validate_args(args)
+            common.validate_path_args(args)
         self.assertEqual(len(log.output), 4)
 
         args = parser.parse_args(['-g', 'genome', '-a', 'annotation',
@@ -31,15 +31,21 @@ class TestMakeDag(TestCase):
                                   '--genome-dir', '~/genome',
                                   '--read1', 'a.fastq.gz'])
         with self.assertLogs(common.logger, logging.INFO) as log:
-            common.validate_args(args)
+            common.validate_path_args(args)
         self.assertEqual(len(log.output), 2)
 
     def test_arguments_pe(self):
         parser = make_star_rsem_dag.make_parser()
 
-        args = parser.parse_args(['-g', 'genome', '-a', 'annotation','--read1', 'a.fastq.gz','b.fastq.gz', '--read2', 'a2.fastq.gz','b2.fastq.gz'])
+        args = parser.parse_args([
+            '-g', 'genome',
+            '-a', 'annotation',
+            '--library-id', '12345',
+            '--read1', 'a.fastq.gz', 'b.fastq.gz',
+            '--read2', 'a2.fastq.gz', 'b2.fastq.gz'
+        ])
         with self.assertLogs(common.logger, logging.INFO) as log:
-            common.validate_args(args)
+            common.validate_path_args(args)
         self.assertEqual(len(log.output), 4)
 
         args = parser.parse_args(['-g', 'genome', '-a', 'annotation',
@@ -49,7 +55,7 @@ class TestMakeDag(TestCase):
                                   '--read2', 'b.fastq.gz',
         ])
         with self.assertLogs(common.logger, logging.INFO) as log:
-            common.validate_args(args)
+            common.validate_path_args(args)
         self.assertEqual(len(log.output), 2)
 
     def test_analysis(self):

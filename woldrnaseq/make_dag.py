@@ -26,7 +26,9 @@ from woldrnaseq.common import (
     configure_logging,
     find_fastqs,
     get_seperator,
-    validate_args
+    validate_path_args,
+    validate_library_file_existance,
+    validate_experiment_file_existance,
 )
 
 logger = logging.getLogger(__name__)
@@ -38,8 +40,12 @@ def main(cmdline=None):
 
     configure_logging(args)
 
-    if not validate_args(args):
-        parser.error("Please set required parameters")
+    if not validate_path_args(args):
+        parser.error('Please set required parameters')
+
+    if not (validate_library_file_existance(args) and
+            validate_experiment_file_existance(args)):
+        parser.error('Fix path to files')
 
     sep = get_seperator(args.sep)
     library_filenames = args.libraries
