@@ -238,6 +238,79 @@ def required_experiment_columns_present(table):
         raise ValueError("Required columns missing: {}".format(','.join(missing)))
 
 
+def load_flagstat(filename):
+    """Read samtools flagstat output file
+    """
+    with open(filename, 'rt') as instream:
+        return load_flagstat_stream(instream)
+
+def load_flagstat_stream(instream):
+    flags = {}
+
+    for i, line in enumerate(instream):
+        fields = line.rstrip().split(' ')
+        assert fields[1] == '+'
+        qc_pass = int(fields[0])
+        qc_fail = int(fields[2])
+        if i == 0:
+            assert fields[5] == '(QC-passed'
+            flags['total'] = qc_pass
+            flags['total_qc_failed'] = qc_fail
+        elif i == 1:
+            assert fields[3] == 'duplicates'
+            flags['duplicates'] = qc_pass
+            flags['duplicates_qc_failed'] = qc_fail
+        elif i == 2:
+            assert fields[3] == 'mapped'
+            flags['mapped'] = qc_pass
+            flags['mapped_qc_failed'] = qc_fail
+            percents = flagstat_parse_percent(fields[4])
+            flags['mapped_pct'] = percents[0]
+        elif i == 3:
+            assert fields[3] == 'paired'
+            # stop parsing for single read alignments
+            if qc_pass == 0 and qc_fail == 0:
+                break
+            flags['paired'] = qc_pass
+        elif i == 4:
+            assert fields[3] == 'read1'
+            flags['read1'] = qc_pass
+            flags['read1_qc_failed'] = qc_fail
+        elif i == 5:
+            assert fields[3] == 'read2'
+            flags['read2'] = qc_pass
+            flags['read2_qc_failed'] = qc_fail
+        elif i == 6:
+            assert fields[3] == 'properly'
+            flags['paired_properly'] = qc_pass
+            flags['paired_properly_qc_failed'] = qc_fail
+            percents = flagstat_parse_percent(fields[5])
+            flags['paired_properly_pct'] = percents[0]
+            # this isn't in the DCC's model, but could exist?
+            # flags['paired_properly_qc_failed_pct'] = percents[1]
+        elif i == 7:
+            assert fields[3] == 'with' and len(fields) == 8
+            flags['with_itself'] = qc_pass
+            flags['with_itself_qc_failed'] = qc_fail
+        elif i == 8:
+            assert fields[3] == 'singletons'
+            flags['singletons'] = qc_pass
+            flags['singletons_qc_failed'] = qc_fail
+            percents = flagstat_parse_percent(fields[4])
+            flags['singletons_pct'] = percents[0]
+        elif i == 9:
+            assert fields[3] == 'with' and len(fields) == 10
+            flags['diff_chroms'] = qc_pass
+            flags['diff_chroms_qc_failed'] = qc_fail
+
+    return flags
+
+
+def flagstat_parse_percent(field):
+    percents = field[1:-1].split(':')
+    return percents
+
+
 def load_samstats(filename):
     floats = set(['Fraction Mapped', 'Complexity', 'Read Length, Average'])
     samstats = collections.OrderedDict()

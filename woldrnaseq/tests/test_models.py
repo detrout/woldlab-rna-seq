@@ -176,6 +176,56 @@ class TestModel(TestCase):
         coverage = models.load_all_coverage(mm10)
         self.assertEqual(coverage.shape, (100, 1))
 
+    def test_load_flagstat_ENCFF284YOU(self):
+        filename = resource_filename(__name__, 'ENCFF284YOU_flagstat.txt')
+        flagstat = models.load_flagstat(filename)
+        expected = {
+            'duplicates': 0,
+            'total': 51759944,
+            'mapped_qc_failed': 3779026,
+            'mapped': 49892660,
+            'mapped_pct': '96.39%',
+            'total_qc_failed': 4818581,
+            'duplicates_qc_failed': 0,
+        }
+        for k in expected:
+            self.assertEqual(flagstat[k], expected[k])
+        self.assertEqual(sorted(expected), sorted(flagstat))
+
+    def test_load_flagstat_ENCFF704SWF(self):
+        filename = resource_filename(__name__, 'ENCFF704SWF_flagstat.txt')
+        flagstat = models.load_flagstat(filename)
+        expected = {
+            'paired_properly': 192704068,
+            'paired_properly_pct': '90.01%',
+            'paired': 214087832,
+            'with_itself_qc_failed': 0,
+            'with_itself': 192704068,
+            'paired_properly_qc_failed': 0,
+            'read2_qc_failed': 0,
+            'total_qc_failed': 0,
+            'mapped_qc_failed': 0,
+            'duplicates': 0,
+            'diff_chroms': 0,
+            'diff_chroms_qc_failed': 0,
+            'singletons_pct': '0.00%',
+            'singletons': 0,
+            'mapped': 192704068,
+            'read1': 107043916,
+            'total': 214087832,
+            'duplicates_qc_failed': 0,
+            'read1_qc_failed': 0,
+            'mapped_pct': '90.01%',
+            'singletons_qc_failed': 0,
+            'read2': 107043916,
+        }
+        for k in expected:
+            self.assertEqual(
+                flagstat[k], expected[k],
+                '{} did not match'.format(k),
+            )
+        self.assertEqual(sorted(expected), sorted(flagstat))
+
     def test_load_all_samstats(self):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
         mm10 = models.load_library_tables([mm10tsv])
