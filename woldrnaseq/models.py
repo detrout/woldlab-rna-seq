@@ -1,6 +1,5 @@
 """Load necessary information to run our analysis from text tables.
 """
-
 import collections
 from glob import glob
 import logging
