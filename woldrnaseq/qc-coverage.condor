@@ -24,5 +24,9 @@ executable=/usr/bin/python3
 transfer_executable=False
 
 initialdir=$(CURDIR)
-arguments="$(GENE_COVERAGE) --gtf $(GTF) $(IN) --output $(OUT) --print-list"
+arguments="$(GENE_COVERAGE) --gtf $(GTF) $(IN) --output $(OUT) \
+  --gene-normalization max \
+  --expression-threshold 1.0 \
+  --print-list \
+"
 queue

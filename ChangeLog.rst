@@ -12,6 +12,9 @@ Release 1.1
   * Add gene_coverage_detail plot
   * Convert makersemcsv to use --genome-dir instead of
     needing to provide path to a genome cache file
+  * Adjust QC coverage script to to single gene model, with each gene
+    normalized to its max expression, and requiring at least 1.0 in
+    the STAR normalized bedgraph file
 
 Release 1.0
 -----------
