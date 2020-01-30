@@ -239,46 +239,78 @@ class TestModel(TestCase):
     def test_make_correlation_filename_default(self):
         """Does make_correlation_filename work with default analysis_root
         """
-        mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
-        path, _ = os.path.split(mm10tsv)
-        mm10 = models.load_experiments([mm10tsv])
+        results = {
+            'genome': 'expf_correlation.h5',
+            'transcriptome': 'expf_transcriptome_correlation.h5',
+        }
+        for reference_type in results:
+            mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
+            path, _ = os.path.split(mm10tsv)
+            mm10 = models.load_experiments([mm10tsv])
 
-        filename = models.make_correlation_filename(mm10.iloc[0])
-        expected = os.path.join(path, 'expf_correlation.h5')
-        self.assertEqual(filename, expected)
+            filename = models.make_correlation_filename(
+                mm10.iloc[0],
+                reference_type=reference_type,
+            )
+            expected = os.path.join(path, results[reference_type])
+            self.assertEqual(filename, expected)
 
     def test_make_correlation_filename_other(self):
         """Does make_correlation_filename work with an alternate analysis_root
         """
-        mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
-        path = '/tmp'
-        mm10 = models.load_experiments([mm10tsv], analysis_root=path)
+        results = {
+            'genome': 'expf_correlation.h5',
+            'transcriptome': 'expf_transcriptome_correlation.h5',
+        }
+        for reference_type in results:
+            mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
+            path = '/tmp'
+            mm10 = models.load_experiments([mm10tsv], analysis_root=path)
 
-        filename = models.make_correlation_filename(mm10.iloc[0])
-        expected = os.path.join(path, 'expf_correlation.h5')
-        self.assertEqual(filename, expected)
+            filename = models.make_correlation_filename(
+                mm10.iloc[0],
+                reference_type=reference_type,
+            )
+            expected = os.path.join(path, results[reference_type])
+            self.assertEqual(filename, expected)
 
     def test_make_quantification_filename_default(self):
         """Does make_quantification_filename work with default analysis_root
         """
-        mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
-        path, _ = os.path.split(mm10tsv)
-        mm10 = models.load_experiments([mm10tsv])
+        results = {
+            'genome': 'expf_FPKM.h5',
+            'transcriptome': 'expf_transcriptome_FPKM.h5',
+        }
+        for reference_type in results:
+            mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
+            path, _ = os.path.split(mm10tsv)
+            mm10 = models.load_experiments([mm10tsv])
 
-        filename = models.make_quantification_filename(mm10.iloc[0])
-        expected = os.path.join(path, 'expf_FPKM.h5')
-        self.assertEqual(filename, expected)
+            filename = models.make_quantification_filename(
+                mm10.iloc[0],
+                reference_type=reference_type,
+            )
+            expected = os.path.join(path, results[reference_type])
+            self.assertEqual(filename, expected)
 
     def test_make_quantification_filename_other(self):
         """Does make_quantification_filename work with an alternate analysis_root
         """
-        mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
-        path = '/tmp'
-        mm10 = models.load_experiments([mm10tsv], analysis_root=path)
+        results = {
+            'genome': 'expf_FPKM.h5',
+            'transcriptome': 'expf_transcriptome_FPKM.h5',
+        }
+        for reference_type in results:
+            mm10tsv = resource_filename(__name__, 'experiments-mm10.tsv')
+            path = '/tmp'
+            mm10 = models.load_experiments([mm10tsv], analysis_root=path)
 
-        filename = models.make_quantification_filename(mm10.iloc[0])
-        expected = os.path.join(path, 'expf_FPKM.h5')
-        self.assertEqual(filename, expected)
+            filename = models.make_quantification_filename(
+                mm10.iloc[0],
+                reference_type=reference_type,
+            )
+            expected = os.path.join(path, results[reference_type])
+            self.assertEqual(filename, expected)
 
 
 @contextmanager

@@ -242,6 +242,13 @@ def validate_library_file_existance(args):
     return can_continue
 
 
+def validate_reference_type(reference_type):
+    if reference_type not in ['genome', 'transcriptome']:
+        raise ValueError(
+            'Reference type must be genome or transcriptome not {}'.format(
+                reference_type))
+
+
 def find_fastqs(table, fastq_column):
     """Find fastqs for a library from a library table
 

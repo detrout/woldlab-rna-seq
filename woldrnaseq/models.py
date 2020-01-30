@@ -7,6 +7,8 @@ import os
 from functools import partial
 import pandas
 
+from woldrnaseq.common import validate_reference_type
+
 logger = logging.getLogger(__name__)
 
 
@@ -473,7 +475,7 @@ def find_library_bam_file(library, reference_type='genome', analysis_root=None):
     :param str analysis_root: root directory to be searching for track files
     :returns: path of bam file relative to analysis_root
     """
-    assert reference_type in ['genome', 'transcriptome'], "bam type is either genome or transcriptome"
+    validate_reference_type(reference_type)
 
     if 'genome' == reference_type:
         extension = '_genome.bam'
@@ -604,18 +606,27 @@ def normalize_hdf_key(key):
     return key.replace('/', '')
 
 
-def make_correlation_filename(experiment, model='gene'):
+def make_correlation_filename(experiment, reference_type='genome'):
+    validate_reference_type(reference_type)
     assert isinstance(experiment, pandas.Series)
     components = [experiment.name]
-    if model == 'transcriptome':
-        components.append(model)
+    if reference_type == 'transcriptome':
+        components.append(reference_type)
+    components.append('correlation')
     name = '_'.join(components) + '.h5'
     return os.path.join(experiment['analysis_dir'], name)
 
 
-def make_quantification_filename(experiment, quantification='FPKM'):
+def make_quantification_filename(
+        experiment,
+        quantification='FPKM',
+        reference_type='gene'):
+    validate_reference_type
     assert isinstance(experiment, pandas.Series)
     components = [experiment.name]
+    if reference_type == 'transcriptome':
+        components.append(reference_type)
+
     components.append(quantification)
 
     name = '_'.join(components) + '.h5'
