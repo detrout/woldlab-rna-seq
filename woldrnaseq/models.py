@@ -503,7 +503,7 @@ def load_all_coverage(libraries):
     return pandas.concat(coverage, axis=1)
 
 
-def load_gene_coverage(filename, library_id, gene_normalization):
+def load_gene_coverage(filename, library_id, gene_normalization=None):
     """Load a geneList per gene coverage file
     """
     coverage = pandas.read_csv(filename, sep='\t', index_col=0, header=None)
@@ -513,7 +513,7 @@ def load_gene_coverage(filename, library_id, gene_normalization):
     return coverage
 
 
-def load_all_gene_coverage(libraries, gene_list, gene_normalization):
+def load_all_gene_coverage(libraries, gene_list=[], gene_normalization=None):
     if len(libraries) > 0:
         analysis_files = find_library_analysis_file(libraries, '*.geneList')
         for library_id, filename in analysis_files:
