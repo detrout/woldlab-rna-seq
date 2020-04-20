@@ -2,17 +2,13 @@
 from __future__ import print_function, unicode_literals, division
 
 import argparse
-from collections import OrderedDict
-import pandas
 import numpy
-import os
-import sys
 
-from bokeh.io import export_png, save
-from bokeh.layouts import row, column, widgetbox
+from bokeh.io import save
+from bokeh.layouts import row, widgetbox
 from bokeh.models import HoverTool, Legend, LegendItem, Select
 from bokeh.plotting import figure, curdoc, ColumnDataSource
-from bokeh import resources, palettes
+from bokeh import palettes
 
 from woldrnaseq.models import (
     load_experiments,
