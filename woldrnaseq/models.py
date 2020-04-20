@@ -244,6 +244,7 @@ def load_flagstat(filename):
     with open(filename, 'rt') as instream:
         return load_flagstat_stream(instream)
 
+
 def load_flagstat_stream(instream):
     flags = {}
 

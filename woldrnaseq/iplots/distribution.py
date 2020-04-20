@@ -16,6 +16,7 @@ from woldrnaseq.models import (
     load_all_distribution
 )
 
+
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
