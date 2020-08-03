@@ -266,7 +266,7 @@ class GFFParser:
             raise RuntimeError('No gtf table to write. Did you call read_gff?')
         if columns is not None:
             gtf = gtf[[columns]]
-        gtf.to_csv(outname, sep=sep)
+        self.gtf.to_csv(outname, sep=sep)
 
 
 def make_parser():
@@ -280,6 +280,8 @@ def make_parser():
                         help='do not add listed attributes to output h5 file')
     parser.add_argument('-o', '--output',
                         help='specify output name, defaults to name.h5')
+    parser.add_argument('--output-type', choices=['hdf5', 'csv'], default='hdf5',
+                        help='specify output file format')
     parser.add_argument('filename', nargs='+',
                         help='specify input GFF/GTF filename')
     parser.add_argument('--name-value-sep', default=" ",
@@ -308,8 +310,13 @@ def main(cmdline=None):
 
         gtf = GFFParser(args.name_value_sep, ignore=args.ignore)
         gtf.read_gff(filename)
-        gtf.write_hdf5(args.output, args.name)
 
+    if args.output_type == 'hdf5':
+        gtf.write_hdf5(args.output, args.name)
+    elif args.output_type == 'csv':
+        gtf.write_table(args.output, args.name)
+    else:
+        raise RuntimeError('Unhandled output-type {}'.format(args.output_type))
 
 if __name__ == '__main__':
     main()
