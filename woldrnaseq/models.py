@@ -120,7 +120,7 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
                                 )
         verify_library_columns(table)
         table.index = [str(x) for x in table.index]
-        table.index.name = 'library id'
+        table.index.name = 'library_id'
         table['analysis_dir'] = table['analysis_dir'].apply(partial(os.path.join, analysis_cur_root))
         table['analysis_name'] = table['analysis_dir'].apply(os.path.basename)
         if 'stranded' not in table.columns:
