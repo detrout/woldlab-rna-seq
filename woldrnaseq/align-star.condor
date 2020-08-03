@@ -25,7 +25,7 @@ endif
 
 request_cpus=$(THREADS)
 request_memory=30G
-request_disk=60G
+request_disk=$(request_disk)K
 
 executable=$(STAR_DIR)STAR
 transfer_executable=false

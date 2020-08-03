@@ -3,10 +3,12 @@
 from __future__ import absolute_import, print_function
 
 from argparse import ArgumentParser
-import os
 import datetime
+import itertools
 import logging
+import os
 from pkg_resources import resource_filename
+import stat
 from jinja2 import Environment, PackageLoader
 
 from woldrnaseq import __version__
@@ -87,6 +89,13 @@ class AnalysisDAG:
         self.reference_prefix = 'chr'
         self.dagman_template = 'star_rsem.dagman'
 
+    @property
+    def fastq_size(self):
+        filesize = 0
+        for filename in itertools.chain(self.read_1_fastqs, self.read_2_fastqs):
+            filesize += os.stat(filename)[stat.ST_SIZE]
+        return filesize
+
     def is_valid(self):
         for key in self.__dict__:
             if key == 'read_1_fastqs' and len(self.read_1_fastqs) == 0:
@@ -160,6 +169,7 @@ class AnalysisDAG:
             analysis_name=self.analysis_name,
             read_1_fastqs=",".join(self.read_1_fastqs),
             read_2_fastqs=",".join(self.read_2_fastqs),
+            request_disk=self.fastq_size/1024 * 4,
             reference_prefix=self.reference_prefix,
             rsem_paired_argument=rsem_paired_argument,
             rsem_strand_probability=rsem_strand_probability,
