@@ -39,8 +39,8 @@ VARS ALL_NODES                  genome="{{genome}}" annotation="{{annotation}}" 
 VARS {{job_id}}_align-star      library_id="{{job_id}}"
 VARS {{job_id}}_align-star      pre_star="{{pre_star}}"
 VARS {{job_id}}_align-star      post_star="{{post_star}}"
-VARS {{job_id}}_align-star read1="{{read_1_fastqs}}"{% if read_2_fastqs %}
-VARS {{job_id}}_align-star read2="{{read_2_fastqs}}"
+VARS {{job_id}}_align-star      read1="{{read_1_fastqs}}"{% if read_2_fastqs %}
+VARS {{job_id}}_align-star      read2="{{read_2_fastqs}}"
 
 VARS {{job_id}}_sort-samtools paired_end="1"
 {% endif %}
