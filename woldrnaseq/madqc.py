@@ -1,9 +1,12 @@
 import argparse
 import collections
+from io import StringIO
 from glob import glob
 import pandas
 import numpy
 import os
+import re
+import requests
 import scipy.stats
 import sys
 import logging
@@ -37,7 +40,12 @@ def load_rsem_quantifications(experiment_files, index=None, column='FPKM'):
     filenames = []
     for filename in experiment_files:
         try:
-            table = pandas.read_csv(filename,
+            if isinstance(filename, str) and re.match('https?://', filename):
+                r = requests.get(filename)
+                stream = StringIO(r.text)
+            else:
+                stream = filename
+            table = pandas.read_csv(stream,
                                     sep='\t',
                                     index_col=0)
         except pandas.io.common.EmptyDataError as e:
