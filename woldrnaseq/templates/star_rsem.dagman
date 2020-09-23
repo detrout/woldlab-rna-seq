@@ -39,7 +39,9 @@ VARS ALL_NODES                  genome="{{genome}}" annotation="{{annotation}}" 
 VARS {{job_id}}_align-star      library_id="{{job_id}}"
 VARS {{job_id}}_align-star      pre_star="{{pre_star}}"
 VARS {{job_id}}_align-star      post_star="{{post_star}}"
-VARS {{job_id}}_align-star      request_disk="{{request_disk}}"
+VARS {{job_id}}_align-star      star_request_memory_megabytes="{{star_request_memory_megabytes}}"
+VARS {{job_id}}_align-star      star_request_memory_bytes="{{star_request_memory_bytes}}"
+VARS {{job_id}}_align-star      star_request_disk_kilobytes="{{star_request_disk_kilobytes}}"
 VARS {{job_id}}_align-star      read1="{{read_1_fastqs}}"{% if read_2_fastqs %}
 VARS {{job_id}}_align-star      read2="{{read_2_fastqs}}"
 
@@ -49,6 +51,7 @@ VARS {{job_id}}_sort-samtools   sort_samtools="{{sort_samtools_sh}}"
 
 VARS {{job_id}}_quant-rsem      paired_end="{{rsem_paired_argument}}"
 VARS {{job_id}}_quant-rsem      strand_probability="{{rsem_strand_probability}}"
+VARS {{job_id}}_quant-rsem      request_disk="{{rsem_request_disk}}"
 
 VARS {{job_id}}_bedgraph-star   reference_prefix="{{reference_prefix}}"
 VARS {{job_id}}_bedgraph-star   bedsort_sh="{{bedgraph_bedsort_sh}}"

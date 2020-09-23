@@ -24,8 +24,8 @@ else
 endif
 
 request_cpus=$(THREADS)
-request_memory=30G
-request_disk=$(request_disk)K
+request_memory=$(star_request_memory_megabytes)
+request_disk=$(star_request_disk_kilobytes)K
 
 executable=$(STAR_DIR)STAR
 transfer_executable=false
@@ -60,7 +60,7 @@ arguments="--genomeDir $(GENOME_DIR) \
 	   --sjdbScore 1 \
            --outTmpDir ./_STARtmp/ \
 	   --outFileNamePrefix $(CURDIR)/ \
-	   --limitBAMsortRAM 90000000000 \
+	   --limitBAMsortRAM $(star_request_memory_bytes:90000000) \
            $(EXTRA_ARGS) \
 "
 +PostCmd="post_star"

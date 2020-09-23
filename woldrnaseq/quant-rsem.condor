@@ -21,6 +21,7 @@ THREADS=8
 
 request_cpus=$(THREADS)
 request_memory=42G
+request_disk=$(request_disk)K
 
 executable=$(RSEM_DIR)rsem-calculate-expression
 transfer_executable=False
