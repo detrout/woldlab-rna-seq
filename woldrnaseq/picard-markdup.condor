@@ -4,7 +4,7 @@ log=$(CURDIR)/picard-markdup-$(Process).log
 output=$(CURDIR)/picard-markdup-$(Process).out
 error=$(CURDIR)/picard-markdup-$(Process).out
 
-PICARD=/woldlab/loxcyc/home/diane/proj/flowcells/HT2CVBCX2/picard.jar
+PICARD=/woldlab/loxcyc/home/diane/proj/picard/picard-2.19.0.jar
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
 IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
 DUPS=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_picard_markdup.bam
