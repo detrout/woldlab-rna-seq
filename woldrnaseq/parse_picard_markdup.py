@@ -7,8 +7,8 @@ e.g. java -Xmx8G -jar $(PICARD) MarkDuplicates \
         M=sample_picard_markdup.metrics
 """
 from argparse import ArgumentParser
-import os
 import pandas
+from pathlib import Path
 
 from woldrnaseq.models import load_library_tables, genome_name_from_library
 
@@ -26,9 +26,12 @@ def main(cmdline=None):
     for library_id, library in libraries.iterrows():
         genome_triple = genome_name_from_library(library)
         filename = library.analysis_name + '-' + genome_triple + '_picard_markdup.metrics'
-        pathname = os.path.join(library.analysis_dir, filename)
-        picard_metric = parse_picard_metric(pathname, library_id=library_id)
-        metrics.append(picard_metric)
+        pathname = Path(library.analysis_dir) / filename
+        if pathname.exists():
+            picard_metric = parse_picard_metric(pathname, library_id=library_id)
+            metrics.append(picard_metric)
+        else:
+            print('{} is missing. Skipping'.format(pathname))
 
     metrics = pandas.DataFrame(metrics)
     metrics.set_index('LIBRARY', inplace=True)
