@@ -187,7 +187,7 @@ def make_short_fastq_name(fastq_name):
     if not parts[3].startswith('R'):
         raise ValueError('Unexpected fastq read {}'.format(fastq_name))
 
-    return '_'.join((parts[0], parts[1], parts[3])) + ext
+    return '_'.join((parts[0], parts[1], parts[2], parts[3])) + ext
 
 
 if __name__ == '__main__':
