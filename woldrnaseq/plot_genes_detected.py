@@ -83,13 +83,16 @@ def bin_library_quantification(quantification, quantification_name, bins=None):
 
 
 def plot_gene_detection_histogram(binned_quantifications, basename,
-                                  show_genes_detected=True):
+                                  show_genes_detected=True, *,
+                                  figsize=None, dpi=100):
     """Apply formatting to gene detction histogram
     """
     with pyplot.style.context('seaborn-talk'):
-        width = max(len(binned_quantifications.index) * 0.5, 6)
-        f = pyplot.figure(figsize=(width, 6), dpi=100)
-        ax = f.add_subplot(1,1,1)
+        if figsize is None:
+            width = max(len(binned_quantifications.index) * 0.5, 6)
+            figsize = (width, 6)
+        f = pyplot.figure(figsize=figsize, dpi=dpi)
+        ax = f.add_subplot(1, 1, 1)
 
         matplotlib.rcParams['patch.force_edgecolor'] = True
         matplotlib.rcParams['patch.facecolor'] = 'b'
