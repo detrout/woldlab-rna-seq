@@ -222,6 +222,7 @@ class GFFParser:
             comment="#",
             na_values='.',
             converters={
+                'chromosome': str,
                 'score': parse_score,
                 'strand': parse_strand,
                 'frame': parse_phase,
