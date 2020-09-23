@@ -7,6 +7,8 @@ from collections import namedtuple
 import hashlib
 import logging
 import os
+from pathlib import Path
+import pandas
 import sys
 import requests
 from urllib.parse import urljoin
@@ -20,10 +22,15 @@ from .models import (
 from .common import (
     add_metadata_arguments,
     add_debug_arguments,
+    add_separator_argument,
     configure_logging,
     get_seperator,
 )
-
+from htsworkflow.util.api import (
+    add_auth_options,
+    make_auth_from_opts,
+    HtswApi,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -31,20 +38,59 @@ logger = logging.getLogger(__name__)
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
-
     configure_logging(args)
 
-    libraries = load_library_tables(args.libraries)
+    apidata = make_auth_from_opts(args)
+    api = HtswApi(args.host, apidata)
 
-    download_fastqs(args.url, args.flowcell, libraries)
+    sep = get_seperator(args.sep)
+    libraries = load_library_tables(args.libraries, sep=sep)
+
+    #download_fastqs(args.url, args.flowcell, libraries)
+    fragments = []
+    flowcell_urls = {}
+    library_details = {}
+    for library_id, row in libraries.iterrows():
+        library = api.get_library(library_id)
+        for lane in library.get('lane_set', []):
+            if lane['status'] in ('Good', 'Unknown'):
+                flowcell_id = lane['flowcell']
+
+                if args.flowcell is not None and flowcell_id not in args.flowcell:
+                    # if there's a flowcell filter skip other flowcells
+                    continue
+
+                if flowcell_id not in flowcell_urls:
+                    flowcell_entry = find_flowcell(args.root_url, flowcell_id)
+                    projects = list(find_projects(flowcell_entry.url))
+                    flowcell_urls[flowcell_id] = projects
+
+                for project_entry in flowcell_urls[flowcell_id]:
+                    _, project_id, project_index = project_entry.name.split('_')
+                    if project_id == library_id:
+                        fastq_entries = {}
+                        for sample_entry in find_sample_url(project_entry.url):
+                            for fastq in find_fastqs(sample_entry.url):
+                                shortened_name = make_short_fastq_name(fastq.name)
+                                fastq_entries.setdefault(shortened_name, []).append(fastq.url)
+
+                        for shortened_name in fastq_entries:
+                            target = Path(row.read_1).parent / shortened_name
+                            fragments.extend(fast_download_merged_fastq(target, fastq_entries[shortened_name]))
+
+    pandas.DataFrame(fragments, columns=['name', 'url', 'length', 'md5']).to_csv('fragments.csv')
 
 
 def make_parser():
     parser = ArgumentParser()
-    add_metadata_arguments(parser)
-    parser.add_argument('-f', '--flowcell',
-                        help='Name of flowcell to look for')
-    parser.add_argument('-u', '--url', help='root url to search')
+    #add_metadata_arguments(parser)
+    parser.add_argument('-l', '--libraries', default=[], action='append',
+                        help='library metadata table to load')
+    parser.add_argument('-f', '--flowcell', default=[], action='append',
+                        help='limit to listed flowcells, otherwise try everything')
+    parser.add_argument('-u', '--root-url', help='root url to search')
+    add_separator_argument(parser)
+    add_auth_options(parser)
     add_debug_arguments(parser)
     return parser
 
@@ -70,6 +116,33 @@ def download_fastqs(root_url, flowcell, libraries):
                             target = os.path.join(library.analysis_dir, shortened_name)
                             download_merged_fastq(target, [f.url for f in read_fastqs])
 
+
+def fast_download_merged_fastq(fastq_name, fastq_urls):
+    fragments = []
+    BLOCK_SIZE = 65535
+    if os.path.exists(fastq_name):
+        logger.error('{} already exists'.format(fastq_name))
+    else:
+        with open(fastq_name, mode='wb') as outstream:
+            block = bytearray(BLOCK_SIZE)
+            full_digest = hashlib.md5()
+            total_count = 0
+            for url in fastq_urls:
+                logger.debug('Downloading: {}'.format(url))
+                fragment_hash = hashlib.md5()
+                count = 0
+                response = requests.get(url, stream=True)
+                for block in response.iter_content(BLOCK_SIZE):
+                    outstream.write(block)
+                    count += len(block)
+                    fragment_hash.update(block)
+                    full_digest.update(block)
+                logger.debug('Read {} bytes. md5={}'.format(count, fragment_hash.hexdigest()))
+                fragments.append((fastq_name, url, count, fragment_hash.hexdigest()))
+                total_count += count
+        logger.debug('Final size {} bytes. md5={}'.format(total_count, full_digest.hexdigest()))
+    print(fragments)
+    return fragments
 
 def download_merged_fastq(fastq_name, fastq_urls):
     BLOCK_SIZE = 65535
@@ -100,7 +173,7 @@ def download_merged_fastq(fastq_name, fastq_urls):
 def find_flowcell(root_url, flowcell):
     for entry in parse_apache_dirindex(root_url):
         if entry.link_type == 'subdirectory' and flowcell in entry.name:
-            yield entry
+            return entry
 
 
 def find_projects(url, maxdepth=1):

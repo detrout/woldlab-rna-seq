@@ -65,6 +65,16 @@ def add_debug_arguments(parser):
     return group
 
 
+def add_separator_argument(parser):
+    """Add argument for setting table separator comma or tab
+    """
+    parser.add_argument(
+        '-s', '--sep', choices=['TAB', ','], default='TAB',
+        help="Specify the field separator character in the library metadata file"
+    )
+    return parser
+
+
 def add_version_argument(parser):
     """Add Version argument
     """
