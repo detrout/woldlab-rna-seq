@@ -1,0 +1,26 @@
+universe=vanilla
+
+#ANALYSIS_NAME=$$($(analysis_name):Analysis)
+#GENOME_ROOT=$$($(genome_root):~/proj/genome/)
+#GENOME=$$($(genome):mm10)
+#ANNOTATION=$$($(annotation):M4)
+#SEX=$$($(sex):male)
+#GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+#GENOME_DIR=$(GENOME_ROOT)$(GENOME_TRIPLET)/
+#IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
+#OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.samstats
+
+log=logs/qc-flagstats-$(Cluster).$(Process).log
+error=logs/qc-flagstats-$(Cluster).$(Process).out
+output=$(OUT)
+
+
+request_cpus=1
+request_memory=4G
+
+executable=/usr/bin/samtools
+transfer_executable=False
+
+#initialdir=$(CURDIR)
+arguments="flagstat $(IN)"
+queue
