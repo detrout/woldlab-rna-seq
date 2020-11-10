@@ -82,7 +82,7 @@ class TestAttributeParser(unittest.TestCase):
                 ('gene_id', 'gene1', str),
                 ('transcript_id', 'transcript1', str),
                 ('exon_number', 1, int)]:
-            
+
             self.assertIn(name, p.terms)
             self.assertEqual(p.terms[name], {line_no: expected})
             self.assertIsInstance(p.terms[name][line_no], attribute_type)
@@ -208,7 +208,6 @@ class TestGFFParser(unittest.TestCase):
         self.assertEqual(p.gtf.shape, (1, 9))
         self.assertEqual('chromosome', p.gtf.columns[0])
         self.assertEqual('chromosome1', p.gtf.columns[8])
-
 
     def test_parse_gtf(self):
         """Check a minimal realistic gtf file
