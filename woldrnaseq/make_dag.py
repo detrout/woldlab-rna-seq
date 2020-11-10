@@ -11,6 +11,7 @@ import datetime
 import os
 import logging
 import pandas
+from pathlib import Path
 from pkg_resources import resource_filename
 from jinja2 import Environment, PackageLoader
 
@@ -83,7 +84,10 @@ def make_parser():
     add_default_path_arguments(parser)
     add_version_argument(parser)
     add_debug_arguments(parser)
-    #parser.add_argument('--template', help='override default dagman template')
+    parser.add_argument('--splice-template',
+                        help='override splice dagman template')
+    parser.add_argument('--collection-template', default='full-encode.dagman',
+                        help='override collection dagman template')
 
     return parser
 
@@ -134,18 +138,21 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
         analysis.annotation = libraries.loc[library_id, 'annotation']
         analysis.sex = libraries.loc[library_id, 'sex']
         analysis.job_id = library_id
-        analysis.analysis_dir = libraries.loc[library_id, 'analysis_dir']
+        analysis.analysis_dir = Path(libraries.loc[library_id, 'analysis_dir'])
         analysis.analysis_name = libraries.loc[library_id, 'analysis_name']
         analysis.read_1_fastqs = read_1_fastqs[library_id]
         analysis.read_2_fastqs = read_2_fastqs.get(library_id, [])
         analysis.stranded = libraries.loc[library_id, 'stranded']
 
         analysis.reference_prefix = get_reference_prefix(libraries, library_id)
-        #if args.template:
-        #    analysis.dagman_template = args.template
+        analysis.collection_template = args.collection_template
+
+        if args.splice_template:
+            analysis.splice_template = Path(args.splice_template)
 
         if analysis.is_valid():
-            target = os.path.join(analysis.analysis_dir, library_id + '.dagman')
+            splice_name = Path(analysis.splice_template).name
+            target = analysis.analysis_dir / '{}-{}'.format(library_id, splice_name)
             with open(target, 'wt') as outstream:
                 outstream.write(str(analysis))
             dag.append({'library_id': library_id,
