@@ -225,9 +225,8 @@ class GFFParser:
     def write_table(self, outname, sep='\t', columns=None):
         if self.gtf is None:
             raise RuntimeError('No gtf table to write. Did you call read_gff?')
-        if columns is not None:
-            gtf = gtf[[columns]]
-        self.gtf.to_csv(outname, sep=sep)
+        gtf = self.gtf[columns] if columns is not None else self.gtf
+        gtf.to_csv(outname, sep=sep)
 
 
 def make_parser():
