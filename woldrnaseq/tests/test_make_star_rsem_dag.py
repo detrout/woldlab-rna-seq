@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 import logging
 import os
 import re
@@ -62,7 +62,8 @@ class TestMakeDag(TestCase):
 
     def test_analysis(self):
         total_size = 1024 ** 3
-        with patch('woldrnaseq.make_star_rsem_dag.AnalysisDAG.fastq_size', return_value=total_size):
+        with patch('woldrnaseq.make_star_rsem_dag.AnalysisDAG.fastq_size', new_callable=PropertyMock) as FastqSize:
+            FastqSize.return_value = total_size
             analysis = make_star_rsem_dag.AnalysisDAG()
 
             read_1 = ['22157_GTCATCGT_L001_R1_001.fastq.gz', '22157_GTCATCGT_L001_R1_002.fastq.gz']
@@ -79,6 +80,7 @@ class TestMakeDag(TestCase):
             analysis.read_1_fastqs = read_1
 
             self.assertTrue(analysis.is_valid())
+            self.assertEqual(analysis.fastq_size, total_size)
 
             dag = str(analysis)
 
@@ -87,10 +89,14 @@ class TestMakeDag(TestCase):
             for line in str(analysis).split(os.linesep):
                 if line.startswith("JOB"):
                     self.assertIn(condor_dir, line)
-                match = re.search('request_disk="(?P<request>[0-9]+)"', line)
+                match = re.search('star *request_disk="(?P<request>[0-9.]+)"', line)
                 if match:
-                    request = match.group(request)
-                    self.assertAlmostEqual(float(request), total_size/1024*4)
+                    request = match.group('request')
+                    self.assertAlmostEqual(float(request), (total_size/1024)*4)
+                match = re.search('rsem *request_disk="(?P<request>[0-9.]+)"', line)
+                if match:
+                    request = match.group('request')
+                    self.assertAlmostEqual(float(request), (total_size/1024)*7)
             print(dag)
 
 
