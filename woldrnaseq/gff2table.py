@@ -170,7 +170,7 @@ class GFFParser:
         tzero = time.monotonic()
         required_gtf_names = [
             'chromosome', 'source', 'type', 'start', 'stop',
-            'score', 'strand', 'frame',]
+            'score', 'strand', 'frame']
         column_names = required_gtf_names + ['attributes']
 
         gtf = pandas.read_csv(
