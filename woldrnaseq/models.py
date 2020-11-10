@@ -1,9 +1,9 @@
 """Load necessary information to run our analysis from text tables.
 """
 import collections
-from glob import glob
 import logging
 import os
+from pathlib import Path
 from functools import partial
 import pandas
 
@@ -527,9 +527,9 @@ AnalysisFile.__doc__ = "Tuple of library_ids and the full path to a particular g
 
 def find_library_analysis_file(libraries, extension):
     for library_id in libraries.index:
-        analysis_dir = libraries.loc[library_id, 'analysis_dir']
+        analysis_dir = Path(libraries.loc[library_id, 'analysis_dir']).expanduser()
         assert analysis_dir is not None
-        filenames = glob(os.path.join(analysis_dir, extension))
+        filenames = list(analysis_dir.glob(extension))
         if len(filenames) == 0:
             logger.warning("No files found in {} for {}".format(
                 analysis_dir, extension))

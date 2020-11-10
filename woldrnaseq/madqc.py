@@ -2,6 +2,7 @@ import argparse
 import collections
 from io import StringIO
 from glob import glob
+from pathlib import Path
 import pandas
 import numpy
 import os
@@ -215,9 +216,8 @@ def load_rsem_replicates(extension, experiment, libraries, column):
     for library_id in experiment.replicates:
         library_ids.append(library_id)
         library = libraries.loc[library_id]
-        analysis_dir = library.analysis_dir
-        pattern = os.path.join(analysis_dir, extension)
-        result = glob(pattern)
+        analysis_dir = Path(library.analysis_dir).expanduser()
+        result = list(analysis_dir.glob(extension))
         if len(result) != 1:
             raise RuntimeError(
                 "Unexpected number of rsem gene result files {} using '{}'".format(
