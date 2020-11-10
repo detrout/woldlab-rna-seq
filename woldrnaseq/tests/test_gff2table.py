@@ -1,11 +1,13 @@
 import unittest
 from io import StringIO
+import pandas
 import numpy
 
 from woldrnaseq.gff2table import (
     tokenize,
     parse_attributes,
     AttributesParser,
+    format_gtf_record,
     GFFParser,
     parse_score,
     parse_strand,
@@ -233,3 +235,33 @@ chr1	source	exon	2000	2150	.	+	.	gene_id "gene2"; transcript_id "transcript2"
                 self.assertEqual(row[key], expected[i][key])
             self.assertEqual(p.attribute_parser.terms['transcript_id'][i],
                              expected[i]['transcript_id'])
+
+    def test_format_gtf_record(self):
+        gtf_data = '''chr1	source	exon	1	1000	.	+	.	gene_id "gene1"; transcript_id "transcript1"
+chr1	source	exon	2000	2100	.	+	.	gene_id "gene2"; transcript_id "transcript1"
+chr1	source	exon	2000	2150	.	+	.	gene_id "gene2"; transcript_id "transcript2"
+'''
+        text = StringIO(gtf_data)
+        p = GFFParser(' ')
+        p.read_gff(text)
+
+        formatted = []
+        for i, row in p.gtf.iterrows():
+            formatted.append(format_gtf_record(row, value_sep=' ', field_sep='; '))
+
+        assert gtf_data == '\n'.join(formatted) + '\n'
+
+        text2 = StringIO('\n'.join(formatted))
+        p2 = GFFParser(' ')
+        p2.read_gff(text2)
+
+        assert p.gtf.shape == p2.gtf.shape
+        for column in p.gtf.columns:
+            for x, y in zip(p.gtf[column], p2.gtf[column]):
+                if pandas.isnull(x) and pandas.isnull(y):
+                    continue
+                elif x == y:
+                    continue
+                else:
+                    raise AssertionError('x={x} does not equal y={y} in column {column}'.format(x=x,y=y,column=column))
+

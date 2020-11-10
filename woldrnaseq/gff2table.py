@@ -230,6 +230,29 @@ class GFFParser:
         gtf.to_csv(outname, sep=sep)
 
 
+def format_gtf_record(row, value_sep=' ', field_sep='; '):
+    strand = {
+        1: '+',
+        -1: '-',
+    }
+    record = []
+    record.append(str(row.chromosome))  #0
+    record.append(str(row.source))      #1
+    record.append(str(row.type))        #2
+    record.append(str(int(row.start)))  #3
+    record.append(str(int(row.stop)))   #4
+    record.append(str(int(row.score)) if not pandas.isnull(row.score) else '.') #5
+    record.append(strand[row.strand])   #6
+    record.append(str(int(row.frame)) if not pandas.isnull(row.frame) else '.') #7
+    attributes = []
+    for name in row.index[8:]:
+        if isinstance(row[name], str) or not pandas.isnull(row[name]):
+            value = row[name]
+            attributes.append(f'{name}{value_sep}"{value}"')
+    record.append(field_sep.join(attributes))
+    return '\t'.join(record)
+
+
 def make_parser():
     parser = argparse.ArgumentParser(
         description="Convert GTF/GFF file to a binary cache file"
