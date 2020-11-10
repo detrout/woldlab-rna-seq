@@ -4,7 +4,7 @@ import configparser
 from glob import glob
 import logging
 import os
-
+from collections import abc
 import pandas
 import numpy
 
@@ -267,8 +267,8 @@ def find_fastqs(table, fastq_column):
     if fastq_column in table.columns:
         for library_id in table.index:
             fastq_field = table.loc[library_id, fastq_column]
-            if not pandas.isnull(fastq_field):
-                fastqs = find_fastqs_by_glob(fastq_field.split(','))
+            if isinstance(fastq_field, abc.Sequence):
+                fastqs = find_fastqs_by_glob(fastq_field)
                 yield (library_id, list(fastqs))
     else:
         # eventually look up by library ID
@@ -290,7 +290,7 @@ def find_fastqs_by_glob(fastq_globs):
         A list of file names with all of the sorted patterns expanded
     """
     for fastq in fastq_globs:
-        fastq_list = sorted(glob(fastq))
+        fastq_list = sorted(glob(str(fastq)))
         if len(fastq_list) == 0:
             logger.warning("No fastqs matched: %s", fastq)
         for filename in fastq_list:

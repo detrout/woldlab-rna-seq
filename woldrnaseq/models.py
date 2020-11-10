@@ -113,7 +113,9 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
                                 dtype={'library_id': str,
                                        'analysis_dir': str},
                                 converters={
-                                    'stranded': _normalize_stranded
+                                    'stranded': _normalize_stranded,
+                                    'read_1': lambda x: x.split(','),
+                                    'read_2': lambda x: x.split(','),
                                 },
                                 comment='#',
                                 skip_blank_lines=True,
