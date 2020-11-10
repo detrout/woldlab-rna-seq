@@ -127,6 +127,7 @@ class AttributesParser:
             column[self.index] = value
             attributes_count += 1
 
+        assert len(self.terms) < 30
         self.index += 1
         return attributes_count
 
