@@ -169,7 +169,13 @@ def genome_name_from_library(row):
     str
         Combined genome, annotation, and sex string.
     """
-    return '-'.join([row.genome, row.annotation, row.sex])
+    if isinstance(row, pandas.Series):
+        triple = '-'.join([row.genome, row.annotation, row.sex])
+    elif isinstance(row, dict):
+        triple = '{genome}-{annotation}-{sex}'.format(**row)
+    else:
+        raise ValueError('Unrecognized type {}'.format(type(row)))
+    return triple
 
 
 def verify_library_columns(table):
