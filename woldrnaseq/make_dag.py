@@ -168,8 +168,8 @@ def generate_combined_analysis(args, dags):
         env = Environment(loader=PackageLoader('woldrnaseq', 'templates'))
         template = env.get_template('full-encode.dagman')
 
-        library_tsv = ' '.join(['-l '+l for l in args.libraries])
-        experiment_tsv = ' '.join(['-e '+e for e in args.experiments])
+        library_tsv = ' '.join(['-l ' + lib for lib in args.libraries])
+        experiment_tsv = ' '.join(['-e ' + experiment for experiment in args.experiments])
 
         outstream.write(template.render(
             madqc=resource_filename(__name__, 'madqc.condor'),
