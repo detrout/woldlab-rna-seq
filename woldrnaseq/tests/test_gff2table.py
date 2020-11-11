@@ -237,9 +237,9 @@ chr1	source	exon	2000	2150	.	+	.	gene_id "gene2"; transcript_id "transcript2"
                              expected[i]['transcript_id'])
 
     def test_format_gtf_record(self):
-        gtf_data = '''chr1	source	exon	1	1000	.	+	.	gene_id "gene1"; transcript_id "transcript1"
-chr1	source	exon	2000	2100	.	+	.	gene_id "gene2"; transcript_id "transcript1"
-chr1	source	exon	2000	2150	.	+	.	gene_id "gene2"; transcript_id "transcript2"
+        gtf_data = '''chr1	source	exon	1	1000	.	+	.	gene_id "gene1"; transcript_id "transcript1";
+chr1	source	exon	2000	2100	.	+	.	gene_id "gene2"; transcript_id "transcript1";
+chr1	source	exon	2000	2150	.	+	.	gene_id "gene2"; transcript_id "transcript2";
 '''
         text = StringIO(gtf_data)
         p = GFFParser(' ')

@@ -249,7 +249,8 @@ def format_gtf_record(row, value_sep=' ', field_sep='; '):
         if isinstance(row[name], str) or not pandas.isnull(row[name]):
             value = row[name]
             attributes.append(f'{name}{value_sep}"{value}"')
-    record.append(field_sep.join(attributes))
+    row = field_sep.join(attributes) + field_sep.rstrip()
+    record.append(row)
     return '\t'.join(record)
 
 
