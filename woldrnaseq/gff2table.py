@@ -236,14 +236,14 @@ def format_gtf_record(row, value_sep=' ', field_sep='; '):
         -1: '-',
     }
     record = []
-    record.append(str(row.chromosome))  #0
-    record.append(str(row.source))      #1
-    record.append(str(row.type))        #2
-    record.append(str(int(row.start)))  #3
-    record.append(str(int(row.stop)))   #4
-    record.append(str(int(row.score)) if not pandas.isnull(row.score) else '.') #5
-    record.append(strand[row.strand])   #6
-    record.append(str(int(row.frame)) if not pandas.isnull(row.frame) else '.') #7
+    record.append(str(row.chromosome))  # 0
+    record.append(str(row.source))      # 1
+    record.append(str(row.type))        # 2
+    record.append(str(int(row.start)))  # 3
+    record.append(str(int(row.stop)))   # 4
+    record.append(str(int(row.score)) if not pandas.isnull(row.score) else '.')  # 5
+    record.append(strand[row.strand])   # 6
+    record.append(str(int(row.frame)) if not pandas.isnull(row.frame) else '.')  # 7
     attributes = []
     for name in row.index[8:]:
         if isinstance(row[name], str) or not pandas.isnull(row[name]):
