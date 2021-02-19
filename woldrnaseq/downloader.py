@@ -20,7 +20,6 @@ from .models import (
     load_library_tables,
 )
 from .common import (
-    add_metadata_arguments,
     add_debug_arguments,
     add_separator_argument,
     configure_logging,
@@ -89,7 +88,6 @@ def main(cmdline=None):
 
 def make_parser():
     parser = ArgumentParser()
-    #add_metadata_arguments(parser)
     parser.add_argument('-l', '--libraries', default=[], action='append',
                         help='library metadata table to load')
     parser.add_argument('-f', '--flowcell', default=[], action='append',
