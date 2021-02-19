@@ -62,7 +62,7 @@ class DistributionPlot:
     @experiment_name.setter
     def experiment_name(self, value):
         self.experiments_combo.value = value
-        
+
     @property
     def experiment_names(self):
         return sorted(self.experiments.index)
@@ -70,7 +70,7 @@ class DistributionPlot:
     @property
     def library_names(self):
         return self.experiments.loc[self.experiment_name].replicates
-    
+
     def make_plot(self, experiment_name=None, title=None):
         if experiment_name is not None:
             self.experiment_name = experiment_name
@@ -87,7 +87,7 @@ class DistributionPlot:
             ('Intergenic', '@Intergenic{%0.2f}'),
         ]
         hover = HoverTool(tooltips=tooltips)
-        
+
         plot = figure(
             x_range=list(subset['library_id']),
             title="Distribution for {}".format(self.experiment_name)
@@ -104,8 +104,8 @@ class DistributionPlot:
         for category, color in zip(categories, palettes.Set1[3]):
             legend_items.append(
                 LegendItem(
-                    label=category, 
-                    renderers=[plot.square([1],[1],color=color, line_color='black' )]))
+                    label=category,
+                    renderers=[plot.square([1], [1], color=color, line_color='black')]))
         legend = Legend(items=legend_items,
                         location=(30, plot.plot_height/2.0))
         plot.add_layout(legend, 'right')
@@ -113,7 +113,7 @@ class DistributionPlot:
         plot.axis.minor_tick_line_color = None
         plot.xaxis.major_label_orientation = numpy.pi/4
         return plot
-        
+
     def update_experiment(self, attr, old, new):
         if self._layout is not None:
             self._layout.children[1] = self.make_plot()
@@ -131,12 +131,13 @@ class DistributionPlot:
         name = experiments_names[0]
         self._layout = self.make_plot()
         return self._layout
-    
+
+
 if __name__ == '__main__':
     plot = main()
     if plot is not None:
         curdoc().add_root(plot.static_layout())
-        #export_png(curdoc(), 'genesdetected.png')
+        # export_png(curdoc(), 'genesdetected.png')
         save(curdoc(), 'genesdetected.html')
 elif __name__.startswith('bk_script'):
     plot = main()
