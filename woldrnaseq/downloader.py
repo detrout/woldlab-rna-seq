@@ -52,12 +52,15 @@ def main(cmdline=None):
     if len(libraries) == 0:
         parser.error('No libraries loaded from metadata files, nothing to do.')
 
+    logger.info('Scanning for: {}'.format(', '.join(libraries.index)))
+
     fragments = []
     flowcell_urls = {}
     library_details = {}
     for library_id, row in libraries.iterrows():
         library = api.get_library(library_id)
         for lane in library.get('lane_set', []):
+            logger.debug(library_id, lane['flowcell'], lane['status'])
             if lane['status'] in ('Good', 'Unknown'):
                 flowcell_id = lane['flowcell']
 
@@ -82,6 +85,8 @@ def main(cmdline=None):
                         for shortened_name in fastq_entries:
                             target = Path(row.read_1).parent / shortened_name
                             fragments.extend(fast_download_merged_fastq(target, fastq_entries[shortened_name]))
+
+    logger.info('Scanned {} flowcells'.format(len(flowcell_urls)))
 
     pandas.DataFrame(fragments, columns=['name', 'url', 'length', 'md5']).to_csv('fragments.csv')
 
