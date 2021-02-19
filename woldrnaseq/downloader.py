@@ -40,6 +40,9 @@ def main(cmdline=None):
     args = parser.parse_args(cmdline)
     configure_logging(args)
 
+    if len(args.libraries) == 0:
+        parser.error('No library metadata files specified, so nothing to do')
+
     apidata = make_auth_from_opts(args)
     api = HtswApi(args.host, apidata)
 
@@ -47,6 +50,9 @@ def main(cmdline=None):
     libraries = load_library_tables(args.libraries, sep=sep)
 
     #download_fastqs(args.url, args.flowcell, libraries)
+    if len(libraries) == 0:
+        parser.error('No libraries loaded from metadata files, nothing to do.')
+
     fragments = []
     flowcell_urls = {}
     library_details = {}
