@@ -32,7 +32,7 @@ from htsworkflow.util.api import (
     HtswApi,
 )
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('downloader')
 
 
 def main(cmdline=None):
