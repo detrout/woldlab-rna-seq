@@ -10,6 +10,7 @@ from pysam import AlignmentFile
 
 from woldrnaseq.common import (
     add_debug_arguments,
+    add_default_path_arguments,
     configure_logging,
 )
 
@@ -51,19 +52,26 @@ def main(cmdline=None):
 
     local_cluster = LocalCluster(n_workers=1, threads_per_worker=len(targets))
     client = Client(local_cluster)
-    star_p = client.submit(run_star_to_bedgraph, args.bam, args.stranded, args.reference_prefix)
+    star_p = client.submit(
+        run_star_to_bedgraph,
+        args.bam,
+        args.stranded,
+        args.reference_prefix,
+        args.star_dir,
+    )
     star_p.result()
 
     chrom_info = delayed(make_chrom_info)(args.bam)
     bigwigs = [star_p]
     for target in targets:
         bedsort = delayed(run_bedsort)(target)
-        bigwig = delayed(run_bedgraph2bigwig)(bedsort, chrom_info, targets[target])
+        bigwig = delayed(run_bedgraph2bigwig)(bedsort, chrom_info, targets[target], args.ucsc_tools_dir)
         bigwigs.append(bigwig)
 
     results = client.compute(bigwigs)
-    generated = client.gather(results)
-    print('Generated', ','.join(generated))
+    status, generated = client.gather(results)
+    print('Generated', ','.join([str(x) for x in generated]))
+    client.close()
     return 0
 
 
@@ -74,17 +82,19 @@ def make_parser():
     parser.add_argument('--stranded', action='store_true', default=False,
                         help='Process as stranded data')
     parser.add_argument('--reference_prefix', default='chr')
+    add_default_path_arguments(parser)
     add_debug_arguments(parser)
     return parser
 
 
-def run_star_to_bedgraph(bam, stranded, reference_prefix):
+def run_star_to_bedgraph(bam, stranded, reference_prefix, star_dir=None):
     if stranded:
         stranded_option = 'Stranded'
     else:
         stranded_option = 'Unstranded'
 
-    cmd = ['STAR',
+    star = 'STAR' if star_dir is None else os.path.join(star_dir, 'STAR')
+    cmd = [star,
            '--runMode', 'inputAlignmentsFromBAM',
            '--inputBAMfile', bam,
            '--outWigType', 'bedGraph',
@@ -103,8 +113,9 @@ def run_bedsort(filename):
     return filename
 
 
-def run_bedgraph2bigwig(source, chrom_info, destination):
-    cmd = ['bedGraphToBigWig', source, chrom_info, destination]
+def run_bedgraph2bigwig(source, chrom_info, destination, ucsc_tools_dir=None):
+    bedgraph_cmd = 'bedGraphToBigWig' if ucsc_tools_dir is None else os.path.join(ucsc_tools_dir, 'bedGraphToBigWig')
+    cmd = [bedgraph_cmd, source, chrom_info, destination]
     print('running', ' '.join(cmd))
     subprocess.run(cmd, check=True)
     os.unlink(source)
