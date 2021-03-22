@@ -48,7 +48,6 @@ def main(cmdline=None):
     sep = get_seperator(args.sep)
     libraries = load_library_tables(args.libraries, sep=sep)
 
-    #download_fastqs(args.url, args.flowcell, libraries)
     if len(libraries) == 0:
         parser.error('No libraries loaded from metadata files, nothing to do.')
 
@@ -56,7 +55,6 @@ def main(cmdline=None):
 
     fragments = []
     flowcell_urls = {}
-    library_details = {}
     for library_id, row in libraries.iterrows():
         library = api.get_library(library_id)
         for lane in library.get('lane_set', []):
