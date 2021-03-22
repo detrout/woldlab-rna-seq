@@ -62,7 +62,7 @@ def main(cmdline=None):
             if lane['status'] in ('Good', 'Unknown'):
                 flowcell_id = lane['flowcell']
 
-                if args.flowcell is not None and flowcell_id not in args.flowcell:
+                if len(args.flowcell) > 0 and flowcell_id not in args.flowcell:
                     # if there's a flowcell filter skip other flowcells
                     continue
 
