@@ -72,12 +72,13 @@ def main(cmdline=None):
                     flowcell_urls[flowcell_id] = projects
 
                 for project_entry in flowcell_urls[flowcell_id]:
-                    _, project_id, project_index = project_entry.name.split('_')
+                    project_fields = project_entry.name.split('_')
+                    project_id = project_fields[1]
                     if project_id == library_id:
                         fastq_entries = {}
                         for sample_entry in find_sample_url(project_entry.url):
                             for fastq in find_fastqs(sample_entry.url):
-                                shortened_name = make_short_fastq_name(fastq.name)
+                                shortened_name = make_short_fastq_name(fastq.name, args.merge_lanes)
                                 fastq_entries.setdefault(shortened_name, []).append(fastq.url)
 
                         for shortened_name in fastq_entries:
@@ -102,13 +103,15 @@ def make_parser():
     parser.add_argument('-f', '--flowcell', default=[], action='append',
                         help='limit to listed flowcells, otherwise try everything')
     parser.add_argument('-u', '--root-url', help='root url to search')
+    parser.add_argument('--merge-lanes', default=False, action='store_true',
+                        help='merge multiple lanes into one file')
     add_separator_argument(parser)
     add_auth_options(parser)
     add_debug_arguments(parser)
     return parser
 
 
-def download_fastqs(root_url, flowcell, libraries):
+def download_fastqs(root_url, flowcell, libraries, merge_lanes=False):
     for runfolder in find_flowcell(root_url, flowcell):
         logger.debug('Scanning runfolder {}'.format(runfolder.name))
         for project in find_projects(runfolder.url):
@@ -118,7 +121,7 @@ def download_fastqs(root_url, flowcell, libraries):
                     fastq_entries = {}
                     for sample in find_sample_url(project.url):
                         for fastq in find_fastqs(sample.url):
-                            shortened_name = make_short_fastq_name(fastq.name)
+                            shortened_name = make_short_fastq_name(fastq.name, merge_lanes)
                             fastq_entries.setdefault(shortened_name, []).append(fastq)
 
                     if len(fastq_entries) > 0:
@@ -250,7 +253,7 @@ def parse_apache_dirindex(url):
         yield direntry(link_type, name, href, last_modified)
 
 
-def make_short_fastq_name(fastq_name):
+def make_short_fastq_name(fastq_name, merge_lanes=False):
     """Generate shortened name for combined fastq files
     """
     ext = '.fastq.gz'
@@ -266,7 +269,10 @@ def make_short_fastq_name(fastq_name):
     if not parts[3].startswith('R'):
         raise ValueError('Unexpected fastq read {}'.format(fastq_name))
 
-    return '_'.join((parts[0], parts[1], parts[2], parts[3])) + ext
+    if merge_lanes:
+        return '_'.join((parts[0], parts[1], parts[3])) + ext
+    else:
+        return '_'.join((parts[0], parts[1], parts[2], parts[3])) + ext
 
 
 if __name__ == '__main__':
