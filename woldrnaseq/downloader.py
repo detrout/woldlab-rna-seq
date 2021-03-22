@@ -3,7 +3,7 @@
 """
 from argparse import ArgumentParser
 from datetime import datetime
-from collections import namedtuple
+from collections import namedtuple, abc
 import hashlib
 import logging
 import os
@@ -81,7 +81,13 @@ def main(cmdline=None):
                                 fastq_entries.setdefault(shortened_name, []).append(fastq.url)
 
                         for shortened_name in fastq_entries:
-                            target = Path(row.read_1).parent / shortened_name
+                            if isinstance(row.read_1, abc.Sequence):
+                                read_1 = row.read_1[0]
+                            else:
+                                read_1 = read_1
+                            if not Path(read_1).parent.exists():
+                                Path(read_1).parent.mkdir()
+                            target = Path(read_1).parent / shortened_name
                             fragments.extend(fast_download_merged_fastq(target, fastq_entries[shortened_name]))
 
     logger.info('Scanned {} flowcells'.format(len(flowcell_urls)))
