@@ -264,6 +264,7 @@ def find_fastqs(table, fastq_column):
 
     fastqs are a comma seperated glob pattern
     """
+    assert fastq_column in ['read_1', 'read_2'], "Unrecognized fastq column name {}".format(fastq_column)
     if fastq_column in table.columns:
         for library_id in table.index:
             fastq_field = table.loc[library_id, fastq_column]
