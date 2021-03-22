@@ -222,7 +222,7 @@ def load_rsem_replicates(extension, experiment, libraries, column):
             raise RuntimeError(
                 "Unexpected number of rsem gene result files {} using '{}'".format(
                     len(result),
-                    pattern,
+                    extension,
                 )
             )
         elif not os.path.exists(result[0]):
