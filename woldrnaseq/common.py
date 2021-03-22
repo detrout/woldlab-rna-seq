@@ -291,7 +291,7 @@ def find_fastqs_by_glob(fastq_globs):
         A list of file names with all of the sorted patterns expanded
     """
     for fastq in fastq_globs:
-        fastq_list = sorted(glob(str(fastq)))
+        fastq_list = sorted(glob(str(os.path.expanduser(fastq))))
         if len(fastq_list) == 0:
             logger.warning("No fastqs matched: %s", fastq)
         for filename in fastq_list:
