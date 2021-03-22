@@ -153,25 +153,18 @@ def fast_download_merged_fastq(fastq_name, fastq_urls):
     print(fragments)
     return fragments
 
+
 def download_merged_fastq(fastq_name, fastq_urls):
-    BLOCK_SIZE = 65535
     if os.path.exists(fastq_name):
         logger.error('{} already exists'.format(fastq_name))
     else:
         with xopen(fastq_name, mode='wb', compresslevel=9, threads=6) as outstream:
-            block = bytearray(BLOCK_SIZE)
             for url in fastq_urls:
                 logger.debug('Downloading: {}'.format(url))
                 fragment_hash = hashlib.md5()
                 count = 0
                 response = requests.get(url, stream=True)
                 with gzip.open(response.raw, 'rb') as instream:
-                    #read = instream.readinto(block)
-                    #while read != 0:
-                    #    outstream.write(block)
-                    #    count += read
-                    #    read = instream.readinto(block)
-                    #    fragment_hash.update(block)
                     for line in instream:
                         count += len(line)
                         outstream.write(line)
