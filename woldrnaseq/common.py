@@ -276,6 +276,22 @@ def find_fastqs(table, fastq_column):
         raise NotImplementedError("Please specify fastq glob")
 
 
+def find_fastqs_for_library(table, library_id, fastq_column):
+    """Find fastqs for a library from a library table
+
+    fastqs are a comma seperated glob pattern
+    """
+    assert fastq_column in ['read_1', 'read_2'], "Unrecognized fastq column name {}".format(fastq_column)
+    if fastq_column in table.columns and library_id in table.index:
+        fastq_field = table.loc[library_id, fastq_column]
+        if isinstance(fastq_field, abc.Sequence):
+            fastqs = find_fastqs_by_glob(fastq_field)
+            yield (library_id, list(fastqs))
+    else:
+        # eventually look up by library ID
+        raise NotImplementedError("Please specify fastq glob {} {}".format(fastq_column in table.columns, library_id in table.index))
+
+
 def find_fastqs_by_glob(fastq_globs):
     """Generate a file names from the provided list of names
 
