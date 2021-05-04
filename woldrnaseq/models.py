@@ -49,15 +49,16 @@ def load_experiments(experiment_filenames, sep='\t', analysis_root=None):
         else:
             analysis_cur_root = analysis_root
 
-        table = pandas.read_csv(experiment_filename, sep=sep, comment='#',
-                                skip_blank_lines=True,
-                                header=0,
-                                dtype={
-                                    'experiment': str,
-                                },
-                                converters={
-                                    'replicates': lambda x: x.split(',')
-                                }
+        table = pandas.read_csv(
+            experiment_filename, sep=sep, comment='#',
+            skip_blank_lines=True,
+            header=0,
+            dtype={
+                'experiment': str,
+            },
+            converters={
+                'replicates': lambda x: x.split(',')
+            }
         )
         table.set_index('experiment', inplace=True)
         required_experiment_columns_present(table)
