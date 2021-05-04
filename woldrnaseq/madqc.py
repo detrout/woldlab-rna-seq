@@ -232,7 +232,7 @@ def load_rsem_replicates(extension, experiment, libraries, column):
     quantifications = load_rsem_quantifications(
         analysis_files, index=library_ids, column=column
     )
-    print('quantifications', experiment.name, quantifications.shape)
+    logging.debug('quantifications {} {}'.format(experiment.name, quantifications.shape))
     return quantifications
 
 
