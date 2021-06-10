@@ -1,6 +1,20 @@
 Changelog
 =========
 
+Release 1.1.1
+-------------
+
+  * Support generating stranded bigwigs
+  * Requires GeorgiScripts 1.1 (available from
+    https://github.com/detrout/GeorgiScripts )
+  * Generate coverage plots directly from bam files
+  * Avoid leaving intermediate bedgraph files in the analysis
+    directory.
+  * Include the star genome index size in the estimate of STAR's
+    memory footprint.
+  * Add --merge-lanes to downloader.py to combine fastqs from
+    multiple lanes into a single file.
+
 Release 1.1
 -----------
 
