@@ -45,7 +45,7 @@ VARS {{job_id}}_align-star      star_request_disk_kilobytes="{{star_request_disk
 VARS {{job_id}}_align-star      read1="{{read_1_fastqs}}"{% if read_2_fastqs %}
 VARS {{job_id}}_align-star      read2="{{read_2_fastqs}}"
 
-VARS {{job_id}}_sort-samtools paired_end="1"
+VARS {{job_id}}_sort-samtools   paired_end="1"
 {% endif %}
 VARS {{job_id}}_sort-samtools   sort_samtools="{{sort_samtools_sh}}"
 
