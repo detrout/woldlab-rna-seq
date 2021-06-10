@@ -224,7 +224,13 @@ def parse_apache_dirindex(url):
         '/icons/compressed.gif': 'compressed',
     }
 
-    root = parse(url)
+    try:
+        root = parse(url)
+    except TypeError as e:
+        print("Unable to parse {}".format(url))
+        print(e)
+        return
+
     for row in root.xpath('/html/body/table/tr'):
         td = row.getchildren()
         icon = td[0].getchildren()
