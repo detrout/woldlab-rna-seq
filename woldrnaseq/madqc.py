@@ -1,7 +1,6 @@
 import argparse
 import collections
 from io import StringIO
-from glob import glob
 from pathlib import Path
 import pandas
 import numpy
