@@ -59,6 +59,13 @@ def load_rsem_quantifications(experiment_files, index=None, column='FPKM'):
         _, name = os.path.split(filename)
         filenames.append(name)
 
+    # make sure our index matches
+    for q, f in zip(quantifications[1:], filenames[1:]):
+        if not numpy.all(q.index == quantifications[0].index):
+            raise ValueError(
+                "Index doesn't match {} {} {}".format(
+                    f, quantifications[0].shape, q.shape))
+
     df = pandas.concat(quantifications, axis=1)
     if index:
         df.columns = index
