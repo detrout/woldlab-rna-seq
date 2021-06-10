@@ -1,0 +1,38 @@
+universe=vanilla
+
+environment="PYTHONPATH=$(pythonpath)"
+
+log=$(curdir)/bam2bigwig-$(Process).log
+output=$(curdir)/bam2bigwig-$(Process).out
+error=$(curdir)/bam2bigwig-$(Process).out
+
+ANALYSIS_NAME=$$($(analysis_name):Analysis)
+
+GENOME=$$($(genome):mm10)
+ANNOTATION=$$($(annotation):M4)
+SEX=$$($(sex):male)
+GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
+OUT_MINUS_ALL=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_minusAll.bw
+OUT_PLUS_ALL=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_plusAll.bw
+OUT_MINUS_UNIQ=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_minusUniq.bw
+OUT_PLUS_UNIQ=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_plusUniq.bw
+
+request_cpus=1
+request_memory=4G
+
+executable=/usr/bin/python3
+transfer_executable=False
+should_transfer_files=ALWAYS
+when_to_transfer_output=ON_EXIT
+transfer_input_files=$(curdir)/$(IN)
+transfer_output_files=$(OUT_MINUS_ALL),$(OUT_PLUS_ALL),$(OUT_MINUS_UNIQ),$(OUT_PLUS_UNIQ)
+
+initialdir=$(CURDIR)
+arguments="-m woldrnaseq.make_bigwig \
+  --star-dir $(STAR_DIR) \
+  --ucsc-tools-dir $(UCSC_TOOLS_DIR) \
+  --reference-prefix $(reference_prefix) \
+  --bam $(IN) \
+  --stranded --debug"
+queue

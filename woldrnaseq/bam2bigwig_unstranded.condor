@@ -1,0 +1,36 @@
+universe=vanilla
+
+environment="PYTHONPATH=$(pythonpath)"
+
+log=$(curdir)/bam2bigwig-$(Process).log
+output=$(curdir)/bam2bigwig-$(Process).out
+error=$(curdir)/bam2bigwig-$(Process).out
+
+CURDIR=$(curdir)
+ANALYSIS_NAME=$$($(analysis_name):Analysis)
+
+GENOME=$$($(genome):mm10)
+ANNOTATION=$$($(annotation):M4)
+SEX=$$($(sex):male)
+GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
+OUT_ALL=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_all.bw
+OUT_UNIQ=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_uniq.bw
+
+request_cpus=1
+request_memory=4G
+
+executable=/usr/bin/python3
+transfer_executable=False
+should_transfer_files=ALWAYS
+when_to_transfer_output=ON_EXIT
+transfer_input_files=$(CURDIR)/$(IN)
+transfer_output_files=$(OUT_ALL),$(OUT_UNIQ)
+
+initialdir=$(CURDIR)
+arguments="-m woldrnaseq.make_bigwig \
+  --star-dir $(STAR_DIR) \
+  --ucsc-tools-dir $(UCSC_TOOLS_DIR) \
+  --reference-prefix $(reference_prefix) \
+  --bam $(IN)"
+queue

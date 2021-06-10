@@ -12,6 +12,7 @@ from pkg_resources import resource_filename
 import stat
 from jinja2 import Environment, PackageLoader
 
+import woldrnaseq
 from woldrnaseq import __version__
 from .common import (
     add_default_path_arguments,
@@ -154,6 +155,11 @@ class AnalysisDAG:
         else:
             rsem_strand_probability = '--forward-prob 0.5'
 
+        if self.stranded == "unstranded":
+            bam2bigwig = resource_filename(__name__, 'bam2bigwig_unstranded.condor')
+        else:
+            bam2bigwig = resource_filename(__name__, 'bam2bigwig_stranded.condor')
+
         return template.render(
             align_star=resource_filename(__name__, 'align-star.condor'),
             pre_star=resource_filename(__name__, 'pre_star'),
@@ -165,7 +171,7 @@ class AnalysisDAG:
             bedgraph_star=resource_filename(__name__, 'bedgraph-star.condor'),
             qc_coverage=resource_filename(__name__, 'qc-coverage.condor'),
             qc_distribution=resource_filename(__name__, 'qc-distribution.condor'),
-            bedgraph2bigwig=resource_filename(__name__, 'bedgraph2bigwig.condor'),
+            bam2bigwig=bam2bigwig,
             sort_samtools_sh=resource_filename(__name__, 'sort-samtools.sh'),
             bedgraph_bedsort_sh=resource_filename(__name__, 'bedsort.sh'),
             picard_markdup=resource_filename(__name__, 'picard-markdup.condor'),
@@ -192,6 +198,7 @@ class AnalysisDAG:
             rsem_paired_argument=rsem_paired_argument,
             rsem_strand_probability=rsem_strand_probability,
             rsem_request_disk=int(self.fastq_size/1024 * 7),
+            pythonpath=Path(woldrnaseq.__path__[0]).parent,
             username=os.getlogin(),
             timestamp=datetime.datetime.now().isoformat(),
             woldrnaseq_version=__version__,

@@ -14,11 +14,11 @@ SEX=$$($(sex):male)
 GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
 GENOME_DIR=$(GENOME_ROOT)$(GENOME_TRIPLET)/
 GTF=$(GENOME_DIR)gencode.v$(ANNOTATION)-tRNAs-ERCC.gff
-IN=$$($(in):Signal.Unique.str1.out.bg)
+IN=$(CURDIR)/$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
 OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET).coverage
 
 request_cpus=1
-request_memory=14G
+request_memory=8G
 
 executable=/usr/bin/python3
 transfer_executable=False
