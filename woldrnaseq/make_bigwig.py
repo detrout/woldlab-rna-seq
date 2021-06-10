@@ -2,10 +2,9 @@
 from argparse import ArgumentParser
 import logging
 import os
+from pathlib import Path
 import sys
 import subprocess
-from dask import delayed
-from dask.distributed import Client, LocalCluster
 from pysam import AlignmentFile
 
 from woldrnaseq.common import (
@@ -25,7 +24,6 @@ def main(cmdline=None):
 
     logger.debug("current directory {}".format(os.getcwd()))
     logger.debug("env: {}".format(os.environ))
-
 
     if args.prefix:
         prefix = args.prefix
@@ -50,28 +48,17 @@ def main(cmdline=None):
             'Signal.Unique.str1.out.bg': prefix + '_uniq.bw',
         }
 
-    local_cluster = LocalCluster(n_workers=1, threads_per_worker=len(targets))
-    client = Client(local_cluster)
-    star_p = client.submit(
-        run_star_to_bedgraph,
-        args.bam,
-        args.stranded,
-        args.reference_prefix,
-        args.star_dir,
-    )
-    star_p.result()
+    star_dir = Path(args.star_dir) if args.star_dir is not None else None
+    ucsc_tools_dir = Path(args.ucsc_tools_dir) if args.ucsc_tools_dir is not None else None
 
-    chrom_info = delayed(make_chrom_info)(args.bam)
-    bigwigs = [star_p]
+    run_star_to_bedgraph(args.bam, args.stranded, args.reference_prefix, star_dir)
+    chrom_info = make_chrom_info(args.bam)
+
     for target in targets:
-        bedsort = delayed(run_bedsort)(target)
-        bigwig = delayed(run_bedgraph2bigwig)(bedsort, chrom_info, targets[target], args.ucsc_tools_dir)
-        bigwigs.append(bigwig)
+        run_bedsort(target, ucsc_tools_dir)
+        run_bedgraph2bigwig(target, chrom_info, targets[target], ucsc_tools_dir)
+    os.unlink(chrom_info)
 
-    results = client.compute(bigwigs)
-    status, generated = client.gather(results)
-    print('Generated', ','.join([str(x) for x in generated]))
-    client.close()
     return 0
 
 
@@ -101,22 +88,23 @@ def run_star_to_bedgraph(bam, stranded, reference_prefix, star_dir=None):
            '--outWigReferencesPrefix', reference_prefix,
            '--outWigStrand', stranded_option]
 
-    print('running', ' '.join(cmd))
+    logger.debug('running: {}'.format(cmd))
     subprocess.run(cmd, check=True)
     return True
 
 
-def run_bedsort(filename):
-    cmd = ['bedSort', filename, filename]
-    print('running', ' '.join(cmd))
+def run_bedsort(filename, ucsc_tools_dir=None):
+    bedsort_cmd = 'bedSort' if ucsc_tools_dir is None else ucsc_tools_dir / 'bedSort'
+    cmd = [bedsort_cmd, filename, filename]
+    logger.debug('running: {}'.format(cmd))
     subprocess.run(cmd, check=True)
     return filename
 
 
 def run_bedgraph2bigwig(source, chrom_info, destination, ucsc_tools_dir=None):
-    bedgraph_cmd = 'bedGraphToBigWig' if ucsc_tools_dir is None else os.path.join(ucsc_tools_dir, 'bedGraphToBigWig')
+    bedgraph_cmd = 'bedGraphToBigWig' if ucsc_tools_dir is None else ucsc_tools_dir / 'bedGraphToBigWig'
     cmd = [bedgraph_cmd, source, chrom_info, destination]
-    print('running', ' '.join(cmd))
+    logger.debug('running: {}'.format(cmd))
     subprocess.run(cmd, check=True)
     os.unlink(source)
     return destination
