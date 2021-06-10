@@ -94,12 +94,13 @@ def replicate_scores(table, rep1_name, rep2_name, Acutoff=0):
     pandas.Series
        Containing all the scores between the two replicates
     """
+    logger.debug("Computing replicate scores for (%s, %s)", rep1_name, rep2_name)
     rep1 = table[rep1_name]
     rep2 = table[rep2_name]
 
-    eitherzero = (rep1 == 0) | (rep2 == 0)
-    replz1 = numpy.log2(rep1[eitherzero != True])
-    replz2 = numpy.log2(rep2[eitherzero != True])
+    both_expressed = (rep1 > 0) & (rep2 > 0)
+    replz1 = numpy.log2(rep1[both_expressed])
+    replz2 = numpy.log2(rep2[both_expressed])
 
     M = replz1 - replz2
     A = (replz1 + replz2) / 2.0
@@ -273,6 +274,7 @@ def create_quantification_cache(
     store.append('quantifications', quantifications)
     store.close()
 
+    logger.debug("Computing all vs all scores for %s", score_filename)
     scores = compute_all_vs_all_scores(quantifications)
     if os.path.exists(score_filename):
         os.unlink(score_filename)
