@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from functools import partial
 import pandas
+import re
 
 from woldrnaseq.common import validate_reference_type
 
@@ -820,3 +821,66 @@ def warn_if_spaces(filename):
         line = instream.readline()
         if ' ' in line:
             logger.warning("There are spaces in the header line, is this intentional?")
+
+
+def config_from_dagman(dagman):
+    analysis_name = re.compile('analysis_name="(?P<name>[^"]+)"')
+    genome_info = re.compile('genome="(?P<genome>[^"]+)" annotation="(?P<annotation>[^"]+)" sex="(?P<sex>[^"]+)"')
+    genome_dir = re.compile('genome_root="(?P<genome_dir>[^"]+)"')
+    star_dir = re.compile('star_dir="(?P<star_dir>[^"]+)"')
+    ucsc_tools_dir = re.compile('ucsc_tools_dir="(?P<ucsc_tools_dir>[^"]+)"')
+    stranded = re.compile('stranded="(?P<stranded>[^"]+)"')
+    reference_prefix = re.compile('reference_prefix="(?P<reference_prefix>[^"]+)"')
+
+    config = {}
+
+    with open(dagman, 'rt') as instream:
+        for line in instream:
+            line = line.strip()
+            if line.startswith("VARS "):
+                match = analysis_name.search(line)
+                if match:
+                    config["analysis_name"] = match.group("name")
+
+                match = genome_info.search(line)
+                if match:
+                    config["genome"] = match.group("genome")
+                    config["annotation"] = match.group("annotation")
+                    config["sex"] = match.group("sex")
+                    config["genome_triple"] = "-".join((
+                        match.group("genome"),
+                        match.group("annotation"),
+                        match.group("sex")))
+
+                match = genome_dir.search(line)
+                if match:
+                    config["genome_dir"] = match.group("genome_dir")
+
+                match = stranded.search(line)
+                if match:
+                    config["stranded"] = match.group("stranded")
+
+                match = reference_prefix.search(line)
+                if match:
+                    config["reference_prefix"] = match.group("reference_prefix")
+
+                match = star_dir.search(line)
+                if match:
+                    config["star_dir"] = match.group("star_dir")
+
+                match = ucsc_tools_dir.search(line)
+                if match:
+                    config["ucsc_tools_dir"] = match.group("ucsc_tools_dir")
+
+    return config
+
+
+def config_from_condor_initialdir():
+    dagmans = list(Path(".").glob("*.dagman"))
+    if len(dagmans) == 0:
+        print("There are no dagmans.")
+        return None
+    elif len(dagmans) > 1:
+        print("Too many dagmans. {}".format(",".join(dagmans)))
+
+    return config_from_dagman(dagmans[0])
