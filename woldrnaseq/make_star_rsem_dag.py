@@ -7,6 +7,7 @@ import datetime
 import itertools
 import logging
 import os
+from pathlib import Path
 from pkg_resources import resource_filename
 import stat
 from jinja2 import Environment, PackageLoader
@@ -96,6 +97,21 @@ class AnalysisDAG:
             filesize += os.stat(filename)[stat.ST_SIZE]
         return filesize
 
+    @property
+    def star_index_size(self):
+        genome_dir = Path(self.genome_dir)
+        sa_name = genome_dir / self.genome_triplet / "SA"
+        filesize = os.stat(sa_name)[stat.ST_SIZE]
+        return filesize
+
+    @property
+    def star_memory_size(self):
+        return self.fastq_size * 3 + self.star_index_size
+
+    @property
+    def genome_triplet(self):
+        return "-".join((self.genome, self.annotation, self.sex))
+
     def is_valid(self):
         for key in self.__dict__:
             if key == 'read_1_fastqs' and len(self.read_1_fastqs) == 0:
@@ -169,8 +185,8 @@ class AnalysisDAG:
             analysis_name=self.analysis_name,
             read_1_fastqs=",".join(self.read_1_fastqs),
             read_2_fastqs=",".join(self.read_2_fastqs),
-            star_request_memory_megabytes=int(self.fastq_size/(1024**2) * 3),
-            star_request_memory_bytes=int(self.fastq_size * 3),
+            star_request_memory_megabytes=int(self.star_memory_size / (2 ** 20)),
+            star_request_memory_bytes=int(self.star_memory_size),
             star_request_disk_kilobytes=int(self.fastq_size/1024 * 4),
             reference_prefix=self.reference_prefix,
             rsem_paired_argument=rsem_paired_argument,
