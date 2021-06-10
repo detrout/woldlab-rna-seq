@@ -24,7 +24,7 @@ else
 endif
 
 request_cpus=$(THREADS)
-request_memory=$(star_request_memory_megabytes)
+request_memory=$(star_request_memory_megabytes)M
 request_disk=$(star_request_disk_kilobytes)K
 
 executable=$(STAR_DIR)STAR
