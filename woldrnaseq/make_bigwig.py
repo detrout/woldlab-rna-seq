@@ -81,7 +81,7 @@ def make_parser():
     parser.add_argument('--prefix', help='set output name prefix')
     parser.add_argument('--stranded', action='store_true', default=False,
                         help='Process as stranded data')
-    parser.add_argument('--reference_prefix', default='chr')
+    parser.add_argument('--reference-prefix', default='chr')
     add_default_path_arguments(parser)
     add_debug_arguments(parser)
     return parser
