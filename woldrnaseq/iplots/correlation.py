@@ -83,7 +83,7 @@ class ScoreCorrelationPlot:
 
         score = self._scores.get(self.experiment_name, correlations)
         spearman = score['rafa_spearman']
-        
+
         factors = list(spearman.index)
         x = list(itertools.chain(*[itertools.repeat(name, len(factors)) for name in factors]))
         y = list(itertools.chain(*itertools.repeat(factors, len(factors))))
