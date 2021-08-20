@@ -96,11 +96,12 @@ def parse_attributes(cell, sep, ignore={}, reserved={}):
 
 
 class AttributesParser:
-    def __init__(self, sep=' ', ignore=None):
+    def __init__(self, sep=' ', ignore=None, max_terms=50):
         self.index = 0
         self.sep = sep
         self.terms = collections.OrderedDict()
         self.max_string = collections.OrderedDict()
+        self.max_terms = max_terms
         self.ignore = ignore if ignore is not None else []
         self.reserved = {
             'chromosome': 0,
@@ -127,7 +128,7 @@ class AttributesParser:
             column[self.index] = value
             attributes_count += 1
 
-        assert len(self.terms) < 30
+        assert len(self.terms) < self.max_terms
         self.index += 1
         return attributes_count
 
