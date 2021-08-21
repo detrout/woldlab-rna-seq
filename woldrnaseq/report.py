@@ -153,6 +153,7 @@ class QCReport:
         score_correlation_plots = ScoreCorrelationPlot(self.experiments)
 
         for experiment_name in sorted(self.experiments.index):
+            logger.info("Processing {}".format(experiment_name))
             experiment = self.experiments.loc[experiment_name]
             library_ids = experiment['replicates']
 
