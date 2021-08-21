@@ -212,10 +212,25 @@ class GFFParser:
     def write_hdf5(self, outname, table_name):
         if self.gtf is None:
             raise RuntimeError('No gtf table to write. Did you call read_gff?')
+        # columns to index
+        data_columns = [
+            "chromosome",
+            "source",
+            "type",
+            "start",
+            "stop",
+            "gene_id",
+            "transcript_id",
+            "gene_name",
+            "gene_type",
+            "transcript_type"]
         tprev = time.monotonic()
         store = pandas.HDFStore(outname, mode='w', complevel=9, complib='blosc:zstd')
-        store.append(table_name, self.gtf,
-                     min_itemsize=self.attribute_parser.max_string)
+        store.append(
+            table_name,
+            self.gtf,
+            data_columns=data_columns,
+            min_itemsize=self.attribute_parser.max_string)
         tnow = time.monotonic()
         logger.info("Wrote table in {:.3} seconds".format(tnow-tprev))
         tprev = tnow
