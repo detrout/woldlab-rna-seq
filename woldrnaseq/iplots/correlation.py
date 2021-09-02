@@ -112,7 +112,7 @@ class ScoreCorrelationPlot:
         plot.rect(x, y, color=colors, width=1, height=1)
 
         mapper = LinearColorMapper(palette=palettes.Plasma256, low=spearman_min, high=spearman_max)
-        cb = ColorBar(color_mapper=mapper, location=(0,0))
+        cb = ColorBar(color_mapper=mapper, location=(0, 0))
         plot.add_layout(cb, 'right')
 
         hist = self.make_score_histogram(spearman)
