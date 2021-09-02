@@ -196,6 +196,10 @@ class QCReport:
             }
 
             if scores is not None:
+                first_column = scores['total_rows'].columns[0]
+                last_column = scores['total_rows'].columns[-1]
+                cur_experiment['total_rows'] = scores['total_rows'].loc[first_column, last_column]
+                cur_experiment['passed_filter'] = scores['passed_filter'].loc[first_column, last_column]
                 cur_experiment['spearman'] = scores['rafa_spearman'].to_html(na_rep='')
 
             self._experiment_report[experiment_name] = cur_experiment

@@ -49,6 +49,10 @@
     </div>
     <h2>{{ name }} Rafa Filtered Spearmans</h2>
     {{experiment_report[name]['spearman']}}
+    <table>
+      <tr><th>Total gene annotations</th><td>{{ experiment_report[name]['total_rows'] }}</td></tr>
+      <tr><th>Gene annotations passed expression filter</th><td>{{ experiment_report[name]['passed_filter'] }}</td></tr>
+    </table>
     {% if plot_divs[experiment_report[name]['spike_variance']] %}<h2>{{ name }} spike-in variance</h2>
     {{plot_divs[experiment_report[name]['spike_variance']]}}{% endif %}
     <p><a href="#index">return to index</a></p>
