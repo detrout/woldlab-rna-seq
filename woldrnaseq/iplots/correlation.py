@@ -82,6 +82,10 @@ class ScoreCorrelationPlot:
             return None
 
         score = self._scores.get(self.experiment_name, correlations)
+        passed_filter = self.get_passed_filter(score)
+        if passed_filter < 10:
+            logger.warn("Too few genes for a correlation histogram")
+            return None
         spearman = score['rafa_spearman']
 
         factors = list(spearman.index)
@@ -144,6 +148,16 @@ class ScoreCorrelationPlot:
         plot.quad(bottom=0, left=edges[:-1], right=edges[1:], top=hist)
 
         return plot
+
+    def get_passed_filter(self, score):
+        """Return number of genes that passed the expression filter
+        """
+        matrix = score['passed_filter']
+        first_column = matrix.columns[0]
+        last_column = matrix.columns[-1]
+        passed_filter = matrix.loc[first_column, last_column]
+        return passed_filter
+
 
     def app_layout(self):
         controls = widgetbox([self.experiments_combo], width=200)
