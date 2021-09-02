@@ -14,7 +14,24 @@ def main(cmdline=None):
     else:
         target = sys.stdout
 
+    if args.trna is not None:
+        with xopen(args.trna, 'rt') as instream:
+            trna_cat(instream, target)
+
     for filename in args.filenames:
+        with xopen(filename, 'rt') as instream:
+            cat(instream, target)
+
+    for filename in args.spikein:
+        with xopen(filename, 'rt') as instream:
+            fasta_cat(instream, target)
+
+    if args.output:
+        target.close()
+
+
+def autodetect_filetype(filenames, instream, target):
+    for filename in filenames:
         filetype = detect_file_type(filename)
         with xopen(filename, 'rt') as instream:
             if filetype == 'unrecognized':
@@ -24,15 +41,14 @@ def main(cmdline=None):
             elif filetype == 'fasta':
                 fasta_cat(instream, target)
 
-    if args.output:
-        target.close()
-
 
 def make_parser():
     parser = ArgumentParser(
         description="Utility to combine multiple annotation GTFs and "
                     "synthesize GTF records for spike-ins from fasta files"
     )
+    parser.add_argument('--trna', help='name of tRNA file to read')
+    parser.add_argument('--spikein', help='name of spikein file to add', action='append', default=[])
     parser.add_argument('filenames', nargs='+', help='name of GTF and fasta files to combine.')
     parser.add_argument('-o', '--output', help='Destination for combined file')
     return parser
@@ -77,6 +93,14 @@ def cat(instream, outstream, strip_comments=True):
     for line in instream:
         if not (strip_comments and line.startswith('#')):
             outstream.write(line)
+
+
+def trna_cat(instream, outstream, strip_comments=True):
+    for line in instream:
+        if not (strip_comments and line.startswith('#')):
+            records = line.split('\t')
+            records[2] = 'exon'
+            outstream.write('\t'.join(records))
 
 
 def fasta_cat(instream, outstream):
