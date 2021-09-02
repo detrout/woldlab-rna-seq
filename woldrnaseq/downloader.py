@@ -192,7 +192,7 @@ def find_projects(url, maxdepth=1):
     for entry in parse_apache_dirindex(url):
         if entry.link_type == 'subdirectory' and entry.name.startswith('Project_'):
             yield entry
-        elif entry.link_type == 'subdirectory':
+        elif entry.link_type == 'subdirectory' and entry.name.startswith('Unaligned'):
             yield from find_projects(entry.url, maxdepth-1)
 
 
