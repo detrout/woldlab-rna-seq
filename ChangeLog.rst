@@ -1,6 +1,18 @@
 Changelog
 =========
 
+2021 Sept 2
+-----------
+
+Renamed project from long-rna-seq-condor to woldlab-rna-seq, because this
+was always intended for illumina sized reads, it was only ever long
+compared to some especially short ENCODE 3 fragments.
+
+The new url is https://github.com/detrout/wold-rna-seq
+
+And I dropped condor because I've been starting to port to snakemake.
+
+
 Release 1.1.1
 -------------
 
