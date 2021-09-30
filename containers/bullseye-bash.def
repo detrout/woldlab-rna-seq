@@ -1,0 +1,45 @@
+# This singularity recipe requires Singularity >= 3.2 And should run on
+# any system that has debootstrap installed.
+
+# Otherwise you need a Debian host with bullseye in the
+# apt/sources.list and to comment out the first bootstrap block, and
+# the stage in the second bootstrap block.
+
+# This is about as minimal of a base image that runs under singularity
+# I can make. It contains coreutils, bash, and xz, gzip, and bzip2.
+
+Bootstrap: debootstrap
+OSVersion: bullseye
+MirrorURL:  http://deb.debian.org/debian/
+
+Bootstrap: scratch
+Stage: final
+
+%setup
+        CURDIR=$(pwd)
+        echo "Creating Debian environment in ${SINGULARITY_ROOTFS} currently in ${CURDIR}"
+        # buster
+        # DEPS="libc6 libc-bin libgcc1 gcc-8-base libpcre3 libacl1 libattr1 libselinux1 coreutils libtinfo6 bash base-files"
+        # apt -t buster download ${DEPS}
+        # bullseye
+        DEPS="libc6 libcrypt1 libgcc-s1 gcc-10-base libc-bin coreutils libacl1 libattr1 libgmp10 libpcre2-8-0 libselinux1 bash libtinfo6 base-files debianutils ncurses-base base-passwd xzdec gzip bzip2 libbz2-1.0"
+        apt -t bullseye download ${DEPS}
+        for dep in ${DEPS}; do fakeroot dpkg-deb -x ${dep}*.deb ${SINGULARITY_ROOTFS}; done
+        ls ${SINGULARITY_ROOTFS}
+        # Singularities %post scripts need a /bin/sh
+        cd ${SINGULARITY_ROOTFS}/bin ; ln -s bash sh ; cd ${CURDIR}
+
+%post
+        cp usr/share/base-passwd/group.master etc/group
+        cp usr/share/base-passwd/passwd.master etc/passwd 
+        rm -rf usr/share/{doc,doc-base,common-licenses,info,lintian,locale}
+
+%runscript
+        /bin/bash "$@"
+
+%environment
+        export LC_ALL=C.UTF-8
+
+%labels
+        Author Diane Trout <diane@caltech.edu>
+        Version v0.0.1
