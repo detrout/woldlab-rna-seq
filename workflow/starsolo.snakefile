@@ -251,6 +251,8 @@ rule allow_list:
             with open(output.allow_file, "wb") as outstream:
                 if params.allow_list_url.endswith('.gz'):
                     instream = gzip.GzipFile(fileobj=instream.raw)
+                else:
+                    instream = instream.raw
                 shutil.copyfileobj(instream, outstream)
 
 
