@@ -277,7 +277,6 @@ rule star_solo:
         raw_barcodes = SOLO_ROOT / get_gene_model() / "raw" / "barcodes.tsv",
         raw_features = SOLO_ROOT / get_gene_model() / "raw" / "features.tsv",
         raw_unique_matrix = SOLO_ROOT / get_gene_model() / "raw" / "matrix.mtx",
-        raw_rescue_matrix = SOLO_ROOT / get_gene_model() / "raw" / "UniqueAndMult-Rescue.mtx",
         raw_em_matrix = SOLO_ROOT / get_gene_model() / "raw" / "UniqueAndMult-EM.mtx",
         sj_barcodes = SOLO_ROOT / "SJ" / "raw" / "barcodes.tsv",
         sj_features = SOLO_ROOT / "SJ" / "raw" / "features.tsv",
