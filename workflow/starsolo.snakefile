@@ -212,12 +212,14 @@ rule ALL:
 rule get_encode_fastq:
     output:
         temp("{accession}_R{read}.fastq.gz")
-    params:
-        username = username,
-        password = password,
     threads: 1
     run:
-        shell("curl -L -o {wildcards.accession}_R{wildcards.read}.fastq.gz https://{params.username}:{params.password}@www.encodeproject.org/files/{wildcards.accession}/@@download/{wildcards.accession}.fastq.gz")
+        url = "https://www.encodeproject.org/files/{accession}/@@download/{accession}.fastq.gz".format(
+            accession=wildcards.accession)
+        with requests.get(url, auth=auth, stream=True) as instream:
+            instream.raise_for_status()
+            with open(output[0], "wb") as outstream:
+                shutil.copyfileobj(instream.raw, outstream)
 
 
 rule genome:
