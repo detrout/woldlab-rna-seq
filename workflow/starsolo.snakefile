@@ -5,9 +5,11 @@
 # non-endorsement clause.
 #
 
+import codecs
+import csv
 import gzip
 import hashlib
-from io import BytesIO
+from io import BytesIO, StringIO
 import netrc
 import os
 from pathlib import Path
@@ -130,10 +132,15 @@ def create_metadata(config, md5s):
     for filename, md5 in md5s:
         metadata[filename] = "md5sum:{}".format(md5)
 
-    series = pandas.Series(metadata)
-    series.index.name = "name"
-    series.name = "value"
-    return series
+    return metadata
+
+
+def write_metadata(outstream, config):
+    writer = csv.writer(outstream, delimiter="\t")
+    writer.writerow(["name", "value"])
+    for key in config:
+        writer.writerow([key, config[key]])
+    return outstream
 
 
 def make_list_of_archive_files(solo_root, quantification="GeneFull", multiread="Unique"):
@@ -172,8 +179,7 @@ def archive_star(solo_root, quantification="GeneFull", multiread="Unique"):
 
     md5s = compute_md5sums(archive_files)
     manifest = create_metadata(config, md5s)
-
-    manifest_buffer = BytesIO(manifest.to_csv(sep="\t").encode("utf-8"))
+    manifest_buffer = BytesIO(write_metadata(StringIO(), manifest).getvalue().encode("utf-8"))
 
     tar_name = "{}_{}.tar.gz".format(quantification, multiread)
     with tarfile.open(tar_name, "w:gz") as archive:
