@@ -89,9 +89,9 @@ config['allow_file'] = compute_allow_list_name(config['allow_list_url'])
 try:
     authdb = netrc.netrc()
     username, _, password = authdb.hosts['www.encodeproject.org']
-    auth = (username, password)
+    auth = (username, password) if username is not None else None
 except FileNotFoundError:
-    auth = (None, None)
+    auth = None
 
 
 def generate_read_argument(config, read):
