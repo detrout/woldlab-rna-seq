@@ -306,7 +306,7 @@ rule star_solo:
            --outSAMheaderHD @HD VN:1.4 SO:coordinate \
            --outSAMunmapped Within \
            --outFilterType BySJout \
-           --outSAMattributes NH HI AS NM MD CB CR UB UR \
+           --outSAMattributes NH HI AS NM MD CB CR CY UB UR UY gx gn \
            --outSAMstrandField intronMotif \
            --outSAMtype BAM SortedByCoordinate \
            --sjdbScore 1 \
