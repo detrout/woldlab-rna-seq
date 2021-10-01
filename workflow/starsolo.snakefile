@@ -5,20 +5,19 @@
 # non-endorsement clause.
 #
 
+import gzip
+import hashlib
+from io import BytesIO
 import netrc
 import os
-import gzip
-from io import BytesIO
-from subprocess import run
 from pathlib import Path
-import stat
-import tarfile
-import time
-import hashlib
-from urllib.parse import urlparse
 import requests
 import shutil
-
+import stat
+from subprocess import run
+import tarfile
+import time
+from urllib.parse import urlparse
 
 ## Example configuration file.
 ## This configuration example is based on a 10x multiome experiment
