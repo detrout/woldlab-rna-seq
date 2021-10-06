@@ -269,6 +269,7 @@ rule star_solo_10x:
         sequence_reads = ",".join(generate_read_argument(config, "read2")),
         barcode_reads = ",".join(generate_read_argument(config, "read1")),
         umi_length = int(config["umi_length"]),
+        star_tmp = temp(directory("_STARtmp")),
     resources:
         mem_mb = config['mem_mb'],
         mem_bytes = config['mem_mb'] * (2 ** 20),
@@ -282,7 +283,6 @@ rule star_solo_10x:
         log_out = "Log.out",
         splice_junctions = "SJ.out.tab",
         barcode_stats = SOLO_ROOT / "Barcodes.stats",
-        star_tmp = temp(directory("_STARtmp")),
         features_stats = SOLO_ROOT / get_gene_model() / "Features.stats",
         umis = SOLO_ROOT / get_gene_model() / "UMIperCellSorted.txt",
         filtered_barcodes = SOLO_ROOT / get_gene_model() / "filtered" / "barcodes.tsv",
@@ -332,7 +332,7 @@ rule star_solo_10x:
            --soloFeatures {params.gene_model} SJ \
            --soloMultiMappers Unique EM \
            --limitBAMsortRAM {resources.mem_bytes} \
-           --outTmpDir {output.star_tmp} \
+           --outTmpDir {params.star_tmp} \
            --outFileNamePrefix ./ 2>&1 >> {log} \
 "
 
