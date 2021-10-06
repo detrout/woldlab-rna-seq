@@ -330,6 +330,7 @@ rule star_solo_10x:
            --soloCellFilter EmptyDrops_CR \
            --soloUMIlen {params.umi_length} \
            --soloCBlen {params.cb_length} \
+           --soloBarcodeReadLength 0 \
            --soloCBwhitelist {input.allow_list} \
            --soloStrand {params.stranded} \
            --soloFeatures {params.gene_model} SJ \
