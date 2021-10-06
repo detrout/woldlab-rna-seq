@@ -63,6 +63,7 @@ from urllib.parse import urlparse
 
 
 MISSING_ERROR = "Please define before upload"
+DEFAULT_10X_CB_LENGTH=16
 SOLO_ROOT = Path("Solo.out")
 MULTIREAD_NAME = {
     "Unique": "matrix.mtx",
@@ -269,6 +270,7 @@ rule star_solo_10x:
         sequence_reads = ",".join(generate_read_argument(config, "read2")),
         barcode_reads = ",".join(generate_read_argument(config, "read1")),
         umi_length = int(config["umi_length"]),
+        cb_length = int(config.get("cb_length", DEFAULT_10X_CB_LENGTH))
         star_tmp = temp(directory("_STARtmp")),
     resources:
         mem_mb = config['mem_mb'],
@@ -327,6 +329,7 @@ rule star_solo_10x:
            --soloType CB_UMI_Simple \
            --soloCellFilter EmptyDrops_CR \
            --soloUMIlen {params.umi_length} \
+           --soloCBlen {params.cb_length} \
            --soloCBwhitelist {input.allow_list} \
            --soloStrand {params.stranded} \
            --soloFeatures {params.gene_model} SJ \
