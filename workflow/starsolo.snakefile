@@ -249,7 +249,8 @@ rule allow_list:
         with requests.get(params.allow_list_url, stream=True) as instream:
             instream.raise_for_status()
             with open(output.allow_file, "wb") as outstream:
-                if params.allow_list_url.endswith('.gz'):
+                if (params.allow_list_url.endswith('.gz') or
+                   instream.headers.get("Content-Encoding") == "gzip"):
                     instream = gzip.GzipFile(fileobj=instream.raw)
                 else:
                     instream = instream.raw
