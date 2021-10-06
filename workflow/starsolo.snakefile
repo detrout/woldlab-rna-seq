@@ -256,7 +256,7 @@ rule allow_list:
                 shutil.copyfileobj(instream, outstream)
 
 
-rule star_solo:
+rule star_solo_10x:
     input:
         sequence_reads = generate_read_argument(config, "read2"),
         barcode_reads = generate_read_argument(config, "read1"),
