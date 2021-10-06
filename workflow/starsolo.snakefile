@@ -273,6 +273,7 @@ rule star_solo_10x:
         mem_bytes = config['mem_mb'] * (2 ** 20),
         disk_mb = config['disk_mb'],
     threads: 16
+    log: "star_solo_10x.out"
     output:
         aligned_bam = "Aligned.sortedByCoord.out.bam",
         log_final = "Log.final.out",
@@ -331,7 +332,7 @@ rule star_solo_10x:
            --soloMultiMappers Unique EM \
            --limitBAMsortRAM {resources.mem_bytes} \
            --outTmpDir {output.star_tmp} \
-           --outFileNamePrefix ./ \
+           --outFileNamePrefix ./ 2>&1 >> {log} \
 "
 
 rule to_archive:
