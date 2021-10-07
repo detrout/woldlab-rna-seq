@@ -64,6 +64,7 @@ from urllib.parse import urlparse
 
 MISSING_ERROR = "Please define before upload"
 DEFAULT_10X_CB_LENGTH=16
+DEFAULT_MEM_MB = 1000
 SOLO_ROOT = Path("Solo.out")
 MULTIREAD_NAME = {
     "Unique": "matrix.mtx",
@@ -214,6 +215,8 @@ rule get_encode_fastq:
     output:
         temp("{accession}_R{read}.fastq.gz")
     threads: 1
+    resources:
+        mem_mb = DEFAULT_MEM_MB,
     run:
         url = "https://www.encodeproject.org/files/{accession}/@@download/{accession}.fastq.gz".format(
             accession=wildcards.accession)
@@ -226,6 +229,8 @@ rule get_encode_fastq:
 rule genome:
     output:
         genome_dir = temp(directory(config['genome_dir']))
+    resources:
+        mem_mb = DEFAULT_MEM_MB,
     run:
         genome_dir = Path(output.genome_dir)
         print("genome_dir")
@@ -246,6 +251,8 @@ rule allow_list:
         allow_file = config['allow_file']
     params:
         allow_list_url = config['allow_list_url']
+    resources:
+        mem_mb = DEFAULT_MEM_MB,
     run:
         with requests.get(params.allow_list_url, stream=True) as instream:
             instream.raise_for_status()
@@ -348,5 +355,7 @@ rule to_archive:
         lambda wildcards: [str(x) for x in make_list_of_archive_files(SOLO_ROOT, wildcards.gene_model, wildcards.multiread)]
     output:
         "{gene_model}_{multiread}.tar.gz"
+    resources:
+        mem_mb = DEFAULT_MEM_MB,
     run:
         archive_star(SOLO_ROOT, wildcards.gene_model, wildcards.multiread)
