@@ -270,7 +270,7 @@ rule star_solo_10x:
         sequence_reads = ",".join(generate_read_argument(config, "read2")),
         barcode_reads = ",".join(generate_read_argument(config, "read1")),
         umi_length = int(config["umi_length"]),
-        cb_length = int(config.get("cb_length", DEFAULT_10X_CB_LENGTH))
+        cb_length = int(config.get("cb_length", DEFAULT_10X_CB_LENGTH)),
         star_tmp = temp(directory("_STARtmp")),
     resources:
         mem_mb = config['mem_mb'],
