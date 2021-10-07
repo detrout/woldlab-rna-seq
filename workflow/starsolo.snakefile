@@ -213,7 +213,7 @@ rule ALL:
 
 rule get_encode_fastq:
     output:
-        temp("{accession}_R{read}.fastq.gz")
+        "{accession}_R{read}.fastq.gz"
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB,
