@@ -289,7 +289,6 @@ rule star_solo_10x:
         aligned_bam = "Aligned.sortedByCoord.out.bam",
         log_final = "Log.final.out",
         log_progress = "Log.progress.out",
-        log_out = "Log.out",
         splice_junctions = "SJ.out.tab",
         barcode_stats = SOLO_ROOT / "Barcodes.stats",
         features_stats = SOLO_ROOT / get_gene_model() / "Features.stats",
