@@ -1,6 +1,28 @@
 Changelog
 =========
 
+
+Release 1.2.0
+-------------
+
+Snakemake is looking to be a much more popular workflow language than
+condor_dagman and I started implementing some workflows in snakemake
+instead.
+
+The most important of right now is a 10x pipeline using STAR Solo that
+will hopefully be useful for processing the ENCODE 4 single cell
+RNA-seq experiments.
+
+"workflows/starsolo.snakemake" is a minimal viable product in that
+given a configuration file with some ENCODE fastq accession IDs in it
+will download them from the ENCODE portal, process them and leave
+archives containing the results in our directory.
+
+The next phase of development will to automate generating the
+configuration files from ENCODE metadata and preparing to submit the
+archived results to the portal
+
+
 2021 Sept 2
 -----------
 
