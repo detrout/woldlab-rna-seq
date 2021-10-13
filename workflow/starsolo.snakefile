@@ -148,14 +148,11 @@ def write_metadata(outstream, config):
     return outstream
 
 
-def make_list_of_archive_files(solo_root, quantification="GeneFull", multiread="Unique"):
+def make_list_of_archive_files(solo_root, quantification="GeneFull", multiread="Unique", matrix="raw"):
     archive_files = []
 
-    if quantification in ("Gene", "GeneFull", "GeneFull_Ex50pAS"):
-        archive_files.append(solo_root / quantification / "filtered" / "barcodes.tsv")
-
-    archive_files.append(solo_root / quantification / "raw" / "barcodes.tsv")
-    archive_files.append(solo_root / quantification / "raw" / "features.tsv")
+    archive_files.append(solo_root / quantification / matrix / "barcodes.tsv")
+    archive_files.append(solo_root / quantification / matrix / "features.tsv")
 
     if quantification == "SJ":
         if multiread != "Unique":
@@ -163,7 +160,7 @@ def make_list_of_archive_files(solo_root, quantification="GeneFull", multiread="
         if matrix != "raw":
             raise ValueError("Splice junctions are only available as raw")
 
-    archive_files.append(solo_root / quantification / "raw" / MULTIREAD_NAME[multiread])
+    archive_files.append(solo_root / quantification / matrix / MULTIREAD_NAME[multiread])
     return archive_files
 
 
@@ -177,18 +174,18 @@ def update_tarinfo(info, filename):
     info.type = tarfile.REGTYPE
 
 
-def archive_star(solo_root, quantification="GeneFull", multiread="Unique"):
-    print("archive_star", solo_root, quantification, multiread)
+def archive_star(solo_root, quantification="GeneFull", multiread="Unique", matrix="raw"):
     assert quantification in ["Gene", "GeneFull", "GeneFull_Ex50pAS", "SJ"]
     assert multiread in ["Unique", "Rescue", "EM"]
+    assert matrix in ["filtered", "raw"]
 
-    archive_files = make_list_of_archive_files(solo_root, quantification, multiread)
+    archive_files = make_list_of_archive_files(solo_root, quantification, multiread, matrix)
 
     md5s = compute_md5sums(archive_files)
     manifest = create_metadata(config, md5s)
     manifest_buffer = BytesIO(write_metadata(StringIO(), manifest).getvalue().encode("utf-8"))
 
-    tar_name = "{}_{}.tar.gz".format(quantification, multiread)
+    tar_name = "{}_{}_{}.tar.gz".format(quantification, multiread, matrix)
     with tarfile.open(tar_name, "w:gz") as archive:
         info = tarfile.TarInfo("manifest.tsv")
         update_tarinfo(info, archive_files[0])
@@ -208,9 +205,11 @@ def get_gene_model():
 rule ALL:
     input:
         "Log.final.out",
-        "{}_Unique.tar.gz".format(get_gene_model()),
-        "{}_EM.tar.gz".format(get_gene_model()),
-        "SJ_Unique.tar.gz",
+        "{}_Unique_filtered.tar.gz".format(get_gene_model()),
+        "{}_EM_filtered.tar.gz".format(get_gene_model()),
+        "{}_Unique_raw.tar.gz".format(get_gene_model()),
+        "{}_EM_raw.tar.gz".format(get_gene_model()),
+        "SJ_Unique_raw.tar.gz",
 
 
 rule get_encode_fastq:
@@ -354,11 +353,12 @@ rule to_archive:
         # At least snakemake 5.4.0 wants input files to be a list of strings
         # make_list_of_archive_files returns a list of Paths so we need to
         # convert them
-        lambda wildcards: [str(x) for x in make_list_of_archive_files(SOLO_ROOT, wildcards.gene_model, wildcards.multiread)]
+        lambda wildcards: [str(x) for x in make_list_of_archive_files(
+            SOLO_ROOT, wildcards.gene_model, wildcards.multiread, wildcards.matrix)]
     output:
-        "{gene_model}_{multiread}.tar.gz"
+        "{gene_model}_{multiread}_{matrix}.tar.gz"
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB,
     run:
-        archive_star(SOLO_ROOT, wildcards.gene_model, wildcards.multiread)
+        archive_star(SOLO_ROOT, wildcards.gene_model, wildcards.multiread, wildcards.matrix)
