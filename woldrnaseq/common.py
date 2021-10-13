@@ -350,6 +350,7 @@ def get_username():
 
     return os.getlogin()
 
+
 def get_star_version(star_dir):
     star = subprocess.run([star_dir / "STAR", "--version"], stdout=subprocess.PIPE)
     return star.stdout.decode("utf-8")
@@ -361,5 +362,3 @@ def get_rsem_version(rsem_dir):
         stdout=subprocess.PIPE)
     stdout = rsem.stdout.decode("utf-8").split()
     return stdout[-1]
-
-
