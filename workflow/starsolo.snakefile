@@ -187,9 +187,10 @@ def compute_md5sums(filenames):
     return results
 
 
-def create_metadata(config, md5s):
+def create_metadata(config, output_type, md5s):
     metadata = {
         "type": "MatrixMarketGeneArchive_v1",
+        "output_type": output_type,
         "experiment_accession": config.get("experiment_accession", MISSING_ERROR),
         "description": config.get("description", MISSING_ERROR),
         "library_accession": config.get("library_accession", MISSING_ERROR),
@@ -236,15 +237,43 @@ def update_tarinfo(info, filename):
     info.type = tarfile.REGTYPE
 
 
+def make_output_type_term(quantification="GeneFull", multiread="Unique", matrix="raw"):
+    assert quantification in ["Gene", "GeneFull", "GeneFull_Ex50pAS", "SJ"]
+    assert multiread in ["Unique", "EM"]
+    assert matrix in ["filtered", "raw"]
+
+    gene_term = {
+        "Gene": "gene",
+        "GeneFull": "gene",
+        "GeneFull_Ex50pAS": "gene",
+        "SJ": "splice junction",
+    }[quantification]
+
+    multiread_term = {
+        "Unique": "unique",
+        "EM": "EM",
+    }[multiread]
+
+    matrix_term = matrix
+
+    output_type = "sparse {multiread} {quantification} {count_matrix}".format(
+        multiread=multiread_term,
+        quantification=gene_term,
+        count_matrix=matrix_term,
+    )
+    return output_type
+
+
 def archive_star(solo_root, quantification="GeneFull", multiread="Unique", matrix="raw"):
     assert quantification in ["Gene", "GeneFull", "GeneFull_Ex50pAS", "SJ"]
     assert multiread in ["Unique", "Rescue", "EM"]
     assert matrix in ["filtered", "raw"]
 
     archive_files = make_list_of_archive_files(solo_root, quantification, multiread, matrix)
+    output_type = make_output_type_term(quantification, multiread, matrix)
 
     md5s = compute_md5sums(archive_files)
-    manifest = create_metadata(config, md5s)
+    manifest = create_metadata(config, output_type, md5s)
     manifest_buffer = BytesIO(write_metadata(StringIO(), manifest).getvalue().encode("utf-8"))
 
     tar_name = "{}_{}_{}.tar.gz".format(quantification, multiread, matrix)
