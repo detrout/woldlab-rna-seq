@@ -231,6 +231,7 @@ rule genome:
         genome_dir = temp(directory(config['genome_dir']))
     resources:
         mem_mb = DEFAULT_MEM_MB,
+    threads: 1
     run:
         genome_dir = Path(output.genome_dir)
         print("genome_dir")
@@ -354,6 +355,7 @@ rule to_archive:
         lambda wildcards: [str(x) for x in make_list_of_archive_files(SOLO_ROOT, wildcards.gene_model, wildcards.multiread)]
     output:
         "{gene_model}_{multiread}.tar.gz"
+    threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB,
     run:
