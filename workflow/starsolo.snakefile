@@ -107,6 +107,8 @@ def generate_read_argument(config, read):
             ))
     return argument
 
+#######
+# Functions for making filtered .mtx file
 
 def read_barcode_lineno_map(filename):
     """Build a map of barcodes to line number from filename
@@ -170,6 +172,11 @@ def filter_mtx(raw_barcode_filename, raw_matrix_filename, filtered_barcode_filen
             yield "{} {} {}\n".format(row, column, count)
 
 
+#######
+# Functions for making manifest
+#
+
+
 def compute_md5sums(filenames):
     BLOCK = 2 ** 20
     results = []
@@ -211,6 +218,8 @@ def write_metadata(outstream, config):
     return outstream
 
 
+####
+# functions for making archive file
 def make_list_of_archive_files(solo_root, quantification="GeneFull", multiread="Unique", matrix="raw"):
     archive_files = []
 
@@ -289,6 +298,8 @@ def archive_star(solo_root, quantification="GeneFull", multiread="Unique", matri
                 archive.addfile(info, instream)
 
 
+###
+# Main rules
 def get_gene_model():
     return "GeneFull_Ex50pAS" if config['include_intron'] else "Gene"
 
