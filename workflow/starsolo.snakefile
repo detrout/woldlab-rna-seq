@@ -108,6 +108,68 @@ def generate_read_argument(config, read):
     return argument
 
 
+def read_barcode_lineno_map(filename):
+    """Build a map of barcodes to line number from filename
+    """
+    barcodes = {}
+    with open(filename, "rt") as csvfile:
+        reader = csv.reader(csvfile, delimiter='\t')
+        for i, line in enumerate(reader):
+            barcodes[line[0]] = i + 1
+
+    return barcodes
+
+
+def compute_raw_to_filtered_map(filtered_barcodes, raw_barcodes):
+    """Generate a raw index to filtered index mapping"""
+    raw_to_filtered_mapping = {}
+    for filtered_barcode in filtered_barcodes:
+        filtered_index = filtered_barcodes[filtered_barcode]
+        raw_index = raw_barcodes[filtered_barcode]
+        raw_to_filtered_mapping[raw_index] = filtered_index
+    return raw_to_filtered_mapping
+
+
+def filter_mtx(raw_barcode_filename, raw_matrix_filename, filtered_barcode_filename):
+    """generating a filtered mtx file from raw and filtered values
+
+    We read the the raw barcodes, raw matrix, and filtered barcodes
+    and use that to generate a mapping between the raw barcode index
+    values and the filtered barcode index values found in the mtx file.
+    """
+    raw_barcodes = read_barcode_lineno_map(raw_barcode_filename)
+    filtered_barcodes = read_barcode_lineno_map(filtered_barcode_filename)
+    raw_to_filtered_mapping = compute_raw_to_filtered_map(filtered_barcodes, raw_barcodes)
+
+    header = True
+    results = []
+    with open(raw_matrix_filename, "rt") as instream:
+        # copy comments
+        for line in instream:
+            if line.startswith("%"):
+                yield line
+            elif header:
+                # After the comment comes the one header line
+                total_rows, total_columns, total_counts = [int(x) for x in line.rstrip().split()]
+                assert total_columns == len(raw_barcodes)
+                header = False
+            else:
+                # row, column, count
+                row, column, count = line.rstrip().split()
+                row = int(row)
+                column = int(column)
+                if column in raw_to_filtered_mapping:
+                    new_column = raw_to_filtered_mapping[column]
+                    results.append((row, new_column, count))
+
+        rs = sorted(results, key=lambda row: (row[1], row[0]))
+        total_columns = len(filtered_barcodes)
+        total_counts = len(rs)
+        yield "{} {} {}\n".format(total_rows, total_columns, total_counts)
+        for row, column, count in rs:
+            yield "{} {} {}\n".format(row, column, count)
+
+
 def compute_md5sums(filenames):
     BLOCK = 2 ** 20
     results = []
@@ -347,6 +409,22 @@ rule star_solo_10x:
            --outTmpDir {params.star_tmp} \
            --outFileNamePrefix ./ 2>&1 >> {log} \
 "
+
+rule filter_em_matrix:
+    input:
+        filtered_barcode_tsv = SOLO_ROOT / get_gene_model() / "filtered" / "barcodes.tsv",
+        raw_barcode_tsv = SOLO_ROOT / get_gene_model() / "raw" / "barcodes.tsv",
+        raw_em_matrix_mtx = SOLO_ROOT / get_gene_model() / "raw" / "UniqueAndMult-EM.mtx",
+    output:
+        filtered_em_mtx = SOLO_ROOT / get_gene_model() / "filtered" / "UniqueAndMult-EM.mtx",
+    threads: 1
+    resources:
+        mem_mb = DEFAULT_MEM_MB
+    run:
+        with open(output.filtered_em_mtx, "wt") as outstream:
+            for line in filter_mtx(input.raw_barcode_tsv, input.raw_em_matrix_mtx, input.filtered_barcode_tsv):
+                outstream.write(line)
+
 
 rule to_archive:
     input:
