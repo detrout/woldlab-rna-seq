@@ -160,6 +160,8 @@ def make_list_of_archive_files(solo_root, quantification="GeneFull", multiread="
     if quantification == "SJ":
         if multiread != "Unique":
             raise ValueError("Splice junctions do not support multread assignment")
+        if matrix != "raw":
+            raise ValueError("Splice junctions are only available as raw")
 
     archive_files.append(solo_root / quantification / "raw" / MULTIREAD_NAME[multiread])
     return archive_files
