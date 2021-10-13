@@ -295,7 +295,7 @@ rule star_solo_10x:
         umis = SOLO_ROOT / get_gene_model() / "UMIperCellSorted.txt",
         filtered_barcodes = SOLO_ROOT / get_gene_model() / "filtered" / "barcodes.tsv",
         filtered_features = SOLO_ROOT / get_gene_model() / "filtered" / "features.tsv",
-        filtered_matrix = SOLO_ROOT / get_gene_model() / "filtered" / "matrix.mtx",
+        filtered_uniq_matrix = SOLO_ROOT / get_gene_model() / "filtered" / "matrix.mtx",
         raw_barcodes = SOLO_ROOT / get_gene_model() / "raw" / "barcodes.tsv",
         raw_features = SOLO_ROOT / get_gene_model() / "raw" / "features.tsv",
         raw_unique_matrix = SOLO_ROOT / get_gene_model() / "raw" / "matrix.mtx",
