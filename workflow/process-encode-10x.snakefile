@@ -74,6 +74,7 @@ rule ALL:
         "{}_Unique_raw.tar.gz".format(get_gene_model()),
         "{}_EM_raw.tar.gz".format(get_gene_model()),
         "SJ_Unique_raw.tar.gz",
+        "posted.csv",  #.format(config["experiment_accession"]),
 
 include:
     "rules/provide_star_index.smk"
@@ -86,3 +87,6 @@ include:
 
 include:
     "rules/fastqs.smk"
+
+include:
+    "rules/encode-submit.smk"
