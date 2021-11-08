@@ -1,31 +1,7 @@
-
+from urllib.parse import urljoin
 from pathlib import Path
 
 DEFAULT_MEM_MB = 1000
-
-
-def get_netrc_auth(host):
-    authdb = netrc.netrc()
-    username, _, password = authdb.hosts[host]
-    auth = (username, password)
-    return auth
-
-
-def get_auth(config):
-    host = config.get("encode_portal_url", "www.encodeproject.org")
-    home_netrc = Path("~/.netrc").expanduser()
-
-    if home_netrc.exists():
-        auth = get_netrc_auth(host)
-    else:
-        username = os.environ.get("DCC_API_KEY")
-        password = os.environ.get("DCC_SECRET_KEY")
-        auth = (username, password)
-
-    if auth == (None, None):
-        return None
-    else:
-        return auth
 
 
 rule get_encode_fastq:
@@ -37,9 +13,13 @@ rule get_encode_fastq:
     wildcard_constraints:
         accession = "ENCFF.*"
     run:
-        url = "https://www.encodeproject.org/files/{accession}/@@download/{accession}.fastq.gz".format(
+        from encoded_client.encoded import ENCODED
+        host = config.get("encode_portal_host", "www.encodeproject.org")
+        server = ENCODED(host)
+        path = "/files/{accession}/@@download/{accession}.fastq.gz".format(
             accession=wildcards.accession)
-        with requests.get(url, auth=auth, stream=True) as instream:
+        url = server.prepare_url(path)
+        with requests.get(url, auth=server.auth, stream=True) as instream:
             instream.raise_for_status()
             with open(output[0], "wb") as outstream:
                 shutil.copyfileobj(instream.raw, outstream)
