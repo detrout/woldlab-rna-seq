@@ -54,10 +54,25 @@ SOLO_ROOT = Path("Solo.out")
 
 configfile: "config.yaml"
 
+# username expand any filenames still in the config file
 for key in ['genome_dir']:
     if key in config and config[key].startswith('~'):
         config[key] = str(Path(config[key]).expanduser())
 
+# Set defaults for this version of the ENCODE scRNA-seq
+# pipeline
+config.setdefault(
+    "step_run",
+    "/analysis-step-runs/aa2ed4a1-331b-4d63-888e-57e1055b7568/"
+)
+config.setdefault(
+    "star_container",
+    "https://woldlab.caltech.edu/~diane/containers/star-dev_EoI_2.7.9a-2021-09-10.sif"
+)
+config.setdefault(
+    "scanpy_container",
+    "https://woldlab.caltech.edu/~diane/containers/bullseye-scanpy-1.8.2.sif"
+)
 
 ###
 # Main rules
