@@ -29,6 +29,9 @@ def read_umi_per_cell(filename):
 
 
 def main(cmdline=None):
+    import matplotlib
+    matplotlib.use("Agg")
+
     parser = ArgumentParser()
     parser.add_argument("--umi-per-cell")
     parser.add_argument("-o", "--output", required=True)
