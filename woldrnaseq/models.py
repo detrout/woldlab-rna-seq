@@ -1,6 +1,7 @@
 """Load necessary information to run our analysis from text tables.
 """
 import collections
+import csv
 import logging
 import os
 from pathlib import Path
@@ -461,6 +462,52 @@ def load_all_star_final(libraries):
         library_ids.append(library_id)
 
     return pandas.DataFrame(final)
+
+
+def load_star_solo_quality_metric(filename):
+    # Note need to update to version not using Multipe typo
+    summary_dtype = {
+        "Number of Reads": int,
+        "Reads With Valid Barcodes": float,
+        "Sequencing Saturation": float,
+        "Q30 Bases in CB+UMI": float,
+        "Q30 Bases in RNA read": float,
+        "Reads Mapped to Genome: Unique+Multiple": float,
+        "Reads Mapped to Genome: Unique": float,
+        "Reads Mapped to Gene: Unique+Multiple Gene": float,
+        "Reads Mapped to Gene: Unique Gene": float,
+        "Reads Mapped to GeneFull: Unique+Multiple GeneFull": float,
+        "Reads Mapped to GeneFull: Unique GeneFull": float,
+        "Reads Mapped to GeneFull_Ex50pAS: Unique+Multiple GeneFull_Ex50pAS": float,
+        "Reads Mapped to GeneFull_Ex50pAS: Unique GeneFull_Ex50pAS": float,
+        "Estimated Number of Cells": int,
+        "Unique Reads in Cells Mapped to Gene": int,
+        "Unique Reads in Cells Mapped to GeneFull": int,
+        "Unique Reads in Cells Mapped to GeneFull_Ex50pAS": int,
+        "Fraction of Unique Reads in Cells": float,
+        "Mean Reads per Cell": int,
+        "Median Reads per Cell": int,
+        "UMIs in Cells": int,
+        "Mean UMI per Cell": int,
+        "Median UMI per Cell": int,
+        "Mean Gene per Cell": int,
+        "Median Gene per Cell": int,
+        "Total Gene Detected": int,
+        "Mean GeneFull per Cell": int,
+        "Median GeneFull per Cell": int,
+        "Total GeneFull Detected": int,
+        "Mean GeneFull_Ex50pAS per Cell": int,
+        "Median GeneFull_Ex50pAS per Cell": int,
+        "Total GeneFull_Ex50pAS Detected": int,
+    }
+    summary = {}
+    with open(filename, "rt") as instream:
+        for name, value in csv.reader(instream):
+            # fix minor report typo in development version of STAR
+            if "Unique+Multipe" in name:
+                name = name.replace("Unique+Multipe", "Unique+Multiple")
+            summary[name] = summary_dtype[name](value)
+    return summary
 
 
 def load_distribution(filename):

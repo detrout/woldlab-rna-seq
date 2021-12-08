@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase, main
 from pkg_resources import resource_filename
 import pandas
+import pytest
 from woldrnaseq import models
 
 
@@ -270,6 +271,10 @@ class TestModel(TestCase):
         final_out = models.load_all_star_final(mm10)
         self.assertEqual(final_out.shape, (1, 27))
         self.assertEqual(final_out.index[0], '12304')
+
+    @pytest.mark.xfail
+    def test_load_star_solo_quality_metric(self):
+        raise NotImplementedError("Need to wait until I have a star release")
 
     def test_load_all_distribution(self):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
