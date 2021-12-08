@@ -10,24 +10,28 @@ import sys
 
 matplotlib.use("Agg")
 
+
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
     target_dir = Path(args.output_dir)
 
+    filename = Path(args.filename[0])
+    name = filename.name[:-len("tar.gz")]
+
     gene_id_to_name = read_gene_info_names(args.gene_info)
-    adata = read_mex_archive_as_anndata(args.filename[0])
+    adata = read_mex_archive_as_anndata(filename)
 
     calculate_qc(adata, gene_id_to_name)
 
     f = generate_violin_plot(adata)
-    f.savefig(target_dir / "qc_metric_violin.png")
+    f.savefig(target_dir / "qc_metric_violin.{}png".format(name))
 
     f = make_pct_mt_scatter(adata, args.title)
-    f.savefig(target_dir / "pct_count_mt.png")
+    f.savefig(target_dir / "pct_count_mt.{}png".format(name))
 
     f = make_gene_by_count_scatter(adata, args.title)
-    f.savefig(target_dir / "n_genes_by_counts.png")
+    f.savefig(target_dir / "n_genes_by_counts.{}png".format(name))
 
     return 0
 
