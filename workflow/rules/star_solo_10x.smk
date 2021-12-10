@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 DEFAULT_MEM_MB = 1000
 
 
-def compute_allow_list_name(url):
+def compute_inclusion_list_name(url):
     """The resulting allow list file need be uncompressed
     """
     parts = urlparse(url)
@@ -14,18 +14,18 @@ def compute_allow_list_name(url):
     return filename.replace(".gz", "")
 
 
-rule download_allow_list:
+rule download_inclusion_list:
     output:
-        allow_file = compute_allow_list_name(config['allow_list_url'])
+        allow_file = compute_inclusion_list_name(config['inclusion_list_url'])
     params:
-        allow_list_url = config['allow_list_url']
+        inclusion_list_url = config['inclusion_list_url']
     resources:
         mem_mb = DEFAULT_MEM_MB,
     run:
-        with requests.get(params.allow_list_url, stream=True) as instream:
+        with requests.get(params.inclusion_list_url, stream=True) as instream:
             instream.raise_for_status()
             with open(output.allow_file, "wb") as outstream:
-                if (params.allow_list_url.endswith('.gz') or
+                if (params.inclusion_list_url.endswith('.gz') or
                    instream.headers.get("Content-Encoding") == "gzip"):
                     instream = gzip.GzipFile(fileobj=instream.raw)
                 else:
@@ -84,7 +84,7 @@ rule star_solo_10x:
         sequence_reads = generate_star_read_argument(config, "read2"),
         barcode_reads = generate_star_read_argument(config, "read1"),
         genome_index = config['genome_dir'],
-        allow_list = compute_allow_list_name(config['allow_list_url']),
+        inclusion_list = compute_inclusion_list_name(config['inclusion_list_url']),
         cofile = "COfile.txt",
     params:
         stranded = config['stranded'],
@@ -156,7 +156,7 @@ rule star_solo_10x:
            --soloUMIlen {params.umi_length} \
            --soloCBlen {params.cb_length} \
            --soloBarcodeReadLength 0 \
-           --soloCBwhitelist {input.allow_list} \
+           --soloCBwhitelist {input.inclusion_list} \
            --soloStrand {params.stranded} \
            --soloFeatures {params.gene_model} SJ \
            --soloMultiMappers Unique EM \
