@@ -67,13 +67,13 @@ include:
     "rules/provide_star_index.smk"
 
 include:
+    "rules/fastqs.smk"
+
+include:
     "rules/star_solo_10x.smk"
 
 include:
     "rules/archive_solo_counts.smk"
-
-include:
-    "rules/fastqs.smk"
 
 include:
     "rules/encode-submit.smk"
