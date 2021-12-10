@@ -47,37 +47,9 @@ from pathlib import Path
 #mem_mb: 65536
 #disk_mb: 51200
 
+include:
+    "rules/star_solo_10x_config.smk"
 
-DEFAULT_10X_CB_LENGTH = 16
-DEFAULT_MEM_MB = 1000
-SOLO_ROOT = Path("Solo.out")
-
-configfile: "config.yaml"
-
-# username expand any filenames still in the config file
-for key in ['genome_dir']:
-    if key in config and config[key].startswith('~'):
-        config[key] = str(Path(config[key]).expanduser())
-
-# Set defaults for this version of the ENCODE scRNA-seq
-# pipeline
-config.setdefault(
-    "step_run",
-    "/analysis-step-runs/aa2ed4a1-331b-4d63-888e-57e1055b7568/"
-)
-config.setdefault(
-    "star_container",
-    "https://woldlab.caltech.edu/~diane/containers/star-dev_EoI_2.7.9a-2021-09-10.sif"
-)
-config.setdefault(
-    "scanpy_container",
-    "https://woldlab.caltech.edu/~diane/containers/bullseye-scanpy-1.8.2.sif"
-)
-
-###
-# Main rules
-def get_gene_model():
-    return "GeneFull_Ex50pAS" if config['include_intron'] else "Gene"
 
 
 rule ALL:
