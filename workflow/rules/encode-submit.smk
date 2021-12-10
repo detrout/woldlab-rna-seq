@@ -208,9 +208,9 @@ rule submit_processed_data:
         gene_unique_raw = "{}_Unique_raw.tar.gz".format(get_gene_model()),
         gene_multi_raw = "{}_EM_raw.tar.gz".format(get_gene_model()),
         sj_unique_raw = "SJ_Unique_raw.tar.gz",
-        metadata = "metadata.csv"
+        metadata = rules.prepare_star_solo_10x_submission_metadata.output[0],
     output:
-        bam = "Aligned.sortedByCoord.out.bam.upload",
+        bam = "Aligned.sortedByCoord.out.bam.{}.upload".format(get_submit_host()),
         gene_unique_filtered = "{}_Unique_filtered.tar.gz.{}.upload".format(get_gene_model(), get_submit_host()),
         gene_multi_filtered = "{}_EM_filtered.tar.gz.{}.upload".format(get_gene_model(), get_submit_host()),
         gene_unique_raw = "{}_Unique_raw.tar.gz.{}.upload".format(get_gene_model(), get_submit_host()),
