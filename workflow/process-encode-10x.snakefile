@@ -52,8 +52,8 @@ include:
 
 
 
-rule ALL:
-    input:
+def list_default_targets():
+    default = [
         "Log.final.out",
         "Aligned.sortedByCoord.out.bam",
         "{}_Unique_filtered.tar.gz".format(get_gene_model()),
@@ -61,7 +61,17 @@ rule ALL:
         "{}_Unique_raw.tar.gz".format(get_gene_model()),
         "{}_EM_raw.tar.gz".format(get_gene_model()),
         "SJ_Unique_raw.tar.gz",
-        "posted.csv",  #.format(config["experiment_accession"]),
+        "umi_per_cell.png",
+        "pct_count_mt.{}_EM_filtered.png".format(get_gene_model()),
+        "n_genes_by_counts.{}_EM_filtered.png".format(get_gene_model()),
+        "metadata.{}.csv".format(get_submit_host()),
+    ]
+    return default
+
+
+rule ALL:
+    input:
+        list_default_targets()
 
 include:
     "rules/provide_star_index.smk"
@@ -74,6 +84,9 @@ include:
 
 include:
     "rules/archive_solo_counts.smk"
+
+include:
+    "rules/prepare-qc.smk"
 
 include:
     "rules/encode-submit.smk"
