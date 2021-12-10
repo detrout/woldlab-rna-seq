@@ -47,6 +47,10 @@ rule to_archive:
             SOLO_ROOT, wildcards.gene_model, wildcards.multiread, wildcards.matrix)]
     output:
         "{gene_model}_{multiread}_{matrix}.tar.gz"
+    wildcard_constraints:
+        gene_model = "(GeneFull_Ex50pAS)|(GeneFull)|(Gene)|(SJ)",
+        multiread = "(EM)|(Unique)",
+        matrix = "(raw)|(filtered)",
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB,
