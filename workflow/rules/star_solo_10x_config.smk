@@ -41,6 +41,10 @@ config.setdefault(
     "scanpy_container",
     "https://woldlab.caltech.edu/~diane/containers/bullseye-scanpy-1.8.2.sif"
 )
+config.setdefault(
+    "alias_prefix",
+    Path(config["lab"]).name
+)
 
 try:
     automatic_submission = bool(config.get("automatic_submission", False))
