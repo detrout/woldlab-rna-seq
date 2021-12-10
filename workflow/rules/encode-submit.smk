@@ -1,4 +1,5 @@
 import sys
+import logging
 import pandas
 from encoded_client.hashfile import make_md5sum
 from encoded_client.encoded import ENCODED, DCCValidator, make_attachment
@@ -220,13 +221,18 @@ rule submit_processed_data:
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB
+    log: "submit_processed_data.log"
     run:
+        logger = logging.getLogger("submit_processed_data")
+        logger.setLevel(logging.INFO)
+        logger.addHandler(logging.FileHandler(log[0]))
+        logger.addHandler(logging.StreamHandler(sys.stderr))
         host = get_submit_host()
         server = ENCODED(host)
         metadata = pandas.read_csv(input.metadata, index_col=None)
         uploaded = process_files(server, metadata, dry_run=False)
-        print("Processed {} files".format(len(uploaded)))
-        print(metadata)
+        logger.info("Processed {} files".format(len(uploaded)))
+        logger.info(metadata)
         metadata.to_csv(output.metadata_posted, index=False)
 
 
@@ -239,17 +245,26 @@ rule post_star_qc:
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB
+    log: "post_star_qc.log"
     run:
+        logger = logging.getLogger("post_star_qc")
+        logger.setLevel(logging.INFO)
+        logger.addHandler(logging.FileHandler(log[0]))
+        logger.addHandler(logging.StreamHandler(sys.stderr))
         host = get_submit_host()
         server = ENCODED(host)
         uploaded = pandas.read_csv(input.metadata_posted)
         accession = uploaded[uploaded["file_format"] == "bam"]["accession"].to_list()
         qc = prepare_star_qc_metric(config, accession, input.log_final)
-        validator = DCCValidator(server)
-        validator.validate(qc, "/star_quality_metric/")
-        results = server.post_json("/star_quality_metric/", qc)
-        with open(output[0], "wt") as outstream:
-            outstream.write(str(results))
+        try:
+            validator = DCCValidator(server)
+            validator.validate(qc, "star_quality_metric")
+            results = server.post_json("/star_quality_metric/", qc)
+            with open(output[0], "wt") as outstream:
+                outstream.write(str(results))
+        except Exception as e:
+            logger.error(e)
+            raise(e)
 
 
 def get_summary_csv_path():
@@ -266,17 +281,26 @@ rule post_star_solo_qc:
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB
+    log: "post_star_solo_qc.log"
     run:
+        logger = logging.getLogger("post_star_solo_qc")
+        logger.setLevel(logging.INFO)
+        logger.addHandler(logging.FileHandler(log[0]))
+        logger.addHandler(logging.StreamHandler(sys.stderr))
         host = get_submit_host()
         server = ENCODED(host)
         uploaded = pandas.read_csv(input.metadata_posted)
         accession = uploaded[uploaded["file_format"] == "bam"]["accession"].to_list()
         qc = prepare_star_solo_qc(config, accession, input.gene_summary, input.umi_plot)
-        validator = DCCValidator(server)
-        validator.validate(qc, "/star_quality_metric/")
-        results = server.post_json("/star_quality_metric/", qc)
-        with open(output[0], "wt") as outstream:
-            outstream.write(str(results))
+        try:
+            validator = DCCValidator(server)
+            validator.validate(qc, "star_solo_quality_metric")
+            results = server.post_json("/star_solo_quality_metric/", qc)
+            with open(output[0], "wt") as outstream:
+                outstream.write(str(results))
+        except Exception as e:
+            logger.error(e)
+            raise e
 
 
 rule post_count_matrix_qc:
@@ -289,18 +313,27 @@ rule post_count_matrix_qc:
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB
+    log: "post_count_matrix_qc_{gene_model}_{multiread}_{matrix}.log"
     run:
+        logger = logging.getLogger("post_count_matrix_qc")
+        logger.setLevel(logging.INFO)
+        logger.addHandler(logging.FileHandler(log[0]))
+        logger.addHandler(logging.StreamHandler(sys.stderr))
         host = get_submit_host()
         server = ENCODED(host)
         uploaded = pandas.read_csv(input.metadata_posted)
         output_type = filename_to_output_type["{}_EM_filtered.tar.gz".format(get_gene_model())]
         accession = uploaded[uploaded["output_type"] == output_type]["accession"].to_list()
-        qc = prepare_sc_count_matrix_qc_metric(config, accession, input.pct_mt_plot, input.gene_by_count_plot)
-        validator = DCCValidator(server)
-        validator.validate(qc, "/scrna_seq_counts_summary_quality_metric/")
-        results = server.post_json("/scrna_seq_counts_summary_quality_metric/", qc)
-        with open(output[0], "wt") as outstream:
-            outstream.write(str(results))
+        qc = prepare_sc_count_matrix_qc_metric(config, accession, input.pct_mt_plot, input.genes_by_count_plot)
+        try:
+            validator = DCCValidator(server)
+            validator.validate(qc, "scrna_seq_counts_summary_quality_metric")
+            results = server.post_json("/scrna_seq_counts_summary_quality_metric/", qc)
+            with open(output[0], "wt") as outstream:
+                outstream.write(str(results))
+        except Exception as e:
+            logger.error(e)
+            raise e
 
 
 # Should the metadata be in a single file?
