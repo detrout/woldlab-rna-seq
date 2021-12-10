@@ -219,9 +219,9 @@ rule submit_processed_data:
         metadata_posted = "posted.{}.csv".format(get_submit_host()),
     threads: 1
     resources:
-        mem_mb = 100
+        mem_mb = DEFAULT_MEM_MB
     run:
-        host = config.get("encode_portal_host", "www.encodeproject.org")
+        host = get_submit_host()
         server = ENCODED(host)
         metadata = pandas.read_csv(input.metadata, index_col=None)
         uploaded = process_files(server, metadata, dry_run=False)
