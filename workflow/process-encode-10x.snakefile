@@ -66,6 +66,17 @@ def list_default_targets():
         "n_genes_by_counts.{}_EM_filtered.png".format(get_gene_model()),
         "metadata.{}.csv".format(get_submit_host()),
     ]
+    if automatic_submission:
+        default.extend([
+            "posted.{}.csv".format(get_submit_host()),
+            "Log.final.out.{}.qc-upload".format(get_submit_host()),
+            SOLO_ROOT / get_gene_model() / "Summary.csv.{}.qc-upload".format(
+                get_submit_host()
+            ),
+            "pct_count_mt.{}_EM_filtered.png.{}.qc-upload".format(
+                get_gene_model(), get_submit_host()
+            ),
+        ])
     return default
 
 
