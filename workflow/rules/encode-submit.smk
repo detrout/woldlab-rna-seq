@@ -143,7 +143,7 @@ def prepare_sc_count_matrix_qc_metric(config, metric_of, pct_mt_plot, gene_by_co
         "lab": config["lab"],
         "award": config["award"],
     }
-    validator.validate(sc_count_metric, "scrna_seq_counts_summary_quality_metric")
+    return sc_count_metric
 
 
 rule prepare_md5:
