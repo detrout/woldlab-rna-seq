@@ -3,7 +3,7 @@ import pandas
 from encoded_client.hashfile import make_md5sum
 from encoded_client.encoded import ENCODED, DCCValidator, make_attachment
 from encoded_client.submission import process_files
-from encoded_client.metadata import generate_star_solo_processed_metadata
+from encoded_client.metadata import generate_star_solo_processed_sheet
 
 from woldrnaseq.models import (
     load_star_final_log,
@@ -180,7 +180,7 @@ rule prepare_star_solo_10x_submission_metadata:
     resources:
         mem_mb = 100
     run:
-        metadata = generate_star_solo_processed_metadata(config, {
+        metadata = generate_star_solo_processed_sheet(config, {
             "alignments": input.bam,
             "sparse gene count matrix of unique reads": input.gene_unique_filtered,
             "sparse gene count matrix of all reads": input.gene_multi_filtered,
