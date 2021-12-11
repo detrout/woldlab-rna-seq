@@ -19,7 +19,7 @@ def get_submit_host():
 
 def update_genome_annotation_info():
     if "genome_accession" in config:
-        genome_accession = config["genome_acession"]
+        genome_accession = config["genome_accession"]
     elif "genome_index_url" in config:
         index_url = config["genome_index_url"]
         genome_accession = compute_dcc_file_accession_from_url(index_url)
