@@ -62,7 +62,10 @@ config.setdefault(
 )
 config.setdefault(
     "star_container",
-    "https://woldlab.caltech.edu/~diane/containers/star-dev_EoI_2.7.9a-2021-09-10.sif"
+    # unreleased
+    "https://woldlab.caltech.edu/~diane/containers/star-bash-dev_EoI-head.sif"
+    # to old
+    #"https://woldlab.caltech.edu/~diane/containers/star-dev_EoI_2.7.9a-2021-09-10.sif"
 )
 config.setdefault(
     "scanpy_container",
