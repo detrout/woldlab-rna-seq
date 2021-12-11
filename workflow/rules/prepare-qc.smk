@@ -32,7 +32,7 @@ rule generate_count_qc_metrics:
     params:
         library_accession = config["library_accession"],
     resources:
-        mem_mb = lambda wildcards, input: Path(input.count_matrix).stat().st_size * 4,
+        mem_mb = config["mem_mb"]
     shell:
         """python3 -m woldrnaseq.plots.scrna_matrix_qc \
                      --gene-info {input.genome_dir}/geneInfo.tab \
