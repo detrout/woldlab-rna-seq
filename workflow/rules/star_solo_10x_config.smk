@@ -72,6 +72,10 @@ config.setdefault(
     "alias_prefix",
     Path(config["lab"]).name
 )
+config.setdefault(
+    "genome_dir",
+    "genome"
+)
 update_genome_annotation_info()
 
 try:
