@@ -27,7 +27,6 @@ def update_genome_annotation_info():
     else:
         raise ValueError("genome_accession or genome_index_url are required parameters")
 
-
     if not('assembly' in config or 'genome_annotation' in config):
         try:
             server = ENCODED(get_submit_host())
