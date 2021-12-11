@@ -156,7 +156,7 @@ rule star_solo_10x:
            --soloUMIlen {params.umi_length} \
            --soloCBlen {params.cb_length} \
            --soloBarcodeReadLength 0 \
-           --soloCBwhitelist {input.inclusion_list} \
+           --soloCBwhitelist '{input.inclusion_list}' \
            --soloStrand {params.stranded} \
            --soloFeatures {params.gene_model} SJ \
            --soloMultiMappers Unique EM \
