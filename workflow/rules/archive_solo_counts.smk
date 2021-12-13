@@ -27,7 +27,7 @@ rule filter_em_matrix:
         filtered_em_mtx = SOLO_ROOT / get_gene_model() / "filtered" / "UniqueAndMult-EM.mtx",
     threads: 1
     resources:
-        mem_mb = DEFAULT_MEM_MB
+        mem_mb = config.get("mem_mb", DEFAULT_MEM_MB)
     run:
         with open(output.filtered_em_mtx, "wt") as outstream:
             for line in filter_mtx(input.raw_barcode_tsv,

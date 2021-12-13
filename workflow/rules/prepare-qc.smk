@@ -14,6 +14,8 @@ rule generate_umi:
         SOLO_ROOT / get_gene_model() / "UMIperCellSorted.txt",
     output:
         UMI_PER_CELL_PLOT_NAME
+    resources:
+        mem_mb = DEFAULT_MEM_MB
     run:
         from woldrnaseq.plots.star_solo_barcodes import main
         main(["--umi-per-cell", input[0], "-o", output[0]])
