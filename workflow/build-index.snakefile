@@ -207,7 +207,7 @@ rule rsem_index:
     resources:
         mem_mb = 40000
     shell:
-        "{input.rsem_dir}/rsem-prepare-reference --gtf {input.gtf} {input.fasta} {params.output_dir}/rsem"
+        "{params.rsem_cmd} --gtf {input.gtf} {input.fasta} {params.output_dir}/rsem"
 
 
 rule gffcache:
