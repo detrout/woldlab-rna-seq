@@ -11,7 +11,10 @@ configfile: "config.yaml"
 
 # expand ~
 for p in ["output_dir", "star_dir", "rsem_dir"]:
-    config[p] = Path(config[p]).expanduser()
+    if p in config:
+        config[p] = Path(config[p]).expanduser()
+
+config.setdefault("name", Path(config["output_dir"]).name)
 
 
 def save_bamcomment(filename, config, version):
