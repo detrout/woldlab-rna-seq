@@ -151,9 +151,8 @@ rule prepare_annotation:
 
 rule star_index:
     input:
-        fasta = config['fasta'],
-        gtf = config['gtf'],
-        star_dir = config['star_dir'],
+        fasta = rules.prepare_reference.output[0],
+        gtf = rules.prepare_annotation.output[0],
     output:
         "chrLength.txt",
         "chrName.txt",
@@ -189,8 +188,9 @@ rule star_index:
 
 rule rsem_index:
     input:
-        fasta = config['fasta'],
-        gtf = config['gtf'],
+        fasta = rules.prepare_reference.output[0],
+        gtf = rules.prepare_annotation.output[0],
+    params:
         output_dir = config['output_dir'],
         rsem_cmd = get_rsem_prepare_reference_command(config)
     singularity:
@@ -212,7 +212,7 @@ rule rsem_index:
 
 rule gffcache:
     input:
-        gtf = config['gtf'],
+        gtf = rules.prepare_annotation.output[0],
     output:
         get_gffcache_name(config),
     threads: 1
