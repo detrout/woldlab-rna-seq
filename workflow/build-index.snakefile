@@ -1,11 +1,16 @@
 import yaml
 from pathlib import Path
+import requests
+import shutil
 import subprocess
+from urllib.parse import urlparse
 from woldrnaseq import gff2table
 from woldrnaseq.common import (
     get_star_version,
     get_rsem_version,
 )
+from xopen import xopen
+DEFAULT_MEM_MB = 1000
 
 configfile: "config.yaml"
 
@@ -46,6 +51,23 @@ def get_gffcache_name(config):
     return config['name'] + ".h5"
 
 
+
+def download(source, destination):
+    parsed = urlparse(source)
+    destination = Path(destination)
+    if parsed.scheme in ['https', 'http']:
+        print("Downloading {} to {}".format(source, destination))
+        with open(destination, "wb") as outstream:
+            with requests.get(source, stream=True) as instream:
+                instream.raise_for_status()
+                shutil.copyfileobj(instream.raw, outstream)
+    elif parsed.scheme in ['file', '']:
+        filename = Path(parsed.path)
+        print("Linking {} to {}".format(destination, filename))
+        destination.symlink_to(filename)
+    else:
+        print("Unrecognized scheme {}".format(parsed.scheme))
+
 rule ALL:
     input:
         get_gffcache_name(config),
@@ -74,6 +96,61 @@ rule rsem_comment:
         version = get_rsem_version(config['rsem_dir'])
     run:
         save_bamcomment(output[0], config, params.version)
+rule download:
+    output:
+        fasta = temp(Path(config['fasta']).name),
+        spikeins = [temp(Path(x).name) for x in config["spikeins"]],
+        trna = temp(Path(config["trna"]).name),
+        annotation = temp(Path(config["gtf"]).name),
+    run:
+        for name in ["fasta", "trna", "gtf"]:
+            download(config[name], Path(config[name]).name)
+        for spike in config["spikeins"]:
+            download(spike, Path(spike).name)
+
+rule prepare_reference:
+    input:
+        fasta = Path(config['fasta']).name,
+        spikeins = [Path(x).name for x in config["spikeins"]],
+    output:
+        temp(config["output_dir"] / "{}.fasta".format(config["name"]))
+    threads: 1
+    resources:
+        mem_mb = DEFAULT_MEM_MB
+    run:
+        files = [input.fasta]
+        if isinstance(input.spikeins, list):
+            files.extend(input.spikeins)
+        else:
+            files.append(input.spikeins)
+        with open(output[0], "wt") as outstream:
+            for filename in files:
+                with xopen(filename, "rt") as instream:
+                    shutil.copyfileobj(instream, outstream)
+
+rule prepare_annotation:
+    input:
+        trna = Path(config["trna"]).name,
+        gtf = Path(config["gtf"]).name,
+        spikeins = [Path(x).name for x in config["spikeins"]],
+    output:
+        temp(config["output_dir"] / "{}.gtf".format(config["name"]))
+    threads: 1
+    resources:
+        mem_mb = DEFAULT_MEM_MB
+    run:
+        from woldrnaseq.merge_encode_annotations import main as annotation_main
+        args = ["--trna", input.trna, input.gtf]
+        if isinstance(input.spikeins, list):
+            for spikein in input.spikeins:
+                args.append("--spikein")
+                args.append(spikein)
+        else:
+            args.extend(["--spikein", config["spikeins"]])
+        args.extend(["--output", output[0]])
+        print("merge", args)
+        annotation_main(args)
+
 
 rule star_index:
     input:
