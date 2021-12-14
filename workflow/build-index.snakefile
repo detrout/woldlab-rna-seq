@@ -60,7 +60,6 @@ rule star_index:
     input:
         fasta = config['fasta'],
         gtf = config['gtf'],
-        output_dir = config['output_dir'],
         star_dir = config['star_dir'],
     output:
         "chrLength.txt",
@@ -82,10 +81,12 @@ rule star_index:
     threads: 12
     resources:
         mem_mb = 40000
+    params:
+        output_dir = config["output_dir"]
     shell:
         "{input.star_dir}/STAR --runThreadN {threads} \
             --runMode genomeGenerate \
-            --genomeDir {input.output_dir} \
+            --genomeDir {params.output_dir} \
             --genomeFastaFiles {input.fasta} \
             --sjdbGTFfile {input.gtf} \
             --sjdbOverhang 100"
@@ -108,13 +109,12 @@ rule rsem_index:
     resources:
         mem_mb = 40000
     shell:
-        "{input.rsem_dir}/rsem-prepare-reference --gtf {input.gtf} {input.fasta} {input.output_dir}/rsem"
+        "{input.rsem_dir}/rsem-prepare-reference --gtf {input.gtf} {input.fasta} {params.output_dir}/rsem"
 
 
 rule gffcache:
     input:
         gtf = config['gtf'],
-        output_dir = config['output_dir'],
     output:
         get_gffcache_name(config),
     threads: 1
