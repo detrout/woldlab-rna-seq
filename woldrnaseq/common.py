@@ -4,6 +4,7 @@ import configparser
 from glob import glob
 import logging
 import os
+from pathlib import Path
 import subprocess
 from collections import abc
 import numpy
@@ -351,14 +352,20 @@ def get_username():
     return os.getlogin()
 
 
-def get_star_version(star_dir):
-    star = subprocess.run([star_dir / "STAR", "--version"], stdout=subprocess.PIPE)
-    return star.stdout.decode("utf-8")
+def get_star_version(star_dir=None):
+    if star_dir is not None:
+        star_cmd = Path(star_dir) / "STAR"
+    else:
+        star_cmd = "STAR"
+    star = subprocess.run([star_cmd, "--version"], stdout=subprocess.PIPE)
+    return star.stdout.decode("utf-8").rstrip()
 
 
-def get_rsem_version(rsem_dir):
-    rsem = subprocess.run(
-        [rsem_dir / "rsem-calculate-expression", "--version"],
-        stdout=subprocess.PIPE)
+def get_rsem_version(rsem_dir=None):
+    if rsem_dir is not None:
+        rsem_cmd = Path(rsem_dir) / "rsem-calculate-expression"
+    else:
+        rsem_cmd = "rsem-calculate-expression"
+    rsem = subprocess.run([rsem_cmd, "--version"], stdout=subprocess.PIPE)
     stdout = rsem.stdout.decode("utf-8").split()
     return stdout[-1]
