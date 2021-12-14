@@ -82,20 +82,17 @@ rule star_comment:
         "config.yaml"
     output:
         "star_bamCommentLines.txt"
-    params:
-        version = get_star_version(config['star_dir'])
     run:
-        save_bamcomment(output[0], config, params.version)
+        save_bamcomment(output[0], config, config["star_version"])
 
 rule rsem_comment:
     input:
         "config.yaml"
     output:
         "rsem_bamCommentLines.txt"
-    params:
-        version = get_rsem_version(config['rsem_dir'])
     run:
-        save_bamcomment(output[0], config, params.version)
+        save_bamcomment(output[0], config, config["rsem_version"])
+
 rule download:
     output:
         fasta = temp(Path(config['fasta']).name),
