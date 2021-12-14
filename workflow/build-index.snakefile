@@ -17,6 +17,23 @@ for p in ["output_dir", "star_dir", "rsem_dir"]:
 config.setdefault("name", Path(config["output_dir"]).name)
 
 
+def get_star_command(config):
+    star = "STAR"
+    star_dir = config.get("star_dir")
+    if star_dir is not None:
+        return star_dir / star
+    else:
+        return star
+
+def get_rsem_prepare_reference_command(config):
+    rsem = "rsem-prepare-reference"
+    rsem_dir = config.get("rsem_dir")
+    if rsem_dir is not None:
+        return rsem_dir / rsem
+    else:
+        return rsem
+
+
 def save_bamcomment(filename, config, version):
     with open(filename, "wt") as outstream:
         for key in ["refid", "annid", "spikeid"]:
@@ -85,8 +102,9 @@ rule star_index:
         mem_mb = 40000
     params:
         output_dir = config["output_dir"]
+        star_cmd = get_star_command(config)
     shell:
-        "{input.star_dir}/STAR --runThreadN {threads} \
+        "{params.star_cmd} --runThreadN {threads} \
             --runMode genomeGenerate \
             --genomeDir {params.output_dir} \
             --genomeFastaFiles {input.fasta} \
@@ -98,7 +116,7 @@ rule rsem_index:
         fasta = config['fasta'],
         gtf = config['gtf'],
         output_dir = config['output_dir'],
-        rsem_dir = config['rsem_dir'],
+        rsem_cmd = get_rsem_prepare_reference_command(config)
     output:
         "rsem.chrlist",
         "rsem.grp",
