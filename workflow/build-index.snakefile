@@ -180,6 +180,8 @@ rule star_index:
     params:
         output_dir = config["output_dir"]
         star_cmd = get_star_command(config)
+    singularity:
+        config["star_container"]
     shell:
         "{params.star_cmd} --runThreadN {threads} \
             --runMode genomeGenerate \
@@ -194,6 +196,8 @@ rule rsem_index:
         gtf = config['gtf'],
         output_dir = config['output_dir'],
         rsem_cmd = get_rsem_prepare_reference_command(config)
+    singularity:
+        config["rsem_container"],
     output:
         "rsem.chrlist",
         "rsem.grp",
