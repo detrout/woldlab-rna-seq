@@ -7,8 +7,7 @@ from woldrnaseq.common import (
     get_rsem_version,
 )
 
-with open("config.yaml", "rt") as instream:
-    config = yaml.load(instream)
+configfile: "config.yaml"
 
 # expand ~
 for p in ["output_dir", "star_dir", "rsem_dir"]:
