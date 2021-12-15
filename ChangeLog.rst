@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Release 1.2.1
+-------------
+
+The processing pipeline process-encode-10x.snakefile is handling
+processing 10x v2 v3 and GEX+ATAC protocols pretty well, and can post
+the results to the DCC, when the lab, award, genome index and
+inclusion list accessions are available in the config.yaml file.
 
 Release 1.2.0
 -------------
