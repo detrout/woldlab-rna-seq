@@ -20,6 +20,7 @@ for p in ["output_dir", "star_dir", "rsem_dir"]:
     if p in config:
         config[p] = Path(config[p]).expanduser()
 
+config.setdefault("output_dir", Path.cwd())
 config.setdefault("name", Path(config["output_dir"]).name)
 
 
