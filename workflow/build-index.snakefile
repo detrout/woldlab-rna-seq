@@ -217,6 +217,8 @@ rule star_archive:
         rules.star_index.output,
     output:
         get_star_archive_name(config)
+    resources:
+        mem_mb = 512
     threads: 1
     shell:
         "tar czvf {output} {input}"
