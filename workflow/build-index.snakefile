@@ -1,4 +1,5 @@
 import yaml
+import gzip
 from pathlib import Path
 import requests
 import shutil
@@ -47,9 +48,20 @@ def save_bamcomment(filename, config, version):
         outstream.write("@CO\tINDEXERVER:{}\n".format(version))
 
 
+def get_gff_archive_name(config):
+    return config["name"] + ".gtf.gz"
+
+
 def get_gffcache_name(config):
     return config['name'] + ".h5"
 
+
+def get_star_archive_name(config):
+    return "{}-star.tar.gz".format(config["name"])
+
+
+def get_rsem_archive_name(config):
+    return "{}-rsem.tar.gz".format(config["name"])
 
 
 def download(source, destination):
@@ -70,11 +82,14 @@ def download(source, destination):
 
 rule ALL:
     input:
-        get_gffcache_name(config),
         "SA",
         "rsem.idx.fa",
         "star_bamCommentLines.txt",
         "rsem_bamCommentLines.txt",
+        get_gff_archive_name(config),
+        get_gffcache_name(config),
+        get_star_archive_name(config),
+        get_rsem_archive_name(config),
 
 
 rule star_comment:
@@ -186,6 +201,16 @@ rule star_index:
             --sjdbGTFfile {input.gtf} \
             --sjdbOverhang 100"
 
+rule star_archive:
+    input:
+        rules.star_comment.output,
+        rules.star_index.output,
+    output:
+        get_star_archive_name(config)
+    threads: 1
+    shell:
+        "tar czvf {output} {input}"
+
 rule rsem_index:
     input:
         fasta = rules.prepare_reference.output[0],
@@ -209,6 +234,30 @@ rule rsem_index:
     shell:
         "{params.rsem_cmd} --gtf {input.gtf} {input.fasta} {params.output_dir}/rsem"
 
+
+rule rsem_archive:
+    input:
+        rules.rsem_comment.output,
+        rules.rsem_index.output,
+    output:
+        get_rsem_archive_name(config)
+    threads: 1
+    shell:
+        "tar czvf {output} {input}"
+
+
+rule gff_archive:
+    input:
+        gtf = rules.prepare_annotation.output[0],
+    output:
+        get_gff_archive_name(config)
+    threads: 1
+    resources:
+        mem_mb = 256
+    run:
+        with open(input.gtf, "rb") as instream:
+            with gzip.GzipFile(output[0], "wb") as outstream:
+                shutil.copyfileobj(instream, outstream)
 
 rule gffcache:
     input:
