@@ -97,6 +97,9 @@ rule star_comment:
         "config.yaml"
     output:
         "star_bamCommentLines.txt"
+    resources:
+        mem_mb = 100
+    threads: 1
     run:
         save_bamcomment(output[0], config, config["star_version"])
 
@@ -105,6 +108,9 @@ rule rsem_comment:
         "config.yaml"
     output:
         "rsem_bamCommentLines.txt"
+    resources:
+        mem_mb = 100
+    threads: 1
     run:
         save_bamcomment(output[0], config, config["rsem_version"])
 
@@ -114,6 +120,9 @@ rule download:
         spikeins = [temp(Path(x).name) for x in config["spikeins"]],
         trna = temp(Path(config["trna"]).name),
         annotation = temp(Path(config["gtf"]).name),
+    resources:
+        mem_mb = 100
+    threads: 1
     run:
         for name in ["fasta", "trna", "gtf"]:
             download(config[name], Path(config[name]).name)
@@ -241,6 +250,8 @@ rule rsem_archive:
         rules.rsem_index.output,
     output:
         get_rsem_archive_name(config)
+    resources:
+        mem_mb = 512
     threads: 1
     shell:
         "tar czvf {output} {input}"
