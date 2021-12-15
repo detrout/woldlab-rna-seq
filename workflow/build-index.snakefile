@@ -189,8 +189,8 @@ rule star_index:
     resources:
         mem_mb = 40000
     params:
-        output_dir = config["output_dir"]
-        star_cmd = get_star_command(config)
+        output_dir = config["output_dir"],
+        star_cmd = get_star_command(config),
     singularity:
         config["star_container"]
     shell:
