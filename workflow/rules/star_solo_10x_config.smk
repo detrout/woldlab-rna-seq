@@ -27,6 +27,7 @@ def attributes_included(config, attributes):
 
 
 def get_dcc_accession(server, accession):
+    metadata = None
     try:
         metadata = server.get_json(accession)
     except HTTPError as e:
@@ -57,9 +58,12 @@ def update_genome_annotation_info(config):
 
     server = ENCODED(get_submit_host())
     metadata = get_dcc_accession(server, genome_accession)
-    config.setdefault("assembly", metadata["assembly"])
-    config.setdefault("genome_annotation", metadata["genome_annotation"])
-    config.setdefault("genome_index_url", server.prepare_url(metadata["href"]))
+    if metadata is not None:
+        config.setdefault("assembly", metadata["assembly"])
+        config.setdefault("genome_annotation", metadata["genome_annotation"])
+        config.setdefault("genome_index_url", server.prepare_url(metadata["href"]))
+    else:
+        print("Unable to retrieve accession please make sure assembly and genome_index_url are set")
 
 
 def update_exclusion_info(config):
@@ -75,9 +79,12 @@ def update_exclusion_info(config):
         accession = config["inclusion_accession"]
         server = ENCODED(get_submit_host())
         metadata = get_dcc_accession(server, accession)
-        config.setdefault(
-            "inclusion_list_url",
-            server.prepare_url(metadata["href"]))
+        if metadata is not None:
+            config.setdefault(
+                "inclusion_list_url",
+                server.prepare_url(metadata["href"]))
+        else:
+            print("Please set inclusion_list_url")
 
 
 configfile: "config.yaml"
