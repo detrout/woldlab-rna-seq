@@ -138,7 +138,7 @@ def prepare_sc_count_matrix_qc_metric(config, metric_of, pct_mt_plot, gene_by_co
         "assay_term_name": "single-cell RNA sequencing assay",
         "total_counts_vs_pct_mitochondria": make_attachment(pct_mt_plot),
         "total_counts_vs_genes_by_count": make_attachment(gene_by_count_plot),
-        "genes_by_count_plot": make_attachment(genes_by_count_plot),
+        "counts_violin_plot": make_attachment(genes_by_count_plot),
 
         # run parameters not from the log file
         "quality_metric_of": metric_of,
