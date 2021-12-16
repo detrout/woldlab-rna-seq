@@ -176,7 +176,7 @@ rule prepare_star_solo_10x_submission_metadata:
         gene_multi_raw = "{}_EM_raw.tar.gz".format(get_gene_model()),
         gene_multi_raw_md5 = "{}_EM_raw.tar.gz.md5".format(get_gene_model()),
         sj_unique_raw = "SJ_Unique_raw.tar.gz",
-        sj_unique_raw_md5 = "SJ_Unique_raw.tar.gz",
+        sj_unique_raw_md5 = "SJ_Unique_raw.tar.gz.md5",
     output:
         "metadata.{}.csv".format(get_submit_host())
     threads: 1
