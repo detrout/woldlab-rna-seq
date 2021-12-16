@@ -25,6 +25,7 @@ filename_to_output_type = {
     "SJ_Unique_raw.tar.gz": "unfiltered sparse splice junction count matrix of unique reads",
 }
 
+
 def prepare_star_qc_metric(config, metric_of, filename):
     star_log = load_star_final_log(filename)
     star_quality_metric = {
@@ -132,11 +133,12 @@ def prepare_star_solo_qc(config, metric_of, filename, umi_plot):
     return star_solo_metrics
 
 
-def prepare_sc_count_matrix_qc_metric(config, metric_of, pct_mt_plot, gene_by_count_plot):
+def prepare_sc_count_matrix_qc_metric(config, metric_of, pct_mt_plot, gene_by_count_plot, genes_by_count_plot):
     sc_count_metric = {
         "assay_term_name": "single-cell RNA sequencing assay",
         "total_counts_vs_pct_mitochondria": make_attachment(pct_mt_plot),
         "total_counts_vs_genes_by_count": make_attachment(gene_by_count_plot),
+        "genes_by_count_plot": make_attachment(genes_by_count_plot),
 
         # run parameters not from the log file
         "quality_metric_of": metric_of,
@@ -307,6 +309,7 @@ rule post_count_matrix_qc:
     input:
         pct_mt_plot = "pct_count_mt.{gene_model}_{multiread}_{matrix}.png",
         genes_by_count_plot = "n_genes_by_counts.{gene_model}_{multiread}_{matrix}.png",
+        counts_violin_plot = "qc_metric_violin.{gene_model}_{multiread}_{matrix}.png",
         metadata_posted = "posted.{}.csv".format(get_submit_host()),
     output:
         "pct_count_mt.{{gene_model}}_{{multiread}}_{{matrix}}.png.{}.qc-upload".format(get_submit_host())
@@ -324,7 +327,13 @@ rule post_count_matrix_qc:
         uploaded = pandas.read_csv(input.metadata_posted)
         output_type = filename_to_output_type["{}_EM_filtered.tar.gz".format(get_gene_model())]
         accession = uploaded[uploaded["output_type"] == output_type]["accession"].to_list()
-        qc = prepare_sc_count_matrix_qc_metric(config, accession, input.pct_mt_plot, input.genes_by_count_plot)
+        qc = prepare_sc_count_matrix_qc_metric(
+            config,
+            accession,
+            input.pct_mt_plot,
+            input.genes_by_count_plot,
+            input.counts_violin_plot
+        )
         try:
             validator = DCCValidator(server)
             validator.validate(qc, "scrna_seq_counts_summary_quality_metric")
