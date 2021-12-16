@@ -1,4 +1,4 @@
-from encoded_client.encoded import ENCODED
+from encoded_client.encoded import ENCODED, HTTPError
 from encoded_client.metadata import compute_dcc_file_accession_from_url
 from pathlib import Path
 
@@ -17,7 +17,35 @@ def get_submit_host():
     return config.get("encode_portal_host", default_host)
 
 
-def update_genome_annotation_info():
+def attributes_included(config, attributes):
+    not_found = []
+    for name in attributes:
+        if name not in config:
+            not_found.append(name)
+
+    return not_found
+
+
+def get_dcc_accession(server, accession):
+    try:
+        metadata = server.get_json(accession)
+    except HTTPError as e:
+        if e.response.status_code == 404:
+            print("Accession {} not found, discovery will fail".format(accession))
+        else:
+            print("Other error {} for {}".format(e.response.status_code, accession))
+            raise e
+
+    return metadata
+
+
+def update_genome_annotation_info(config):
+    all_genome_attributes = [
+        "genome_accession", "genome_index_url", "assembly", "genome_annotation"
+    ]
+    if len(attributes_included(config, all_genome_attributes)) == 0:
+        return
+
     if "genome_accession" in config:
         genome_accession = config["genome_accession"]
     elif "genome_index_url" in config:
@@ -27,20 +55,30 @@ def update_genome_annotation_info():
     else:
         raise ValueError("genome_accession or genome_index_url are required parameters")
 
-    if not('assembly' in config or 'genome_annotation' in config):
-        try:
-            server = ENCODED(get_submit_host())
-            index_metadata = server.get_json(genome_accession)
-        except HTTPError as e:
-            if e.response.status_code == 404:
-                print("{} not found, please set assembly and genone_annotation parameters".format(accession))
-            else:
-                print("Other error {} for {}".format(e.response.status_code, accession))
+    server = ENCODED(get_submit_host())
+    metadata = get_dcc_accession(server, genome_accession)
+    config.setdefault("assembly", metadata["assembly"])
+    config.setdefault("genome_annotation", metadata["genome_annotation"])
+    config.setdefault("genome_index_url", server.prepare_url(metadata["href"]))
 
-        if "assembly" not in config:
-            config["assembly"] = index_metadata["assembly"]
-        if "genome_annotation" not in config:
-            config["genome_annotation"] = index_metadata["genome_annotation"]
+
+def update_exclusion_info(config):
+    all_inclusion_attributes = ["inclusion_accession", "inclusion_list_url"]
+    if len(attributes_included(config, all_inclusion_attributes)) == 0:
+        return
+
+    if "inclusion_list_url" in config:
+        config.setdefault(
+            "inclusion_accession",
+            compute_dcc_file_accession_from_url(config["inclusion_list_url"]))
+    elif "inclusion_accession" in config:
+        accession = config["inclusion_accession"]
+        server = ENCODED(get_submit_host())
+        metadata = get_dcc_accession(server, accession)
+        config.setdefault(
+            "inclusion_list_url",
+            server.prepare_url(metadata["href"]))
+
 
 configfile: "config.yaml"
 
@@ -79,7 +117,9 @@ config.setdefault(
     "genome_dir",
     "genome"
 )
-update_genome_annotation_info()
+update_genome_annotation_info(config)
+update_exclusion_info(config)
+
 
 try:
     automatic_submission = bool(config.get("automatic_submission", False))
