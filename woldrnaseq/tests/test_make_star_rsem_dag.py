@@ -8,6 +8,7 @@ from pkg_resources import resource_filename
 from woldrnaseq import make_star_rsem_dag
 from woldrnaseq import common
 
+
 class TestMakeDag(TestCase):
     def setUp(self):
         self.home_fd, self.home_pathname = tempfile.mkstemp(
@@ -19,11 +20,11 @@ class TestMakeDag(TestCase):
         if os.path.isdir(self.home_pathname):
             os.rmdir(self.home_pathname)
         os.environ['HOME'] = self.old_home_variable
-        
+
     def test_arguments_se(self):
         parser = make_star_rsem_dag.make_parser()
 
-        args = parser.parse_args(['-g', 'genome', '-a', 'annotation','--read1', 'a.fastq.gz','b.fastq.gz'])
+        args = parser.parse_args(['-g', 'genome', '-a', 'annotation', '--read1', 'a.fastq.gz', 'b.fastq.gz'])
         with self.assertLogs(common.logger, logging.INFO) as log:
             common.validate_path_args(args)
         self.assertEqual(len(log.output), 4)
