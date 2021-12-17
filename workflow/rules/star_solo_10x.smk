@@ -2,6 +2,7 @@ import gzip
 import requests
 import shutil
 from urllib.parse import urlparse
+from encoded_client.encoded import ENCODED
 
 DEFAULT_MEM_MB = 1000
 
@@ -22,14 +23,14 @@ rule download_inclusion_list:
     resources:
         mem_mb = DEFAULT_MEM_MB,
     run:
-        with requests.get(params.inclusion_list_url, stream=True) as instream:
-            instream.raise_for_status()
+        server = ENCODED(get_submit_host())
+        with server.get_response(params.inclusion_list_url, stream=True) as response:
             with open(output.allow_file, "wb") as outstream:
                 if (params.inclusion_list_url.endswith('.gz') or
-                   instream.headers.get("Content-Encoding") == "gzip"):
-                    instream = gzip.GzipFile(fileobj=instream.raw)
+                   response.headers.get("Content-Encoding") == "gzip"):
+                    instream = gzip.GzipFile(fileobj=response.raw)
                 else:
-                    instream = instream.raw
+                    instream = response.raw
                 shutil.copyfileobj(instream, outstream)
 
 
