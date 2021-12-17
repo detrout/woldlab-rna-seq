@@ -1,4 +1,7 @@
 from unittest import TestCase
+import pytest
+
+pytest.importorskip("htsworkflow")
 
 from woldrnaseq.downloader import (
     make_short_fastq_name
