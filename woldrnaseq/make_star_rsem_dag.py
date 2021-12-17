@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function
 
 from argparse import ArgumentParser
 import datetime
+import getpass
 import itertools
 import logging
 import os
@@ -199,7 +200,7 @@ class AnalysisDAG:
             rsem_strand_probability=rsem_strand_probability,
             rsem_request_disk=int(self.fastq_size/1024 * 7),
             pythonpath=Path(woldrnaseq.__path__[0]).parent,
-            username=os.getlogin(),
+            username=getpass.getuser(),
             timestamp=datetime.datetime.now().isoformat(),
             woldrnaseq_version=__version__,
         )
