@@ -1,0 +1,23 @@
+[build-system]
+requires = [
+    "setuptools >= 45",
+    "setuptools_scm >= 6.2",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "woldrnaseq/_version.py"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist=py{37,38,39}
+skip_missing_interpreters=True
+
+[testenv]
+commands=pytest --cov=woldrnaseq
+deps = 
+    pytest
+    pytest-cov
+"""

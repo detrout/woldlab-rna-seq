@@ -13,3 +13,4 @@
 /.eggs/
 /htmlcov/
 /.tox/
+woldrnaseq/_version.py
