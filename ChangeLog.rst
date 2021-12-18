@@ -1,6 +1,18 @@
 Changelog
 =========
 
+Release 1.2.2
+-------------
+
+Additional work on being able to download indexes and inclusion lists
+from the ENCODE DCC portal.
+
+Support posting the count violin plot to the DCC.
+
+Changed to PEP517/PEP518 project layout.
+
+Fixed some issues in the unit tests for the condor based pipeline.
+
 Release 1.2.1
 -------------
 
