@@ -1,6 +1,9 @@
+
 ===================
 Long RNA Seq Condor
 ===================
+
+|ci-test|
 
 Table of Contents
 =================
@@ -280,3 +283,4 @@ Steps for our processing pipeline:
 .. _ENCFF751OWT: https://www.encodeproject.org/files/ENCFF751OWT/@@download/ENCFF751OWT.tar.gz
 .. _GeorgisScripts: https://github.com/detrout/GeorgiScripts
 .. _GENCODE reference files used in ENCODE pipelines: https://www.encodeproject.org/references/ENCSR884DHJ/
+.. |ci-test| image:: https://github.com/detrout/woldlab-rna-seq/actions/workflows/ci-test.yml/badge.svg
