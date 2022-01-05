@@ -16,9 +16,12 @@ rule generate_umi:
         UMI_PER_CELL_PLOT_NAME
     resources:
         mem_mb = DEFAULT_MEM_MB
-    run:
-        from woldrnaseq.plots.star_solo_barcodes import main
-        main(["--umi-per-cell", input[0], "-o", output[0]])
+    singularity:
+        config['scanpy_container']
+    shell:
+        """python3 -m woldrnaseq.plots.star_solo_barcodes \
+                    --umi-per-cell {input} -o {output}
+        """
 
 
 rule generate_count_qc_metrics:
