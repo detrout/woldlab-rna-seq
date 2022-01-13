@@ -24,7 +24,7 @@ rule filter_em_matrix:
         raw_barcode_tsv = SOLO_ROOT / get_gene_model() / "raw" / "barcodes.tsv",
         raw_em_matrix_mtx = SOLO_ROOT / get_gene_model() / "raw" / "UniqueAndMult-EM.mtx",
     output:
-        filtered_em_mtx = SOLO_ROOT / get_gene_model() / "filtered" / "UniqueAndMult-EM.mtx",
+        filtered_em_mtx = temp(SOLO_ROOT / get_gene_model() / "filtered" / "UniqueAndMult-EM.mtx"),
     threads: 1
     resources:
         mem_mb = config.get("mem_mb", DEFAULT_MEM_MB)
