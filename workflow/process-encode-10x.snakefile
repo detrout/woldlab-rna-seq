@@ -93,6 +93,16 @@ def list_default_targets():
         ])
     return default
 
+# Set defaults for this version of the ENCODE scRNA-seq
+# pipeline
+config.setdefault(
+    "alignment_step_run",
+    "barbara-wold:starsolo-10x-alignment-step-run"
+)
+config.setdefault(
+    "quantification_step_run",
+    "barbara-wold:starsolo-10x-quantification-step-run",
+)
 
 rule ALL:
     input:

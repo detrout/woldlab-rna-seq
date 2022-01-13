@@ -95,16 +95,6 @@ for key in ['genome_dir']:
     if key in config and config[key].startswith('~'):
         config[key] = str(Path(config[key]).expanduser())
 
-# Set defaults for this version of the ENCODE scRNA-seq
-# pipeline
-config.setdefault(
-    "alignment_step_run",
-    "barbara-wold:starsolo-alignment-step-run"
-)
-config.setdefault(
-    "quantification_step_run",
-    "barbara-wold:starsolo-quantification-step-run",
-)
 config.setdefault(
     "star_container",
     # unreleased
