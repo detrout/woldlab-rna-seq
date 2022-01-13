@@ -22,14 +22,13 @@ Table of Contents
 Introduction
 ============
 
-The official `ENCODE Long RNA-Seq pipeline`_ is designed to run on
-DNA-Nexus_. This is a conversion to use settings from the official
-pipeline for a pipeline suitable for running the alignment, mapping,
-and quantification steps through HT-Condor_ DagMan.
+This started as a port of the ENCODE3 bulk RNA-seq pipeline for processing
+Illumina short read sequences from DNA nexus to `HT-Condor`_'s dagman
+language. as time progressed I've also added in some of our (Wold Lab)
+quality-control steps after the core RNA-Seq STAR/rsem runs.
 
-I've also added in some of our (Wold Lab) quality-control steps after
-the core RNA-Seq process.
-
+More recently I added new pipelines to run STAR on 10x style or
+split-seq style experiments.
 
 Installation
 ============
