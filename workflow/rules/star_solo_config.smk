@@ -57,7 +57,6 @@ from encoded_client.encoded import ENCODED, HTTPError
 from encoded_client.metadata import compute_dcc_file_accession_from_url
 from pathlib import Path
 
-DEFAULT_10X_CB_LENGTH = 16
 DEFAULT_MEM_MB = 1000
 SOLO_ROOT = Path("Solo.out")
 UMI_PER_CELL_PLOT_NAME = "umi_per_cell.png"

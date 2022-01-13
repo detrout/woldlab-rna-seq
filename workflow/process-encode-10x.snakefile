@@ -6,6 +6,7 @@
 #
 
 from pathlib import Path
+DEFAULT_10X_CB_LENGTH = 16
 
 
 include:
