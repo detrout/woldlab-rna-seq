@@ -105,6 +105,9 @@ include:
     "rules/fastqs.smk"
 
 include:
+    "rules/star_co_file.smk"
+
+include:
     "rules/star_solo_10x.smk"
 
 include:
