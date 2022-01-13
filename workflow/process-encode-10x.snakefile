@@ -10,10 +10,7 @@ DEFAULT_10X_CB_LENGTH = 16
 configfile: "config.yaml"
 
 include:
-    "rules/star_solo_10x_config.smk"
-
-
-
+    "rules/star_solo_config.smk"
 
 # Set defaults for this version of the ENCODE scRNA-seq
 # pipeline
