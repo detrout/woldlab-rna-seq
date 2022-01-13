@@ -55,4 +55,10 @@ rule to_archive:
     resources:
         mem_mb = DEFAULT_MEM_MB,
     run:
-        archive_star_solo(SOLO_ROOT, config, wildcards.gene_model, wildcards.multiread, wildcards.matrix)
+        archive_star_solo(
+            SOLO_ROOT,
+            config,
+            wildcards.gene_model,
+            wildcards.multiread,
+            wildcards.matrix
+        )
