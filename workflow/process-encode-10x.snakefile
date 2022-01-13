@@ -8,6 +8,7 @@
 from pathlib import Path
 DEFAULT_10X_CB_LENGTH = 16
 
+configfile: "config.yaml"
 
 include:
     "rules/star_solo_10x_config.smk"

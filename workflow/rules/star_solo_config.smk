@@ -140,10 +140,6 @@ def update_exclusion_info(config):
         else:
             print("Please set inclusion_list_url")
 
-
-configfile: "config.yaml"
-
-
 # username expand any filenames still in the config file
 for key in ['genome_dir']:
     if key in config and config[key].startswith('~'):
