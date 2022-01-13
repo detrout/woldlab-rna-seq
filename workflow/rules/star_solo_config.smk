@@ -178,3 +178,31 @@ try:
 except ValueError:
     print("Unable to parse '{}'".format(config.get("automatic_submission")))
     automatic_submission = False
+
+
+def list_default_encode_targets():
+    default = [
+        "Log.final.out",
+        "Aligned.sortedByCoord.out.bam",
+        "{}_Unique_filtered.tar.gz".format(get_gene_model()),
+        "{}_EM_filtered.tar.gz".format(get_gene_model()),
+        "{}_Unique_raw.tar.gz".format(get_gene_model()),
+        "{}_EM_raw.tar.gz".format(get_gene_model()),
+        "SJ_Unique_raw.tar.gz",
+        "umi_per_cell.png",
+        "pct_count_mt.{}_EM_filtered.png".format(get_gene_model()),
+        "n_genes_by_counts.{}_EM_filtered.png".format(get_gene_model()),
+        "metadata.{}.csv".format(get_submit_host()),
+    ]
+    if automatic_submission:
+        default.extend([
+            "posted.{}.csv".format(get_submit_host()),
+            "Log.final.out.{}.qc-upload".format(get_submit_host()),
+            SOLO_ROOT / get_gene_model() / "Summary.csv.{}.qc-upload".format(
+                get_submit_host()
+            ),
+            "pct_count_mt.{}_EM_filtered.png.{}.qc-upload".format(
+                get_gene_model(), get_submit_host()
+            ),
+        ])
+    return default
