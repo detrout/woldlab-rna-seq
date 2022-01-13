@@ -5,7 +5,6 @@
 # non-endorsement clause.
 #
 
-from pathlib import Path
 DEFAULT_10X_CB_LENGTH = 16
 
 configfile: "config.yaml"
