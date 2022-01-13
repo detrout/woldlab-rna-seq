@@ -17,7 +17,7 @@ def compute_inclusion_list_name(url):
 
 rule download_inclusion_list:
     output:
-        allow_file = compute_inclusion_list_name(config['inclusion_list_url'])
+        allow_file = temp(compute_inclusion_list_name(config['inclusion_list_url']))
     params:
         inclusion_list_url = config['inclusion_list_url']
     resources:
@@ -82,18 +82,18 @@ rule star_solo_10x:
         features_stats = SOLO_ROOT / get_gene_model() / "Features.stats",
         umis = SOLO_ROOT / get_gene_model() / "UMIperCellSorted.txt",
         gene_summary = SOLO_ROOT / get_gene_model() / "Summary.csv",
-        filtered_barcodes = SOLO_ROOT / get_gene_model() / "filtered" / "barcodes.tsv",
-        filtered_features = SOLO_ROOT / get_gene_model() / "filtered" / "features.tsv",
-        filtered_uniq_matrix = SOLO_ROOT / get_gene_model() / "filtered" / "matrix.mtx",
-        raw_barcodes = SOLO_ROOT / get_gene_model() / "raw" / "barcodes.tsv",
-        raw_features = SOLO_ROOT / get_gene_model() / "raw" / "features.tsv",
-        raw_unique_matrix = SOLO_ROOT / get_gene_model() / "raw" / "matrix.mtx",
-        raw_em_matrix = SOLO_ROOT / get_gene_model() / "raw" / "UniqueAndMult-EM.mtx",
-        sj_feature_stats = SOLO_ROOT / "SJ" / "Features.stats",
+        filtered_barcodes = temp(SOLO_ROOT / get_gene_model() / "filtered" / "barcodes.tsv"),
+        filtered_features = temp(SOLO_ROOT / get_gene_model() / "filtered" / "features.tsv"),
+        filtered_uniq_matrix = temp(SOLO_ROOT / get_gene_model() / "filtered" / "matrix.mtx"),
+        raw_barcodes = temp(SOLO_ROOT / get_gene_model() / "raw" / "barcodes.tsv"),
+        raw_features = temp(SOLO_ROOT / get_gene_model() / "raw" / "features.tsv"),
+        raw_unique_matrix = temp(SOLO_ROOT / get_gene_model() / "raw" / "matrix.mtx"),
+        raw_em_matrix = temp(SOLO_ROOT / get_gene_model() / "raw" / "UniqueAndMult-EM.mtx"),
+        sj_feature_stats = temp(SOLO_ROOT / "SJ" / "Features.stats"),
         sj_summary = SOLO_ROOT / "SJ" / "Summary.csv",
-        sj_barcodes = SOLO_ROOT / "SJ" / "raw" / "barcodes.tsv",
-        sj_features = SOLO_ROOT / "SJ" / "raw" / "features.tsv",
-        sj_matrix = SOLO_ROOT / "SJ" / "raw" / "matrix.mtx",
+        sj_barcodes = temp(SOLO_ROOT / "SJ" / "raw" / "barcodes.tsv"),
+        sj_features = temp(SOLO_ROOT / "SJ" / "raw" / "features.tsv"),
+        sj_matrix = temp(SOLO_ROOT / "SJ" / "raw" / "matrix.mtx"),
     singularity:
         config['star_container']
     shell:
