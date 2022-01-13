@@ -1,7 +1,7 @@
 
-===================
-Long RNA Seq Condor
-===================
+===============
+Woldlab RNA-seq
+===============
 
 |ci-test|
 
@@ -36,7 +36,8 @@ Installation
 Required Dependencies
 ---------------------
 
-* HT-Condor
+* HT-Condor (for bulk pipeline)
+* snakemake (for single cell pipelines)
 * python3
 * numpy
 * pandas
