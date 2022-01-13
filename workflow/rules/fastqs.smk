@@ -40,5 +40,3 @@ rule get_sra_fastq:
         mv {wildcards.accession}_1.fastq.gz {wildcards.accession}_R1.fastq.gz
         mv {wildcards.accession}_2.fastq.gz {wildcards.accession}_R2.fastq.gz
         """
-
-
