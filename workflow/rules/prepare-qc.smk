@@ -1,7 +1,3 @@
-
-include:
-    "star_solo_10x_config.smk"
-
 rule test_all:
     input:
         "umi_per_cell.png",
