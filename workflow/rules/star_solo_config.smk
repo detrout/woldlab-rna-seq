@@ -147,10 +147,7 @@ for key in ['genome_dir']:
 
 config.setdefault(
     "star_container",
-    # unreleased
-    "https://woldlab.caltech.edu/~diane/containers/star-bash-dev_EoI-head.sif"
-    # to old
-    #"https://woldlab.caltech.edu/~diane/containers/star-dev_EoI_2.7.9a-2021-09-10.sif"
+    "https://woldlab.caltech.edu/~diane/containers/star-bash-2.7.10a.sif"
 )
 config.setdefault(
     "scanpy_container",
