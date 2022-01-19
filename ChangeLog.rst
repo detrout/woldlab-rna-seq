@@ -1,6 +1,19 @@
 Changelog
 =========
 
+Release 1.2.3
+-------------
+
+Implement the Snakemake split-seq pipeline launched from
+workflow/process-encode-splitseq.snakefile. There was some extra
+complexity added due to how split-seq needs collapsing two cell
+barcodes into a single logical cell. Though the STAR matrices contain
+the two barcodes, the real barcodes are merged into their logical
+cells when building the mex_gene_archives.
+
+The code to handle the merging is located in
+woldrnaseq/splitseq_merger.py
+
 Release 1.2.2
 -------------
 
