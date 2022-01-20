@@ -10,9 +10,9 @@ MirrorURL:  http://deb.debian.org/debian/
                      python3-networkx python3-h5py python3-tqdm python3-xlrd \
                      python-is-python3 git
         pip3 install scanpy==1.8.2
-        pip3 install mex_gene_archive==0.1
-        pip3 install git+https://github.com/detrout/encoded_client.git
-        pip3 install git+https://github.com/detrout/woldlab-rna-seq.git
+        pip3 install mex_gene_archive==0.2.1
+        pip3 install encoded-client==0.1.1
+        pip3 install git+https://github.com/detrout/woldlab-rna-seq.git@1.2.3
         apt clean
 
 %environment
