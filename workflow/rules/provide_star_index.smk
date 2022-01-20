@@ -1,5 +1,5 @@
+from encoded_client.encoded import ENCODED
 from pathlib import Path
-import requests
 import tarfile
 
 DEFAULT_MEM_MB = 1000
@@ -30,7 +30,8 @@ rule genome:
         if not Path(Path(genome_dir).parts[0]).exists():
             os.mkdir(genome_dir.parts[0])
         if "genome_index_url" in config:
-            with requests.get(config["genome_index_url"], stream=True) as instream:
+            server = ENCODED(get_submit_host())
+            with server.get_response(config["genome_index_url"], stream=True) as instream:
                 tar = tarfile.open(fileobj=instream.raw, mode="r:*")
                 # this is a vulnerability, only use trusted tar files
                 # See https://docs.python.org/3/library/tarfile.html#tarfile.TarFile.extractall
