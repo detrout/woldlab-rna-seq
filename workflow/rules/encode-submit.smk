@@ -2,7 +2,7 @@ import sys
 import logging
 import pandas
 from encoded_client.hashfile import make_md5sum
-from encoded_client.encoded import ENCODED, DCCValidator, make_attachment
+from encoded_client.encoded import ENCODED, DCCValidator, make_attachment, HTTPError
 from encoded_client.submission import process_files
 from encoded_client.metadata import generate_star_solo_processed_sheet
 
@@ -232,6 +232,19 @@ rule submit_processed_data:
         host = get_submit_host()
         server = ENCODED(host)
         metadata = pandas.read_csv(input.metadata, index_col=None)
+        # catch previous submission
+        for i, row in metadata.iterrows():
+            if pandas.isnull(row["accession"]):
+                try:
+                    file = server.get_json("md5:{}".format(row["md5sum"]))
+                    metadata[i, "accession"] = row["accession"]
+                    metadata[i, "uuid"] = row["uuid"]
+                    upload_file = Path("{}.{}.upload".format(row["submitted_file_name"], host))
+                    if not upload_file.exists():
+                        upload_file.touch()
+                except HTTPError as e:
+                    if e.response.status_code != 404:
+                        logger.warning("Unexpected status code {}".format(e))
         uploaded = process_files(server, metadata, dry_run=False)
         logger.info("Processed {} files".format(len(uploaded)))
         logger.info(metadata)
