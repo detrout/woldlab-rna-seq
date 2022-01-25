@@ -18,6 +18,10 @@ from woldrnaseq.models import (
 
 filename_to_output_type = {
     "Aligned.sortedByCoord.out.bam": "alignments",
+    "Gene_Unique_filtered.tar.gz": "sparse gene count matrix of unique reads",
+    "Gene_EM_filtered.tar.gz": "sparse gene count matrix of all reads",
+    "Gene_Unique_raw.tar.gz": "unfiltered sparse gene count matrix of unique reads",
+    "Gene_EM_raw.tar.gz": "unfiltered sparse gene count matrix of all reads",
     "GeneFull_Ex50pAS_Unique_filtered.tar.gz": "sparse gene count matrix of unique reads",
     "GeneFull_Ex50pAS_EM_filtered.tar.gz": "sparse gene count matrix of all reads",
     "GeneFull_Ex50pAS_Unique_raw.tar.gz": "unfiltered sparse gene count matrix of unique reads",
