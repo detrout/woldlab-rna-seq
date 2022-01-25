@@ -104,8 +104,8 @@ def prepare_star_solo_qc(config, metric_of, filename, umi_plot):
     if "Mean Gene per Cell" in summary:
         star_solo_metrics.update({
             "mode": "Gene",
-            "reads_mapped_to_gene_unique_and_multiple_gene": summary["Reads Mapped to Gene: Unique+Multiple"],
-            "reads_mapped_to_gene_unique_gene": summary["Reads Mapped to Gene: Unique"],
+            "reads_mapped_to_gene_unique_and_multiple_gene": summary["Reads Mapped to Gene: Unique+Multiple Gene"],
+            "reads_mapped_to_gene_unique_gene": summary["Reads Mapped to Gene: Unique Gene"],
             "unique_reads_in_cells_mapped_to_gene": summary["Unique Reads in Cells Mapped to Gene"],
             "mean_gene_per_cell": summary["Mean Gene per Cell"],
             "median_gene_per_cell": summary["Median Gene per Cell"],
