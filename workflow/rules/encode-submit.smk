@@ -153,20 +153,6 @@ def prepare_sc_count_matrix_qc_metric(config, metric_of, pct_mt_plot, gene_by_co
     return sc_count_metric
 
 
-rule prepare_md5:
-    input:
-        "{filename}"
-    output:
-        "{filename}.md5"
-    params:
-        python = sys.executable,
-    threads: 1
-    resources:
-        mem_mb = 100
-    shell:
-        "{params.python} -m encoded_client.hashfile {input}"
-
-
 rule prepare_star_solo_10x_submission_metadata:
     input:
         bam = "Aligned.sortedByCoord.out.bam",

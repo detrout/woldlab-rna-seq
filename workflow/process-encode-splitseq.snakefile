@@ -132,4 +132,7 @@ include:
     "rules/prepare-qc.smk"
 
 include:
+    "rules/create_md5s.smk"
+
+include:
     "rules/encode-submit.smk"
