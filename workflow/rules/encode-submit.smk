@@ -1,7 +1,6 @@
 import sys
 import logging
 import pandas
-from encoded_client.hashfile import make_md5sum
 from encoded_client.encoded import ENCODED, DCCValidator, make_attachment, HTTPError
 from encoded_client.submission import process_files
 from encoded_client.metadata import generate_star_solo_processed_sheet
