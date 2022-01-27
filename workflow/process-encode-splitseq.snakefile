@@ -141,4 +141,4 @@ include:
     "rules/post-star-solo-qc.smk"
 
 include:
-    "rules/encode-submit.smk"
+    "rules/encode_submit_splitseq.smk"
