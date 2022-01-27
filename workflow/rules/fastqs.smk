@@ -11,7 +11,7 @@ rule get_encode_fastq:
     resources:
         mem_mb = DEFAULT_MEM_MB,
     wildcard_constraints:
-        accession = "ENCFF.*"
+        accession = "(ENCFF.*)|(TSTFF.*)"
     run:
         from encoded_client.encoded import ENCODED
         host = config.get("encode_portal_host", "www.encodeproject.org")
