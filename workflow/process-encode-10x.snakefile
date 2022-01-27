@@ -82,4 +82,7 @@ include:
     "rules/post-star-qc.smk"
 
 include:
+    "rules/post-star-solo-qc.smk"
+
+include:
     "rules/encode-submit.smk"
