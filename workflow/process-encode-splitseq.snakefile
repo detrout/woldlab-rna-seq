@@ -135,4 +135,7 @@ include:
     "rules/create_md5s.smk"
 
 include:
+    "rules/post-star-qc.smk"
+
+include:
     "rules/encode-submit.smk"
