@@ -129,7 +129,7 @@ include:
     "rules/archive_solo_counts.smk"
 
 include:
-    "rules/prepare-qc.smk"
+    "rules/prepare_star_counts_qc.smk"
 
 include:
     "rules/create_md5s.smk"
