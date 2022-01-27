@@ -1,8 +1,3 @@
-rule test_all:
-    input:
-        "umi_per_cell.png",
-        "pct_count_mt.png",
-        "n_genes_by_counts.png",
 
 rule generate_umi:
     input:
