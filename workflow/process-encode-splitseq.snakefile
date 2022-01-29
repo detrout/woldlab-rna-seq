@@ -74,11 +74,11 @@ include:
 # pipeline
 config.setdefault(
     "alignment_step_run",
-    "barbara-wold:starsolo-splitseq-alignment-step-run"
+    "barbara-wold:starsolo-split-alignment-step-run"
 )
 config.setdefault(
     "quantification_step_run",
-    "barbara-wold:starsolo-splitseq-quantification-step-run",
+    "barbara-wold:starsolo-split-quantification-step-run",
 )
 
 
