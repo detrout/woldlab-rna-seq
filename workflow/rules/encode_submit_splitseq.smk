@@ -69,14 +69,20 @@ rule submit_processed_data:
         logger.addHandler(logging.StreamHandler(sys.stderr))
         host = get_submit_host()
         server = ENCODED(host)
-        metadata = pandas.read_csv(input.metadata, index_col=None)
+        metadata = pandas.read_csv(
+            input.metadata,
+            dtype={
+                "uuid": str,
+                "accession": str
+            },
+            index_col=None)
         # catch previous submission
         for i, row in metadata.iterrows():
             if pandas.isnull(row["accession"]):
                 try:
-                    file = server.get_json("md5:{}".format(row["md5sum"]))
-                    metadata[i, "accession"] = row["accession"]
-                    metadata[i, "uuid"] = row["uuid"]
+                    submitted_file = server.get_json("md5:{}".format(row["md5sum"]))
+                    metadata.at[i, "accession"] = submitted_file["accession"]
+                    metadata.at[i, "uuid"] = submitted_file["uuid"]
                     upload_file = Path("{}.{}.upload".format(row["submitted_file_name"], host))
                     if not upload_file.exists():
                         upload_file.touch()
