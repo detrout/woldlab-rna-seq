@@ -104,4 +104,3 @@ rule post_star_solo_qc:
             logger.error(e)
             raise e
 
-
