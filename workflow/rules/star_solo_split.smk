@@ -139,7 +139,7 @@ rule star_solo_splitseq:
            --outTmpDir {params.star_tmp} \
            --outFileNamePrefix ./ 2>&1 >> {log} ; \
         rm -rf {params.star_tmp} ; \
-        rm -v Solo.out/{params.gene_model}/filtered/*.tsv ; \
+        rm -rfv Solo.out/{params.gene_model}/filtered/ ; \
         mv -v Solo.out/{params.gene_model}/raw/* Solo.out/{params.gene_model}/raw_2bc/ ; \
         mv -v Solo.out/SJ/raw/* Solo.out/SJ/raw_2bc/ ; \
 "
