@@ -93,6 +93,7 @@ rule post_star_solo_qc:
         server = ENCODED(host)
         uploaded = pandas.read_csv(input.metadata_posted)
         accession = uploaded[uploaded["file_format"] == "bam"]["accession"].to_list()
+        assert not pandas.isnull(accession)
         qc = prepare_star_solo_qc(config, accession, input.gene_summary, input.umi_plot)
         try:
             validator = DCCValidator(server)

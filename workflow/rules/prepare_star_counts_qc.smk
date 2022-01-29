@@ -91,8 +91,11 @@ rule post_count_matrix_qc:
         host = get_submit_host()
         server = ENCODED(host)
         uploaded = pandas.read_csv(input.metadata_posted)
-        output_type = filename_to_output_type["{}_EM_filtered.tar.gz".format(get_gene_model())]
+        file_qced = "{}_EM_{}.tar.gz".format(get_gene_model(), wildcards.matrix)
+        logger.info("Using {} as QC file".format(file_qced))
+        output_type = filename_to_output_type[file_qced]
         accession = uploaded[uploaded["output_type"] == output_type]["accession"].to_list()
+        assert len(accession) > 0 and not pandas.isnull(accession)
         qc = prepare_sc_count_matrix_qc_metric(
             config,
             accession,
