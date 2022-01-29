@@ -102,7 +102,7 @@ def list_encode_splitseq_targets():
             SOLO_ROOT / get_gene_model() / "Summary.csv.{}.qc-upload".format(
                 get_submit_host()
             ),
-            "pct_count_mt.{}_EM_filtered.png.{}.qc-upload".format(
+            "pct_count_mt.{}_EM_raw.png.{}.qc-upload".format(
                 get_gene_model(), get_submit_host()
             ),
         ])
