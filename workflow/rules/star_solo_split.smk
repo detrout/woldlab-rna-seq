@@ -158,7 +158,7 @@ rule merge_raw_cells:
         raw_unique_matrix = temp(SOLO_ROOT / get_gene_model() / "raw" / "matrix.mtx"),
         raw_em_matrix = temp(SOLO_ROOT / get_gene_model() / "raw" / "UniqueAndMult-EM.mtx"),
     resources:
-        mem_mb = DEFAULT_MEM_MB
+        mem_mb = 8192
     threads: 1
     run:
         from woldrnaseq.splitseq_merger import write_merged_splitseq_matrix
@@ -177,7 +177,7 @@ rule merge_sj_cells:
         sj_features = temp(SOLO_ROOT / "SJ" / "raw" / "features.tsv"),
         sj_matrix = temp(SOLO_ROOT / "SJ" / "raw" / "matrix.mtx"),
     resources:
-        mem_mb = DEFAULT_MEM_MB
+        mem_mb = 8192
     threads: 1
     run:
         from woldrnaseq.splitseq_merger import write_merged_splitseq_matrix
@@ -199,7 +199,7 @@ rule filter_merged_unique_cells:
         output_directory = lambda wildcards, output: Path(output.filtered_unique_matrix).parent,
         star_tmp = temp(directory("_STARtmp")),
     resources:
-        mem_mb = DEFAULT_MEM_MB
+        mem_mb = 8192
     threads: 1
     log: "filter_merged_unique_cells.out"
     singularity:
