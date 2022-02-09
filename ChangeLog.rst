@@ -1,6 +1,35 @@
 Changelog
 =========
 
+Release 1.2.5
+-------------
+
+It was decided that splitseq should only submit the unfiltered files
+and not STAR's empty drops filtered set. This led to a bunch of
+refactoring to remove repeated code and get the rules to properly
+fire for attaching the QC matrix to the unfiltered EM count matrix.
+
+The count matrix merging code memory limits were set too low for a few
+datasets and needed to be increased.
+
+This is the version used to process single-cell RNA-seq 10x multiome
+and splitseq experiments for the ENCODE4 2021 January freeze.
+
+Release 1.2.4
+-------------
+
+Use released mex_gene_archive==0.2.1 and encoded-client==0.1.1 packages.
+
+Try to catch cases where a file to be uploaded has already been
+uploaded by md5sum. If it has been uploaded provide the uuid and
+accession and skip doing a new upload.
+
+Unfortunately, the pipeline isn't alwyas binary reproducable, so
+sometimes there will still be duplication.
+
+Use encoded_client to download the genome_index_url in case it hasn't
+been released yet.
+
 Release 1.2.3
 -------------
 
