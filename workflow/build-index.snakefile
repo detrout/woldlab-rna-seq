@@ -76,8 +76,11 @@ def download(source, destination):
                 shutil.copyfileobj(instream.raw, outstream)
     elif parsed.scheme in ['file', '']:
         filename = Path(parsed.path)
-        print("Linking {} to {}".format(destination, filename))
-        destination.symlink_to(filename)
+        if not destination.exists():
+            print("Linking {} to {}".format(destination, filename))
+            destination.symlink_to(filename)
+        else:
+            print("{} already exists".format(destination))
     else:
         print("Unrecognized scheme {}".format(parsed.scheme))
 
