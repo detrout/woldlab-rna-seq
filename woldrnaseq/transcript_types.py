@@ -116,7 +116,10 @@ def make_experiment_transcript_type_scores(experiment, libraries, transcript_typ
     for library_id in experiment.replicates:
         library = libraries.loc[library_id]
         anno = find_library_bam_file(library, "transcriptome")
-        scores[library_id] = score_bam_transcript_type(anno, transcript_type_map)
+        if anno is None:
+            logger.error("Unable to find annotation file for {}".format(library_id))
+        else:
+            scores[library_id] = score_bam_transcript_type(anno, transcript_type_map)
 
     return pandas.DataFrame(scores)
 
