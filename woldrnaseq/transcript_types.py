@@ -85,14 +85,20 @@ def make_transcript_type_map(cache_filename):
     tstart = time.monotonic()
     logger.info("Loading GTF Cache")
     type_name = "gene_type"
+    key_name = "gtf"
     store = pandas.HDFStore(cache_filename)
+    if "/{}".format(key_name) not in store.keys():
+        logger.warning("{} key not found in {}".format(key_name, ",".join(store.keys())))
     trna = store.select(
-        "gtf", columns=["transcript_id", type_name], where=["type==tRNA"]
+        key_name, columns=["transcript_id", type_name], where=["type==tRNA"]
     )
+    logger.debug("Loaded {} trna records".format(trna.shape[0]))
     transcripts = store.select(
-        "gtf", columns=["transcript_id", type_name], where=["type==transcript"]
+        key_name, columns=["transcript_id", type_name], where=["type==transcript"]
     )
-    spikes = store.select("gtf", columns=["transcript_id"], where=["source==spikein"])
+    logger.debug("Loaded {} primary records".format(transcripts.shape[0]))
+    spikes = store.select(key_name, columns=["transcript_id"], where=["source==spikein"])
+    logger.debug("Loaded {} spike records".format(spikes.shape[0]))
     store.close()
 
     transcript_type_map = {k: "spikein" for k in spikes["transcript_id"]}
