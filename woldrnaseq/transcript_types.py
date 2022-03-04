@@ -37,7 +37,7 @@ def main(cmdline=None):
 
     if len(args.filenames) > 0:
         if args.output is None:
-            parser.perror("Output filename is required when listing bam files directly")
+            parser.error("Output filename is required when listing bam files directly")
 
         scores = make_transcript_type_scores(args.filenames, transcript_type_map)
         scores.to_csv(args.output, sep="\t")
