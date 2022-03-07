@@ -1,11 +1,12 @@
 """Utilities to help generate some test data
 """
-from collections import abc
+from collections import abc, namedtuple
 from contextlib import contextmanager
 import itertools
 import os
-import tempfile
+from pathlib import Path
 import pysam
+import tempfile
 
 
 # Op BAM Description Consumes Consumes
@@ -33,6 +34,24 @@ def tokenize_cigar(cigar):
             number = []
 
     return tokens
+
+
+def numeric_cigar(cigar):
+    codes = {
+        "M": 0,  # CMATCH
+        "I": 1,  # CINS
+        "D": 2,  # CDEL
+        "N": 3,  # CREF_SKIP
+        "S": 4,  # CSOFT_CLIP
+        "H": 5,  # CHARD_CLIP
+        "P": 6,  # CPAD
+        "=": 7,  # CEQUAL
+        "X": 8,  # CDIFF
+        "B": 9,  # CBACK
+    }
+    tokenized = tokenize_cigar(cigar)
+    for count, operator in tokenized:
+        yield (codes[operator], count)
 
 
 # References from https://samtools.github.io/hts-specs/SAMv1.pdf
@@ -97,12 +116,31 @@ def make_sam_flags(
     )
 
 
+read_tuple = namedtuple(
+    "read_tuple",
+    [
+        "query_name",
+        "query_sequence",
+        "query_qualities",
+        "flag",
+        "reference_name",
+        "reference_start",
+        "mapping_quality",
+        "cigarstring",
+        "next_reference_name",
+        "next_reference_start",
+        "template_length",
+        "tags",
+    ],
+)
+
+
 class SAMGenerator:
     def __init__(self):
         self._reads = []
         self._sq = {}
 
-    def add_single_read(
+    def add_single_read0(
         self,
         name,
         chromosome,
@@ -118,6 +156,7 @@ class SAMGenerator:
         tags=None,
         **kwargs,
     ):
+        """Add 0 based single end read to simulator list"""
         if seq is None:
             seq = "A" * 10
         if qual is None:
@@ -130,11 +169,14 @@ class SAMGenerator:
         if rnext is None:
             rnext = "*"
         if pnext is None:
-            pnext = "0"
+            pnext = 0
         if tlen is None:
             tlen = len(seq)
         if tags is None:
             tags = {"NH": 1}
+
+        if "NH" not in tags:
+            tags["NH"] = 1
 
         if flag is None:
             if chromosome == "*":
@@ -148,29 +190,28 @@ class SAMGenerator:
 
             flag = make_sam_flags(multi=multi, aligned=aligned, **kwargs)
 
-        items = [
-            name,
-            "{:g}".format(flag),
-            chromosome,
-            "{:g}".format(pos),
-            "{:g}".format(mapq),
-            cigar,
-            rnext,
-            pnext,
-            "{:g}".format(tlen),
-            seq,
-            qual,
-        ]
-        for tag in tags:
-            if tag == "NH":
-                items.append("NH:i:{}".format(tags[tag]))
+        if chromosome != "*":
+            current_sq = self._sq.get(chromosome, 0)
+            cigar_len = sum((x[0] for x in tokenize_cigar(cigar)))
+            self._sq[chromosome] = max(current_sq, pos + cigar_len, pos + len(seq))
 
-        cigar_len = sum((x[0] for x in tokenize_cigar(cigar)))
-        current_sq = self._sq.get(chromosome, 0)
-        self._sq[chromosome] = max(current_sq, pos + cigar_len, pos + len(seq))
-        self._reads.append("\t".join(items))
+        read = read_tuple(
+            query_name=name,
+            query_sequence=seq,
+            query_qualities=qual,
+            flag=flag,
+            reference_name=chromosome,
+            reference_start=pos,
+            mapping_quality=mapq,
+            cigarstring=cigar,
+            next_reference_name=rnext,
+            next_reference_start=pnext,
+            template_length=tlen,
+            tags=tags,
+        )
+        self._reads.append(read)
 
-    def add_paired_read(
+    def add_paired_read0(
         self,
         name,
         chromosome,
@@ -187,6 +228,11 @@ class SAMGenerator:
         is_reverse=None,
         **kwargs,
     ):
+        """Add 0 based list of reads to simulator list
+
+        This was intended for paired reads but the sam standard seems to
+        support more than paired reads.
+        """
         if not isinstance(pos, abc.Sequence):
             raise ValueError("Adding paired ends requires multiple locations")
 
@@ -239,7 +285,7 @@ class SAMGenerator:
             raise ValueError("Lengths of next reads and positions must be the same")
 
         if pnext is None:
-            pnext = [str(p) for p in itertools.chain(pos[1:], [pos[0]])]
+            pnext = [p for p in itertools.chain(pos[1:], [pos[0]])]
         elif len(pnext) != len(pos):
             raise ValueError(
                 "Lengths of next next positions and positions must be the same"
@@ -279,7 +325,7 @@ class SAMGenerator:
 
         for i in range(len(pos)):
             kwargs["is_reverse"] = is_reverse[i]
-            self.add_single_read(
+            self.add_single_read0(
                 name,
                 chromosome,
                 pos[i],
@@ -295,6 +341,18 @@ class SAMGenerator:
                 **kwargs,
             )
 
+    def make_header_dict(self):
+        SQ = []
+        for key in self._sq:
+            if key != "*":
+                SQ.append({"LN": self._sq[key], "SN": key})
+
+        return {
+            # "HD": {"VN": "1.4", "SO": "coordinate"},
+            # "PG": {"ID": "SSIM", "PN": "samsimulator"},
+            "SQ": SQ
+        }
+
     def make_header(self):
         yield "\t".join(("@HD", "VN:1.4", "SO:coordinate"))
         yield "\t".join(("@PG", "ID:DS", "PN:datasimulator"))
@@ -304,14 +362,55 @@ class SAMGenerator:
                     ("@SQ", "SN:{}".format(key), "LN:{}".format(self._sq[key]))
                 )
 
-    @contextmanager
-    def to_alignedfile(self):
-        with tempfile.NamedTemporaryFile(mode="w+t", suffix=".sam") as sam:
-            sam_name = sam.name
-            for line in itertools.chain(self.make_header(), self._reads):
-                sam.write(line)
-                sam.write(os.linesep)
-            sam.seek(0)
+    def to_aligned_reads(self, header):
+        for r in self._reads:
+            read = pysam.AlignedSegment(header=header)
+            read.query_name = r.query_name
+            read.query_sequence = r.query_sequence
+            read.query_qualities = pysam.qualitystring_to_array(r.query_qualities)
+            read.flag = r.flag
+            read.reference_name = r.reference_name
+            read.reference_start = r.reference_start
+            read.mapping_quality = r.mapping_quality
+            read.cigarstring = r.cigarstring
+            read.next_reference_name = r.reference_name
+            read.next_reference_start = r.next_reference_start
+            read.template_length = r.template_length
+            read.tags = list(r.tags.items())
+            yield read
 
-            with pysam.AlignmentFile(sam.name, "r") as instream:
+    @contextmanager
+    def to_bam(self):
+        tmpname = Path(tempfile.mktemp(suffix=".bam"))
+        tmpindex = Path(str(tmpname) + ".bai")
+        try:
+            with pysam.AlignmentFile(
+                tmpname, mode="wb", header=self.make_header_dict()
+            ) as bam:
+                for read in self.to_aligned_reads(bam.header):
+                    bam.write(read)
+                bam.close()
+
+            os.system("samtools index {}".format(tmpname))
+            with pysam.AlignmentFile(tmpname, mode="rb") as bam:
+                yield bam
+        finally:
+            for filename in [tmpname, tmpindex]:
+                if filename.exists():
+                    filename.unlink()
+
+    @contextmanager
+    def to_sam(self):
+        tmpname = Path(tempfile.mktemp(suffix=".sam"))
+        headers = self.make_header_dict()
+        try:
+            with pysam.AlignmentFile(tmpname, mode="w", header=headers) as sam:
+                for read in self.to_aligned_reads(sam.header):
+                    sam.write(read)
+                sam.close()
+
+            with pysam.AlignmentFile(tmpname, "r") as instream:
                 yield instream
+        finally:
+            if tmpname.exists():
+                tmpname.unlink()
