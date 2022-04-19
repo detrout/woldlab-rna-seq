@@ -1,5 +1,7 @@
 universe=vanilla
 
+environment="PYTHONPATH=$(pythonpath)"
+
 log=report-$(Process).log
 output=report-$(Process).out
 error=report-$(Process).out

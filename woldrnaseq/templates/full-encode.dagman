@@ -15,5 +15,6 @@ PARENT madqc CHILD report
 
 VARS all_nodes    experiments="{{experiments}}"
 VARS all_nodes    libraries="{{libraries}}"
+VARS all_nodes    pythonpath="{{pythonpath}}"
 
 VARS makersemcsv  genome_dir="{{genome_dir}}"

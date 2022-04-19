@@ -1,5 +1,7 @@
 universe=vanilla
 
+environment="PYTHONPATH=$(pythonpath)"
+
 log=makersemcsv-$(Process).log
 output=makersemcsv-$(Process).out
 error=makersemcsv-$(Process).out

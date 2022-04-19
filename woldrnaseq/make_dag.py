@@ -15,6 +15,7 @@ from pathlib import Path
 from pkg_resources import resource_filename
 from jinja2 import Environment, PackageLoader
 
+import woldrnaseq
 from woldrnaseq import make_star_rsem_dag
 from woldrnaseq import models
 from woldrnaseq import __version__
@@ -177,6 +178,7 @@ def generate_combined_analysis(args, dags):
             report=resource_filename(__name__, 'report.condor'),
             libraries=library_tsv,
             experiments=experiment_tsv,
+            pythonpath=Path(woldrnaseq.__path__[0]).parent,
             genome_dir=args.genome_dir,
             dags=dags,
             username=os.getlogin(),

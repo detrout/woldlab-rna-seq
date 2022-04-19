@@ -1,5 +1,7 @@
 universe=vanilla
 
+environment="PYTHONPATH=$(pythonpath)"
+
 log=madqc-$(Process).log
 output=madqc-$(Process).out
 error=madqc-$(Process).out
