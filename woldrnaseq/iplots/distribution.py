@@ -2,6 +2,7 @@
 from __future__ import print_function, unicode_literals, division
 
 import argparse
+import logging
 import numpy
 
 from bokeh.io import save
@@ -10,16 +11,24 @@ from bokeh.models import HoverTool, Legend, LegendItem, Select
 from bokeh.plotting import figure, curdoc, ColumnDataSource
 from bokeh import palettes
 
+from ..common import (
+    add_debug_arguments,
+    configure_logging,
+)
 from woldrnaseq.models import (
     load_experiments,
     load_library_tables,
     load_all_distribution
 )
 
+logger = logging.getLogger(__name__)
+
 
 def main(cmdline=None):
     parser = make_parser()
     args = parser.parse_args(cmdline)
+
+    configure_logging(args)
 
     experiments = load_experiments(args.experiments)
     libraries = load_library_tables(args.libraries)
@@ -40,6 +49,7 @@ def make_parser():
     parser.add_argument('-n', '--use-experiment', help='plot specific experiment name')
     #parser.add_argument('-r', '--remove', nargs='*', action='append',
     #                    help='Libraries to filter out')
+    add_debug_arguments(parser)
     return parser
 
 
@@ -77,6 +87,9 @@ class DistributionPlot:
         subset = self._distribution.loc[self.library_names]
         subset.index.name = 'library_id'
         subset = subset.reset_index()
+        logger.debug("Using subset of {} records out of {}".format(
+            subset.shape[0],
+            self._distribution.shape[0]))
 
         source = ColumnDataSource(subset)
         categories = ['Exonic', 'Intronic', 'Intergenic', ]
