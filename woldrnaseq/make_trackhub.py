@@ -55,7 +55,7 @@ def main(cmdline=None):
         raise ValueError('We can only generate tracks for one genome')
     genome = ucsc_genome_conversion(genomes.pop())
 
-    hub, genomes_file, genome, trackdb = trackhub.default_hub(
+    hub, genomes_file, _, trackdb = trackhub.default_hub(
         hub_name=args.hub,
         short_label=args.short_name,
         long_label=args.long_name,
