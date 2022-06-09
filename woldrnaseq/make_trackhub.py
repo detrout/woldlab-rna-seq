@@ -77,7 +77,9 @@ def main(cmdline=None):
             hub=hub,
             host='localhost',
             remote_dir=args.output)
-        print('trackhub: ' + args.web_root + hub.hub + '.hub.txt')
+        hub_url = args.web_root + hub.hub + '.hub.txt'
+        print('trackhub: {}'.format(hub_url))
+        print("clickable: http://genome.ucsc.edu/cgi-bin/hgTracks?db={}&hubUrl={}".format(genome, hub_url))
     else:
         print(trackdb)
 
