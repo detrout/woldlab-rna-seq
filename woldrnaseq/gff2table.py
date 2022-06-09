@@ -77,7 +77,7 @@ def parse_attributes(cell, sep, ignore={}, reserved={}):
 
         if name not in ignore:
             if name in reserved:
-                suffix = reserved[name] + 1
+                suffix = 1
                 reserved[name] = suffix
                 name = name + str(suffix)
 
