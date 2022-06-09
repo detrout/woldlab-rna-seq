@@ -12,6 +12,7 @@ import logging
 import pandas
 import numpy
 import time
+from xopen import xopen
 
 logger = logging.getLogger('gff2table')
 
@@ -175,22 +176,23 @@ class GFFParser:
             'score', 'strand', 'frame']
         column_names = required_gtf_names + ['attributes']
 
-        gtf = pandas.read_csv(
-            inname,
-            sep='\t',
-            header=None,
-            names=column_names,
-            index_col=False,
-            comment="#",
-            na_values='.',
-            converters={
-                'chromosome': str,
-                'score': parse_score,
-                'strand': parse_strand,
-                'frame': parse_phase,
-                'attributes': self.attribute_parser,
-            },
-        )
+        with xopen(inname, "rt") as instream:
+            gtf = pandas.read_csv(
+                instream,
+                sep='\t',
+                header=None,
+                names=column_names,
+                index_col=False,
+                comment="#",
+                na_values='.',
+                converters={
+                    'chromosome': str,
+                    'score': parse_score,
+                    'strand': parse_strand,
+                    'frame': parse_phase,
+                    'attributes': self.attribute_parser,
+                },
+            )
         tnow = time.monotonic()
         tprev = tnow
         logger.info("Parsed in {:.3} seconds".format(tnow-tzero))
@@ -318,6 +320,7 @@ def main(cmdline=None):
         gtf.write_table(args.output, args.name)
     else:
         raise RuntimeError('Unhandled output-type {}'.format(args.output_type))
+
 
 if __name__ == '__main__':
     main()
