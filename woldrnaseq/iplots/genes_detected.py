@@ -239,23 +239,16 @@ class GenesDetectedPlot:
             width=0.5,
             source=source,
             color=palettes.Oranges8,
+            legend_label=friendly_names,
         )
 
-        legend_items = []
-        for label, color in zip(friendly_names, palettes.Oranges8):
-            legend_items.append(
-                LegendItem(
-                    label=label,
-                    renderers=[f.square([1], [1], color=color, line_color='black')]))
-        legend = Legend(items=legend_items, location=(30, 0))
-        f.add_layout(legend, 'right')
+        f.legend.location = (10, f.plot_height/2.0)
+        f.add_layout(f.legend[0], 'right')
         f.y_range.start = 0
         f.x_range.range_padding = 0.1
         f.xgrid.grid_line_color = None
         f.axis.minor_tick_line_color = None
         f.outline_line_color = None
-        #f.legend.location = "top_left"
-        #f.legend.orientation = "vertical"
         f.xaxis.major_label_orientation = numpy.pi/4
 
         return f

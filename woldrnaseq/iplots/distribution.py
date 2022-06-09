@@ -7,7 +7,7 @@ import numpy
 
 from bokeh.io import save
 from bokeh.layouts import row, widgetbox
-from bokeh.models import HoverTool, Legend, LegendItem, Select
+from bokeh.models import HoverTool, Select
 from bokeh.plotting import figure, curdoc, ColumnDataSource
 from bokeh import palettes
 from bokeh import resources
@@ -113,16 +113,10 @@ class DistributionPlot:
             width=0.5,
             color=palettes.Set1[3],
             source=source,
+            legend_label=categories,
         )
-        legend_items = []
-        for category, color in zip(categories, palettes.Set1[3]):
-            legend_items.append(
-                LegendItem(
-                    label=category,
-                    renderers=[plot.square([1], [1], color=color, line_color='black')]))
-        legend = Legend(items=legend_items,
-                        location=(30, plot.plot_height/2.0))
-        plot.add_layout(legend, 'right')
+        plot.legend.location = (10, plot.plot_height/2.0)
+        plot.add_layout(plot.legend[0], 'right')
         plot.xgrid.grid_line_color = None
         plot.axis.minor_tick_line_color = None
         plot.xaxis.major_label_orientation = numpy.pi/4
