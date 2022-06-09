@@ -11,6 +11,7 @@ from bokeh.layouts import row, widgetbox
 from bokeh.models import HoverTool, Legend, LegendItem, Select
 from bokeh.plotting import figure, curdoc, ColumnDataSource
 from bokeh import palettes
+from bokeh import resources
 
 from woldrnaseq.common import (
     add_debug_arguments,
@@ -281,6 +282,13 @@ class GenesDetectedPlot:
 
 if __name__ == '__main__':
     plot = main()
+    if plot is not None:
+        curdoc().add_root(plot.static_layout())
+        # export_png(curdoc(), 'genesdetected.png')
+        save(curdoc(),
+             filename='genesdetected.html',
+             resources=resources.CDN,
+             title=plot.experiment_name)
 elif __name__.startswith('bk_script'):
     plot = main()
     if plot is not None:
