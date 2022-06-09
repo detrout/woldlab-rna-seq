@@ -13,6 +13,7 @@ from woldrnaseq.common import (
     add_version_argument,
     configure_logging,
     get_seperator,
+    sanitize_name,
 )
 from woldrnaseq.models import (
     genome_name_from_library,
@@ -120,7 +121,7 @@ def make_parser():
 def make_bigwig_trackhub(experiments, libraries, trackdb, baseurl, stranded=False):
     experiment_mapping = {}
     for key in experiments.index:
-        experiment_mapping[key] = key
+        experiment_mapping[sanitize_name(key)] = sanitize_name(key)
 
     experiment_group = trackhub.SubGroupDefinition(
             name='experiment',
@@ -185,7 +186,7 @@ def make_bigwig_trackhub(experiments, libraries, trackdb, baseurl, stranded=Fals
                     visibility='full',
                     tracktype='bigWig',
                     subgroups={
-                        'experiment': experiment_name,
+                        'experiment': sanitize_name(experiment_name),
                         'multi': track_type},
                     priority=priority,
                     **extra

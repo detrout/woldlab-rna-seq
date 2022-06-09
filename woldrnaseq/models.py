@@ -9,7 +9,7 @@ from functools import partial
 import pandas
 import re
 
-from woldrnaseq.common import validate_reference_type
+from woldrnaseq.common import validate_reference_type, sanitize_name
 
 logger = logging.getLogger(__name__)
 
@@ -731,7 +731,7 @@ def normalize_hdf_key(key):
 def make_correlation_filename(experiment, reference_type='genome'):
     validate_reference_type(reference_type)
     assert isinstance(experiment, pandas.Series)
-    components = [experiment.name]
+    components = [sanitize_name(experiment.name)]
     if reference_type == 'transcriptome':
         components.append(reference_type)
     components.append('correlation')
@@ -745,7 +745,7 @@ def make_quantification_filename(
         reference_type='gene'):
     validate_reference_type
     assert isinstance(experiment, pandas.Series)
-    components = [experiment.name]
+    components = [sanitize_name(experiment.name)]
     if reference_type == 'transcriptome':
         components.append(reference_type)
 

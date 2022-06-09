@@ -369,3 +369,9 @@ def get_rsem_version(rsem_dir=None):
     rsem = subprocess.run([rsem_cmd, "--version"], stdout=subprocess.PIPE)
     stdout = rsem.stdout.decode("utf-8").split()
     return stdout[-1]
+
+
+def sanitize_name(name):
+    """Make names more browser and filename safe"""
+
+    return name.replace("/", "_per_").replace(" ", "_").replace(":", "")
