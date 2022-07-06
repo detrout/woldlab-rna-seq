@@ -117,6 +117,7 @@ def count_exonic_genomic_reads_for_reference(
             code = gene_model.get(pos, None)
             if code == "E":
                 exon_base_count += 1
+                gene_base_count += 1
             elif code == "G":
                 gene_base_count += 1
 
