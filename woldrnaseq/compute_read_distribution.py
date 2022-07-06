@@ -243,7 +243,7 @@ def make_parser():
         "--gtf-h5", required=True, help="Location of .h5 cache of parse gtf file"
     )
     parser.add_argument(
-        "--strand", choice=["forward", "unstranded", "reverse"], default="unstranded"
+        "--strand", choices=["forward", "unstranded", "reverse"], default="unstranded"
     )
     parser.add_argument("-o", "--output", help="Location to write result file")
     add_debug_arguments(parser)
