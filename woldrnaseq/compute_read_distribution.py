@@ -9,6 +9,7 @@ introns
 """
 
 from argparse import ArgumentParser
+from collections import namedtuple
 import logging
 import pandas
 import pysam
@@ -26,6 +27,14 @@ logger = logging.getLogger(__name__)
 GENE = "G"
 EXON = "E"
 
+DistributionTotals = namedtuple(
+    "DistributionTotals",
+    ["Exonic", "Intronic", "Intergenic", "Spikeins"])
+
+ReferenceDistribution = namedtuple(
+    "ReferenceDistribution",
+    ["Exonic", "Intronic", "Intergenic"])
+
 
 def count_exonic_genomic_reads(bam, gtf_name, stranded="unstranded"):
     assert stranded in ["forward", "reverse", "unstranded"]
@@ -35,9 +44,11 @@ def count_exonic_genomic_reads(bam, gtf_name, stranded="unstranded"):
         check_strand = True
 
     with pysam.AlignmentFile(bam, "rb") as bam:
-        exonic_read_count = 0
-        genomic_read_count = 0
+        exon_read_count = 0
+        gene_read_count = 0
         intergenic_read_count = 0
+        other_read_count = 0
+        spikein_read_count = 0
         t0 = time.monotonic()
 
         for reference_name in bam.references:
@@ -48,28 +59,41 @@ def count_exonic_genomic_reads(bam, gtf_name, stranded="unstranded"):
             counts = count_exonic_genomic_reads_for_reference(
                 bam, reference_name, gene_plus, gene_minus, stranded
             )
-            exonic_read_count += counts[0]
-            genomic_read_count += counts[1]
-            intergenic_read_count += counts[2]
+            if not is_spike(reference_name):
+                exon_read_count += counts["Exonic"]
+                gene_read_count += counts["Intronic"]
+                intergenic_read_count += counts["Intergenic"]
+                other_read_count += counts["Other"]
+            else:
+                spikein_read_count += sum(counts.values())
 
         logger.info(
-            "exonic count {}, genomic count {}, intergenic count{} in {} seconds".format(
-                exonic_read_count,
-                genomic_read_count,
+            "exons {}, genes {}, intergenic count {}, other{}, spikes {} in {} seconds".format(
+                exon_read_count,
+                gene_read_count,
                 intergenic_read_count,
+                other_read_count,
+                spikein_read_count,
                 time.monotonic() - t0,
             )
         )
-    return (exonic_read_count, genomic_read_count, intergenic_read_count)
+
+    return DistributionTotals(
+        Exonic=exon_read_count,
+        Intronic=gene_read_count,
+        Intergenic=intergenic_read_count,
+        Spikeins=spikein_read_count,
+    )
 
 
 def count_exonic_genomic_reads_for_reference(
     bam, reference_name, gene_plus, gene_minus, stranded
 ):
     assert stranded in ["forward", "reverse", "unstranded"]
-    exonic_read_count = 0
-    genomic_read_count = 0
+    exon_read_count = 0
+    gene_read_count = 0
     intergenic_read_count = 0
+    other_read_count = 0
     t0 = time.monotonic()
 
     # by using 3 values in the tuple we can take the -1 / 1 flag we
@@ -107,22 +131,28 @@ def count_exonic_genomic_reads_for_reference(
         print("ega", exon_base_count, gene_base_count, base_count)
         weight = 1 / read.get_tag("NH")
         if exon_base_count / base_count >= 0.5:
-            exonic_read_count += weight
+            exon_read_count += weight
         elif gene_base_count / base_count >= 0.5:
-            genomic_read_count += weight
+            gene_read_count += weight
         else:
             intergenic_read_count += weight
+
     tnow = time.monotonic()
     print(
         "{}: {} {} {} in {:.4}s".format(
             reference_name,
-            exonic_read_count,
-            genomic_read_count,
+            exon_read_count,
+            gene_read_count,
             intergenic_read_count,
+            other_read_count,
             tnow - t0,
         )
     )
-    return (exonic_read_count, genomic_read_count, intergenic_read_count)
+    return ReferenceDistribution(
+        Exonic=exon_read_count,
+        Intronic=gene_read_count,
+        Intergenic=intergenic_read_count,
+    )
 
 
 def build_gene_locations(gtf, reference_name, check_strand=True):
@@ -222,6 +252,14 @@ def read_tabix_as_pandas(gtf_name, reference_name, sep=' '):
         read_tabix(gtf_name, reference_name, sep=sep),
         columns=["chromosome", "start", "stop", "strand", "type", "gene_id", "gene_name"])
 
+
+def is_spike(reference_name):
+    if reference_name.startswith("ERCC"):
+        return True
+    elif reference_name == "phiX174":
+        return True
+    else:
+        return False
 
 
 def main(cmdline=None):
