@@ -230,7 +230,23 @@ def main(cmdline=None):
 
     configure_logging(args)
 
-    # stuff, do it.
+    counts = count_exonic_genomic_reads(args.filename[0], args.gtf_cache, stranded=args.strand)
+
+    counts = pandas.Series(counts)
+    counts.index.name = "#Class"
+    counts.name = "Counts"
+    fractions = counts / counts.sum()
+    fractions.name = "Fraction"
+
+    try:
+        if args.output is not None:
+            outstream = open(args.output, "wt")
+        else:
+            outstream = sys.stdout
+        fractions.to_csv(outstream, sep="\t")
+    finally:
+        if args.output is not None:
+            outstream.close()
 
     return 0
 
@@ -240,7 +256,7 @@ def make_parser():
 
     parser.add_argument("filename", nargs=1, help="name of bam file to read")
     parser.add_argument(
-        "--gtf-h5", required=True, help="Location of .h5 cache of parse gtf file"
+        "--gtf-cache", required=True, help="Location of .h5 cache of parse gtf file"
     )
     parser.add_argument(
         "--strand", choices=["forward", "unstranded", "reverse"], default="unstranded"
