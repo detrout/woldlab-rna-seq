@@ -19,7 +19,7 @@ from .common import (
     add_debug_arguments,
     configure_logging,
 )
-
+from .gff2table import tokenize as gff_tokenize
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +41,9 @@ def count_exonic_genomic_reads(bam, gtf_name, stranded="unstranded"):
         t0 = time.monotonic()
 
         for reference_name in bam.references:
+            gtf_cache = read_tabix_as_pandas(gtf_name, reference_name)
             gene_plus, gene_minus = build_gene_locations(
-                gtf_name, reference_name, check_strand=check_strand
+                gtf_cache, reference_name, check_strand=check_strand
             )
             counts = count_exonic_genomic_reads_for_reference(
                 bam, reference_name, gene_plus, gene_minus, stranded
@@ -172,6 +173,55 @@ def read_filtered_gtf_cache(gtf_name, reference_name):
     store.close()
     logger.debug("gtf shape for {}: {}".format(reference_name, gtf.shape))
     return gtf
+def read_tabix(gtf_name, reference_name, sep=' '):
+    logger.info("Reading gtf file {}".format(gtf_name))
+    strand_map = {
+        "+": 1,
+        ".": 0,
+        "-": -1,
+    }
+    with pysam.TabixFile(gtf_name) as tab:
+        if reference_name not in tab.contigs:
+            logger.info("{} is not in the GTF/GFF file".format(reference_name))
+            return []
+        else:
+            for read in tab.fetch(reference_name):
+                fields = read.split("\t")
+                chromosome = fields[0]
+                record_type = fields[2]
+                start = int(fields[3])
+                stop = int(fields[4])
+                strand = strand_map[fields[6]]
+                tokens = gff_tokenize(fields[8], sep)
+                gene_id = None
+                gene_name = None
+                for term in tokens:
+                    name = term
+                    attribute_sep = next(tokens)
+                    assert attribute_sep == sep
+                    value = next(tokens)
+                    if name == "gene_id":
+                        gene_id = value
+                    elif name == "gene_name":
+                        gene_name = value
+
+                    if gene_id is not None and gene_name is not None:
+                        break
+
+                    try:
+                        field_sep = next(tokens)
+                        assert field_sep == ";"
+                    except StopIteration:
+                        break
+
+                yield (chromosome, start, stop, strand, record_type, gene_id, gene_name)
+
+
+def read_tabix_as_pandas(gtf_name, reference_name, sep=' '):
+    return pandas.DataFrame(
+        read_tabix(gtf_name, reference_name, sep=sep),
+        columns=["chromosome", "start", "stop", "strand", "type", "gene_id", "gene_name"])
+
 
 
 def main(cmdline=None):
