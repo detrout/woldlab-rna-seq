@@ -129,8 +129,8 @@ def count_exonic_genomic_reads_for_reference(
             intergenic_read_count += weight
 
     tnow = time.monotonic()
-    print(
-        "{}: {} {} {} in {:.4}s".format(
+    logger.info(
+        "{}: {} {} {} {} in {:.4}s".format(
             reference_name,
             exon_read_count,
             gene_read_count,
