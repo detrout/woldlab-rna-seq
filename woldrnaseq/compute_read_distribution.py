@@ -105,21 +105,13 @@ def count_exonic_genomic_reads_for_reference(
         "unstranded": (gene_plus, None, gene_plus),
         "reverse": (gene_plus, None, gene_minus),
     }
-    print("+", gene_plus)
-    print("-", gene_minus)
     for read in bam.fetch(reference_name):
         strand = -1 if read.is_reverse else 1
-        print(
-            "read: {} {} {} {} {} ".format(
-                read.query_name, read.reference_name, read.pos, strand, read.cigarstring
-            )
-        )
         exon_base_count = 0
         gene_base_count = 0
         base_count = 0
 
         gene_model = gene_map[stranded][strand + 1]
-        print("reference pos:", read.get_reference_positions())
         for pos in read.get_reference_positions():
             base_count += 1
             code = gene_model.get(pos, None)
@@ -128,7 +120,6 @@ def count_exonic_genomic_reads_for_reference(
             elif code == "G":
                 gene_base_count += 1
 
-        print("ega", exon_base_count, gene_base_count, base_count)
         weight = 1 / read.get_tag("NH")
         if exon_base_count / base_count >= 0.5:
             exon_read_count += weight
