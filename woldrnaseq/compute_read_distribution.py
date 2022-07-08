@@ -52,10 +52,17 @@ def count_exonic_genomic_reads(bam, gtf_name, stranded="unstranded"):
         t0 = time.monotonic()
 
         for reference_name in bam.references:
-            gtf_cache = read_tabix_as_pandas(gtf_name, reference_name)
+            if gtf_name.endswith(".h5"):
+                gtf_cache = read_filtered_gtf_cache(gtf_name, reference_name)
+            elif gtf_name.endswith(".tbi"):
+                gtf_cache = read_tabix_as_pandas(gtf_name, reference_name)
+            else:
+                gtf_cache = read_pyranges_as_pandas(gtf_name, reference_name)
+
             gene_plus, gene_minus = build_gene_locations(
                 gtf_cache, reference_name, check_strand=check_strand
             )
+
             counts = count_exonic_genomic_reads_for_reference(
                 bam, reference_name, gene_plus, gene_minus, stranded
             )
@@ -195,6 +202,8 @@ def read_filtered_gtf_cache(gtf_name, reference_name):
     store.close()
     logger.debug("gtf shape for {}: {}".format(reference_name, gtf.shape))
     return gtf
+
+
 def read_tabix(gtf_name, reference_name, sep=' '):
     logger.info("Reading gtf file {}".format(gtf_name))
     strand_map = {
