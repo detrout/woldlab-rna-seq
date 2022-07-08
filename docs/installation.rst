@@ -3,8 +3,8 @@
 Installation
 ============
 
-I tested these instructions with Debian Stretch 9.8, but it
-should work similiarly with Ubuntu 16.x or 18.x.
+I tested these instructions with Debian 11 (Bullseye), but it
+should work similiarly with recent versions of Ubuntu as well.
 
 Assuming you don't have a Linux system available, first install the
 base system according to the vendor's instructions.
@@ -71,10 +71,14 @@ course, want to download other utilities as well.
    wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig
    chmod a+x bedSort bedGraphToBigWig
 
+You can browse the list of all the prebuilt binaries at
+http://hgdownload.soe.ucsc.edu/admin/exe/
+
+
 Installing ENCODE DCC prebuilt indexes
 --------------------------------------
 
-For ENCODE mm10 M4 we can use these prebuilt indexes provided by
+For ENCODE mm10 M21 we can use these prebuilt indexes provided by
 the DCC. The main advantage to this method is you can save several
 hours of computer time by not having to build the indexes. The
 downside is you are limited to ENCODE's choices and versions. You may
@@ -86,11 +90,11 @@ want to use different annotations than what ENCODE chose to do.
    mkdir ~/proj/genome
    cd ~/proj/genome/
    # The STAR index
-   wget https://www.encodeproject.org/files/ENCFF533JRE/@@download/ENCFF533JRE.tar.gz
-   tar xavf ENCFF533JRE.tar.gz
+   wget https://www.encodeproject.org/files/ENCFF795ZFF/@@download/ENCFF795ZFF.tar.gz
+   tar xavf ENCFF795ZFF.tar.gz
    # The RSEM Index
-   wget https://www.encodeproject.org/files/ENCFF717NFD/@@download/ENCFF717NFD.tar.gz
-   tar xavf ENCFF717NFD.tar.gz
+   wget https://www.encodeproject.org/files/ENCFF363TFV/@@download/ENCFF363TFV.tar.gz
+   tar xavf ENCFF363TFV.tar.gz
    mv out mm10-M4-male
 
 I found these by looking at a recent RNA-seq experiment for the
@@ -102,33 +106,33 @@ following screen shot.)
 
 Unfortunately the ENCODE STAR and RSEM indexes lack a "GTF/GFF" file,
 So we'll need to build one. For example using the RSEM input file
-above we can look at its detail page `ENCFF717NFD`_. From there we can
+above we can look at its detail page `ENCFF795ZFF`_. From there we can
 see the input GTF and fasta files.  `ENCFF001RTP`_ is the accession ID
 for the ERCC spike-in set and `ENCFF335FFV`_ is the accession ID for
 phiX.
 
-.. image:: _static/Screenshot_2019-04-09\ ENCFF717NFD\ –\ ENCODE.png
+.. image::  _static/Screenshot_2022-06-27T10-20-14_ENCFF795ZFF.png
 
 .. code-block:: console
 
     wget https://www.encodeproject.org/files/ENCFF001RTP/@@download/ENCFF001RTP.fasta.gz
     wget https://www.encodeproject.org/files/ENCFF335FFV/@@download/ENCFF335FFV.fasta.gz
-    wget https://www.encodeproject.org/files/gencode.vM4.tRNAs/@@download/gencode.vM4.tRNAs.gtf.gz
-    wget https://www.encodeproject.org/files/gencode.vM4.annotation/@@download/gencode.vM4.annotation.gtf.gz
-    merge_encode_annotations -o mm10-M4-male/gencode.vM4-tRNAs-ERCC.gff \
-       gencode.vM4.annotation.gtf.gz \
-       gencode.vM4.tRNAs.gtf.gz \
-       ENCFF001RTP.fasta.gz \
-       ENCFF335FFV.fasta.gz
+    wget https://www.encodeproject.org/files/gencode.vM21.tRNAs/@@download/gencode.vM21.tRNAs.gtf.gz
+    wget https://www.encodeproject.org/files/gencode.vM21.primary_assembly.annotation_UCSC_names/@@download/gencode.vM21.primary_assembly.annotation_UCSC_names.gtf.gz
+    merge_encode_annotations -o mm10-M4-male/gencode.vM21-tRNAs-ERCC.gff \
+       --trna gencode.vM21.tRNAs.gtf.gz \
+       --spikein ENCFF001RTP.fasta.gz \
+       --spikein ENCFF335FFV.fasta.gz \
+       gencode.vM21.annotation.gtf.gz
 
 If you'd like, you might want to delete the downloaded files.
 
 .. code-block:: console
 
-    rm ENCFF533JRE.tar.gz ENCFF717NFD.tar.gz ENCFF001RTP.fasta.gz ENCFF335FFV.fasta.gz \
-       gencode.vM4.tRNAs.gtf.gz gencode.vM4.annotation.gtf.gz
+    rm ENCFF795ZFF.tar.gz ENCFF363TFV.tar.gz ENCFF001RTP.fasta.gz ENCFF335FFV.fasta.gz \
+       gencode.vM21.tRNAs.gtf.gz gencode.vM21.annotation.gtf.gz
 
-See also :ref:`howto.building_indexes`
+See also :ref:`reference.building_indexes`
 
 Configuring Paths
 -----------------
@@ -205,7 +209,7 @@ lines:
 
 
 .. _HT Condor: https://research.cs.wisc.edu/htcondor/
-.. _ENCFF717NFD: https://www.encodeproject.org/files/ENCFF717NFD/
+.. _ENCFF795ZFF: https://www.encodeproject.org/files/ENCFF795ZFF/
 .. _ENCFF001RTP: https://www.encodeproject.org/files/ENCFF001RTP/
 .. _ENCFF335FFV: https://www.encodeproject.org/files/ENCFF335FFV/
 .. _STAR: https://github.com/alexdobin/STAR
