@@ -10,6 +10,7 @@ from woldrnaseq.common import (
     add_debug_arguments,
     configure_logging,
     get_seperator,
+    sanitize_name,
 )
 
 logger = logging.getLogger('RSEM CSV')
@@ -99,7 +100,7 @@ class RsemLoader:
         }[output_format]
 
         if filename is None:
-            filename = quantifications.name + output_extension
+            filename = sanitize_name(quantifications.name) + output_extension
 
         quantifications.to_csv(filename, sep=output_sep)
 
