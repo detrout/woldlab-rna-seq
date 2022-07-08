@@ -1,10 +1,7 @@
-.. long-rna-seq-condor documentation master file, created by
-   sphinx-quickstart on Tue Nov  8 15:28:18 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. woldlab-rna-seq documentation master file, created by
 
-Welcome to long-rna-seq-condor's documentation!
-===============================================
+Welcome to woldab-rna-seq's documentation!
+==========================================
 
 Contents:
 
