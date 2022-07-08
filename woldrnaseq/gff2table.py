@@ -176,7 +176,12 @@ class GFFParser:
             'score', 'strand', 'frame']
         column_names = required_gtf_names + ['attributes']
 
-        with xopen(inname, "rt") as instream:
+        if isinstance(inname, (str, bytes, os.PathLike)):
+            instream = xopen(inname, "rt")
+        else:
+            instream = inname
+
+        try:
             gtf = pandas.read_csv(
                 instream,
                 sep='\t',
@@ -193,6 +198,10 @@ class GFFParser:
                     'attributes': self.attribute_parser,
                 },
             )
+        finally:
+            if inname != instream:
+                instream.close()
+
         tnow = time.monotonic()
         tprev = tnow
         logger.info("Parsed in {:.3} seconds".format(tnow-tzero))
