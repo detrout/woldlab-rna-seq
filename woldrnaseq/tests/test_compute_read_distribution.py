@@ -3,9 +3,9 @@ from unittest import TestCase
 
 from .samsimulator import SAMGenerator
 from ..compute_read_distribution import (
-    count_exonic_genomic_reads,
-    count_exonic_genomic_reads_for_reference,
     build_gene_locations,
+    count_exonic_genomic_reads_for_reference,
+    ReferenceDistribution,
 )
 
 
@@ -87,9 +87,9 @@ class TestCountExonicGenes(TestCase):
         sam.add_single_read0("r0001", chromosome, 105, seq="A" * 25)
 
         expected_data = [
-            ("forward", (1.0, 0, 0)),
-            ("unstranded", (1.0, 0, 0)),
-            ("reverse", (0, 0, 1.0)),
+            ("forward", ReferenceDistribution(1.0, 0, 0)),
+            ("unstranded", ReferenceDistribution(1.0, 0, 0)),
+            ("reverse", ReferenceDistribution(0, 0, 1.0)),
         ]
 
         for stranded, expected in expected_data:
@@ -105,9 +105,9 @@ class TestCountExonicGenes(TestCase):
         sam.add_single_read0("r0001", "chr1", 125, seq="A" * 20)
 
         expected_data = [
-            ("forward", (0, 1.0, 0)),
-            ("unstranded", (0, 1.0, 0)),
-            ("reverse", (0, 0, 1.0)),
+            ("forward", ReferenceDistribution(0, 1.0, 0)),
+            ("unstranded", ReferenceDistribution(0, 1.0, 0)),
+            ("reverse", ReferenceDistribution(0, 0, 1.0)),
         ]
 
         for stranded, expected in expected_data:
@@ -123,9 +123,9 @@ class TestCountExonicGenes(TestCase):
         sam.add_single_read0("r0001", "chr1", 0, seq="A" * 50)
 
         expected_data = [
-            ("forward", (0, 0, 1.0)),
-            ("unstranded", (0, 0, 1.0)),
-            ("reverse", (0, 0, 1.0)),
+            ("forward", ReferenceDistribution(0, 0, 1.0)),
+            ("unstranded", ReferenceDistribution(0, 0, 1.0)),
+            ("reverse", ReferenceDistribution(0, 0, 1.0)),
         ]
 
         for stranded, expected in expected_data:
@@ -142,9 +142,9 @@ class TestCountExonicGenes(TestCase):
         sam.add_single_read0("r0001", chromosome, 105, seq="A" * 25, is_reverse=True)
 
         expected_data = [
-            ("forward", (0, 0, 1.0)),
-            ("unstranded", (1.0, 0, 0)),
-            ("reverse", (1.0, 0, 0)),
+            ("forward", ReferenceDistribution(0, 0, 1.0)),
+            ("unstranded", ReferenceDistribution(1.0, 0, 0)),
+            ("reverse", ReferenceDistribution(1.0, 0, 0)),
         ]
 
         for stranded, expected in expected_data:
@@ -160,9 +160,9 @@ class TestCountExonicGenes(TestCase):
         sam.add_single_read0("r0001", "chr1", 125, seq="A" * 20, is_reverse=True)
 
         expected_data = [
-            ("forward", (0, 0, 1.0)),
-            ("unstranded", (0, 1.0, 0)),
-            ("reverse", (0, 1.0, 0)),
+            ("forward", ReferenceDistribution(0, 0, 1.0)),
+            ("unstranded", ReferenceDistribution(0, 1.0, 0)),
+            ("reverse", ReferenceDistribution(0, 1.0, 0)),
         ]
 
         for stranded, expected in expected_data:
