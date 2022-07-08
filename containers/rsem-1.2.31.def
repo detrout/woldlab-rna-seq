@@ -1,0 +1,21 @@
+Bootstrap: debootstrap
+OSVersion: bullseye
+MirrorURL:  http://deb.debian.org/debian/
+
+%post
+        apt update ; apt -y upgrade
+        apt install -y curl r-base-core bowtie2 python perl samtools bowtie
+        cd /tmp ; curl -L -O https://woldlab.caltech.edu/~diane/containers/rsem_1.2.31+dfsg-1~bpo11+1_amd64.deb
+        dpkg -i /tmp/rsem_1.2.31+dfsg-1~bpo11+1_amd64.deb
+        rm /tmp/rsem_1.2.31+dfsg-1~bpo11+1_amd64.deb
+        apt clean
+
+%environment
+        export LC_ALL=C.UTF-8
+
+%runscript
+        exec /usr/bin/rsem-calculate-expression $@
+
+%labels
+        Author Diane Trout <diane@caltech.edu>
+        Version v0.0.3

@@ -1,0 +1,27 @@
+Bootstrap: localimage
+From: /woldlab/loxcyc/home/diane/public_html/containers/bullseye-bash.sif
+
+%setup
+        #TEMP=$(mktemp -d)
+        echo "Using tempdir ${TEMP}"
+
+        echo "installing STAR static"
+        cp ~diane/proj/STAR-2.5.1b/STAR ${SINGULARITY_ROOTFS}/usr/bin
+        #git clone https://github.com/alexdobin/STAR.git ${TEMP}/STAR
+        #CURDIR=$(pwd)
+        #cd ${TEMP}/STAR ; git checkout -b target 2.5.1b
+        #cd source
+        #mkdir STARstatic
+        #cp STAR ${SINGULARITY_ROOTFS}/usr/bin
+        #cd ${TEMP}/..
+        #rm -rf ${TEMP}
+
+%environment
+        export LC_ALL=C.UTF-8
+
+%runscript
+        exec /usr/bin/STAR $@
+
+%labels
+        Author Diane Trout <diane@caltech.edu>
+        Version v0.0.1
