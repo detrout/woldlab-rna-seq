@@ -12,13 +12,21 @@ def make_comment_file(lib_id, genome_dir, output_dir):
                     outstream.write(line)
 
 
+def get_library_accession():
+    if "library_accession" in config:
+        return config["library_accession"]
+    elif "library_id" in config:
+        return config["library_id"]
+    else:
+        return "Unknown"
+
 rule generate_co_file:
     input:
         genome_index = config['genome_dir'],
     output:
         temp("COfile.txt"),
     params:
-        library_accession = config['library_accession'],
+        library_accession = get_library_accession(),
     singularity:
         config['star_container']
     resources:
