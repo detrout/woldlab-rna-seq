@@ -293,7 +293,8 @@ class TestDownloader(TestCase):
         ).set_index("library_id")
 
         flowcells = get_library_flowcells(fake_api, libraries)
-        self.assertEqual(list(flowcells), ["HKGWTBCX3", "AAAJ5NWHV"])
+        # in this case order doesn't really matter
+        self.assertEqual(set(flowcells), {"HKGWTBCX3", "AAAJ5NWHV"})
 
     def test_get_flowcells_filtered_flowcells(self):
         fake_api = FakeHtswApi("https://htsw.example.edu", (None, None))
