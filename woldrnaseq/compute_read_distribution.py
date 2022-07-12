@@ -138,7 +138,7 @@ def count_exonic_genomic_reads_for_reference(
 
     tnow = time.monotonic()
     logger.info(
-        "{}: {} {} {} {} in {:.4}s".format(
+        "{}: {} {} {} {} in {:.3f}s".format(
             reference_name,
             exon_read_count,
             gene_read_count,
@@ -170,6 +170,7 @@ def build_gene_locations(gtf, reference_name, check_strand=True):
     gene_plus = {}
     gene_minus = {}
 
+    t0 = time.monotonic()
     for i, row in gtf.iterrows():
         if check_strand and row.strand == -1:
             gene_locations = gene_minus
@@ -187,11 +188,14 @@ def build_gene_locations(gtf, reference_name, check_strand=True):
     logger.debug(
         "{} plus={}, minus={}".format(reference_name, len(gene_plus), len(gene_minus))
     )
+    logger.info("Built gene locations for {} in {:.3f} s".format(
+        reference_name, time.monotonic() - t0))
     return (gene_plus, gene_minus)
 
 
 def read_filtered_gtf_cache(gtf_name, reference_name):
     """Read just the relevant parts of the gtf cache"""
+    t0 = time.monotonic()
     logger.info("Reading cache {}".format(gtf_name))
     store = pandas.HDFStore(gtf_name)
     gtf = store.select(
@@ -200,11 +204,13 @@ def read_filtered_gtf_cache(gtf_name, reference_name):
         columns=["chromosome", "type", "start", "stop", "strand", "gene_id"],
     )
     store.close()
-    logger.debug("gtf shape for {}: {}".format(reference_name, gtf.shape))
+    logger.debug("gtf shape for {}: {} in {:.3f} s".format(
+        reference_name, gtf.shape, time.monotonic() - t0))
     return gtf
 
 
 def read_tabix(gtf_name, reference_name, sep=' '):
+    t0 = time.monotonic()
     logger.info("Reading gtf file {}".format(gtf_name))
     strand_map = {
         "+": 1,
@@ -246,6 +252,9 @@ def read_tabix(gtf_name, reference_name, sep=' '):
                         break
 
                 yield (chromosome, start, stop, strand, record_type, gene_id, gene_name)
+
+        logger.info("Finished reading {} in {:.3f} s".format(
+            chromosome, time.monotonic() - t0))
 
 
 def read_tabix_as_pandas(gtf_name, reference_name, sep=' '):
