@@ -53,6 +53,8 @@ def count_exonic_genomic_reads(bam, gtf_name, stranded="unstranded"):
 
         for reference_name in bam.references:
             if gtf_name.endswith(".h5"):
+                # The problem with this method is that pandas's HDF reader locks the
+                # file, so you can only one run process at a time.
                 gtf_cache = read_filtered_gtf_cache(gtf_name, reference_name)
             elif gtf_name.endswith(".tbi"):
                 gtf_cache = read_tabix_as_pandas(gtf_name, reference_name)
