@@ -11,6 +11,7 @@ introns
 from argparse import ArgumentParser
 from collections import namedtuple
 import logging
+from pathlib import Path
 import pandas
 import pysam
 import sys
@@ -51,12 +52,13 @@ def count_exonic_genomic_reads(bam, gtf_name, stranded="unstranded"):
         spikein_read_count = 0
         t0 = time.monotonic()
 
+        tbi = Path(gtf_name + ".tbi")
         for reference_name in bam.references:
             if gtf_name.endswith(".h5"):
                 # The problem with this method is that pandas's HDF reader locks the
                 # file, so you can only one run process at a time.
                 gtf_cache = read_filtered_gtf_cache(gtf_name, reference_name)
-            elif gtf_name.endswith(".tbi"):
+            elif tbi.exists():
                 gtf_cache = read_tabix_as_pandas(gtf_name, reference_name)
             else:
                 gtf_cache = read_pyranges_as_pandas(gtf_name, reference_name)
