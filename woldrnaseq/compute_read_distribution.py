@@ -264,6 +264,29 @@ def read_tabix_as_pandas(gtf_name, reference_name, sep=' '):
         columns=["chromosome", "start", "stop", "strand", "type", "gene_id", "gene_name"])
 
 
+def read_pyranges_as_pandas(gtf_name, reference_name):
+    import pyranges
+
+    t0 = time.monotonic()
+    logger.info("Reading gtf file {}".format(gtf_name))
+
+    gtf = pyranges.read_gtf(gtf_name)
+    df = gtf[reference_name].as_df()
+    pyrange_names = [
+        "Chromosome", "Start", "End", "Strand", "Feature", "gene_id", "gene_name"]
+    col_names = [
+        'chromosome', 'start', 'stop', 'strand', 'type', 'gene_id', 'gene_name']
+    if df.shape[0] == 0:
+        return pandas.DataFrame([], columns=col_names)
+    df = df[pyrange_names]
+    df.columns = col_names
+
+    logger.info("Finished reading {} in {:.3f} s".format(
+        reference_name, time.monotonic() - t0))
+
+    return df
+
+
 def is_spike(reference_name):
     if reference_name.startswith("ERCC"):
         return True
