@@ -48,7 +48,6 @@ def count_exonic_genomic_reads(bam, gtf_name, stranded="unstranded"):
         exon_read_count = 0
         gene_read_count = 0
         intergenic_read_count = 0
-        other_read_count = 0
         spikein_read_count = 0
         t0 = time.monotonic()
 
@@ -71,19 +70,17 @@ def count_exonic_genomic_reads(bam, gtf_name, stranded="unstranded"):
                 bam, reference_name, gene_plus, gene_minus, stranded
             )
             if not is_spike(reference_name):
-                exon_read_count += counts["Exonic"]
-                gene_read_count += counts["Intronic"]
-                intergenic_read_count += counts["Intergenic"]
-                other_read_count += counts["Other"]
+                exon_read_count += counts.Exonic
+                gene_read_count += counts.Intronic
+                intergenic_read_count += counts.Intergenic
             else:
-                spikein_read_count += sum(counts.values())
+                spikein_read_count += sum(counts)
 
         logger.info(
-            "exons {}, genes {}, intergenic count {}, other{}, spikes {} in {} seconds".format(
+            "exons {}, genes {}, intergenic count {}, spikes {} in {} seconds".format(
                 exon_read_count,
                 gene_read_count,
                 intergenic_read_count,
-                other_read_count,
                 spikein_read_count,
                 time.monotonic() - t0,
             )
