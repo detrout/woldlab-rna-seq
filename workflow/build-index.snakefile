@@ -6,10 +6,6 @@ import shutil
 import subprocess
 from urllib.parse import urlparse
 from woldrnaseq import gff2table
-from woldrnaseq.common import (
-    get_star_version,
-    get_rsem_version,
-)
 from xopen import xopen
 DEFAULT_MEM_MB = 1000
 
@@ -96,27 +92,54 @@ rule ALL:
         get_rsem_archive_name(config),
 
 
+rule star_version:
+    output:
+        temp("star_version.txt")
+    resources:
+        mem_mb = 100
+    singularity:
+        config["star_container"]
+    shell:
+        "STAR --version > {output}"
+
 rule star_comment:
     input:
-        "config.yaml"
+        config="config.yaml",
+        version=rules.star_version.output[0],
     output:
         "star_bamCommentLines.txt"
     resources:
         mem_mb = 100
     threads: 1
     run:
-        save_bamcomment(output[0], config, config["star_version"])
+        with open(input.version, "rt") as instream:
+            version = instream.read().strip()
+            save_bamcomment(output[0], config, version)
+
+rule rsem_version:
+    output:
+        temp("rsem_version.txt")
+    resources:
+        mem_mb = 100
+    singularity:
+        config["rsem_container"]
+    shell:
+        "rsem-calculate-expression --version | cut -f 3 -d 'v' > {output}"
+
 
 rule rsem_comment:
     input:
-        "config.yaml"
+        config="config.yaml",
+        version=rules.rsem_version.output[0],
     output:
         "rsem_bamCommentLines.txt"
     resources:
         mem_mb = 100
     threads: 1
     run:
-        save_bamcomment(output[0], config, config["rsem_version"])
+        with open(input.version, "rt") as instream:
+            version = instream.read().strip()
+            save_bamcomment(output[0], config, version)
 
 rule download:
     output:
