@@ -198,7 +198,7 @@ def read_filtered_gtf_cache(gtf_name, reference_name):
     """Read just the relevant parts of the gtf cache"""
     t0 = time.monotonic()
     logger.info("Reading cache {}".format(gtf_name))
-    store = pandas.HDFStore(gtf_name)
+    store = pandas.HDFStore(gtf_name, "r")
     gtf = store.select(
         "gtf",
         where='chromosome="{}"'.format(reference_name),
