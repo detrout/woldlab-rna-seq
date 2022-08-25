@@ -64,42 +64,51 @@ class TestMakeDag(TestCase):
     @patch('woldrnaseq.make_star_rsem_dag.AnalysisDAG.star_index_size', new_callable=PropertyMock)
     @patch('woldrnaseq.make_star_rsem_dag.AnalysisDAG.fastq_size', new_callable=PropertyMock)
     def test_analysis(self, fastq_size, star_index_size):
-        total_size = 1024 ** 3
-        fastq_size.return_value = total_size
-        star_index_size.return_value = 1_000_000
-        analysis = make_star_rsem_dag.AnalysisDAG()
+        genome_name = "mm10-M4-male"
+        with tempfile.TemporaryDirectory() as tmp_genome_dir:
+            tmp_genome_path = Path(tmp_genome_dir)
+            tmp_genome_name = tmp_genome_path / genome_name
+            tmp_genome_name.mkdir()
+            with open(tmp_genome_name / "gencode.vM4-tRNAs-ERCC.gff", "wt"):
+                pass
+            total_size = 1024 ** 3
+            fastq_size.return_value = total_size
+            star_index_size.return_value = 1_000_000
+            analysis = make_star_rsem_dag.AnalysisDAG()
 
-        read_1 = ['22157_GTCATCGT_L001_R1_001.fastq.gz', '22157_GTCATCGT_L001_R1_002.fastq.gz']
-        analysis.genome_dir = '~/genome_dir/'
-        analysis.star_dir = '/usr/bin'
-        analysis.rsem_dir = '/usr/bin'
-        analysis.georgi_dir = '~/GeorgiScripts'
-        analysis.ucsc_tools_dir = '~/x86_64-304'
-        analysis.genome_name = 'mm10-M4-male'
-        analysis.job_id = '12345'
-        analysis.analysis_dir = '/tmp/12345'
-        analysis.read_1_fastqs = read_1
+            read_1 = ['22157_GTCATCGT_L001_R1_001.fastq.gz', '22157_GTCATCGT_L001_R1_002.fastq.gz']
+            analysis.genome_dir = tmp_genome_dir
+            analysis.star_dir = '/usr/bin'
+            analysis.rsem_dir = '/usr/bin'
+            analysis.georgi_dir = '~/GeorgiScripts'
+            analysis.ucsc_tools_dir = '~/x86_64-304'
+            analysis.genome_name = genome_name
+            analysis.job_id = '12345'
+            analysis.analysis_dir = '/tmp/12345'
+            analysis.read_1_fastqs = read_1
 
-        self.assertTrue(analysis.is_valid())
-        self.assertEqual(analysis.genome_dir, "~/genome_dir")
-        self.assertEqual(analysis.fastq_size, total_size)
+            print("glob", list(Path(analysis.genome_dir).glob("gencode*-tRNAs-ERCC.gff")))
+            
+            self.assertTrue(analysis.is_valid())
+            self.assertEqual(analysis.genome_dir, tmp_genome_dir)
+            self.assertEqual(analysis.fastq_size, total_size)
 
-        dag = str(analysis)
-        self.assertGreater(len(dag), 0)
+            dag = str(analysis)
+            self.assertGreater(len(dag), 0)
 
-        samtools = resource_filename('woldrnaseq', 'sort-samtools.condor')
-        condor_dir = os.path.dirname(samtools)
-        for line in str(analysis).split(os.linesep):
-            if line.startswith("JOB"):
-                self.assertIn(condor_dir, line)
-            match = re.search('star *request_disk="(?P<request>[0-9.]+)"', line)
-            if match:
-                request = match.group('request')
-                self.assertAlmostEqual(float(request), (total_size/1024)*4)
-            match = re.search('rsem *request_disk="(?P<request>[0-9.]+)"', line)
-            if match:
-                request = match.group('request')
-                self.assertAlmostEqual(float(request), (total_size/1024)*7)
+            samtools = resource_filename('woldrnaseq', 'sort-samtools.condor')
+            condor_dir = os.path.dirname(samtools)
+            for line in str(analysis).split(os.linesep):
+                if line.startswith("JOB"):
+                    self.assertIn(condor_dir, line)
+                match = re.search('star *request_disk="(?P<request>[0-9.]+)"', line)
+                if match:
+                    request = match.group('request')
+                    self.assertAlmostEqual(float(request), (total_size/1024)*4)
+                match = re.search('rsem *request_disk="(?P<request>[0-9.]+)"', line)
+                if match:
+                    request = match.group('request')
+                    self.assertAlmostEqual(float(request), (total_size/1024)*7)
 
     def test_fastq_size(self):
         analysis = make_star_rsem_dag.AnalysisDAG()
