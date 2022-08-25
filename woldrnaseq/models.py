@@ -528,7 +528,11 @@ def load_distribution(filename):
     with open(filename, 'rt') as instream:
         try:
             for line in read_line_from_stream(instream):
-                name, value = line.split(':\t')
+                name, value = line.split('\t')
+                # Chomp off trailing : which older version writes
+                if name.endswith(":"):
+                    name = name[:-1]
+
                 distribution[name] = float(value)
         except ValueError as e:
             raise ValueError('Unable to parse {}: {}'.format(filename, str(e)))
