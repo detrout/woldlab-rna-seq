@@ -283,7 +283,8 @@ class TestModel(TestCase):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
         mm10 = models.load_library_tables([mm10tsv])
         distribution = models.load_all_distribution(mm10)
-        self.assertEqual(distribution.shape, (1, 3))
+        for name in ["Exonic", "Intronic", "Intergenic"]:
+            self.assertIn(name, distribution.columns)
         self.assertEqual(distribution.index[0], '12304')
 
     def test_warn_if_spaces(self):
