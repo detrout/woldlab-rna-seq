@@ -232,17 +232,19 @@ class QCReport:
         def read_length(x):
             return "{:,}".format(int(x))
 
-        return self._samstats.loc[library_ids].to_html(
-            formatters={
-                'Unique': reads_format,
-                'Unique Splices': reads_format,
-                'Multi': reads_format,
-                'Multi Splices': reads_format,
-                'Total Aligned Reads': reads_format,
-                'Fraction Mapped': fraction_mapped,
-                'Read Length, Minimum': read_length,
-                'Read Length, Maximum': read_length,
-            })
+        available_libraries = set(self._samstats.index).intersection(library_ids)
+        if len(available_libraries) > 0:
+            return self._samstats.loc[available_libraries].to_html(
+                formatters={
+                    'Unique': reads_format,
+                    'Unique Splices': reads_format,
+                    'Multi': reads_format,
+                    'Multi Splices': reads_format,
+                    'Total Aligned Reads': reads_format,
+                    'Fraction Mapped': fraction_mapped,
+                    'Read Length, Minimum': read_length,
+                    'Read Length, Maximum': read_length,
+                })
 
     def make_star_stats_html(self, library_ids):
         available_libraries = set(self._star_stats.index).intersection(library_ids)
