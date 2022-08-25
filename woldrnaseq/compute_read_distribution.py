@@ -86,12 +86,12 @@ def count_exonic_genomic_reads(bam, gtf_name, stranded="unstranded"):
             )
         )
 
-    return DistributionTotals(
-        Exonic=exon_read_count,
-        Intronic=gene_read_count,
-        Intergenic=intergenic_read_count,
-        Spikeins=spikein_read_count,
-    )
+    return {
+        "Exonic": exon_read_count,
+        "Intronic": gene_read_count,
+        "Intergenic": intergenic_read_count,
+        "Spikeins": spikein_read_count,
+    }
 
 
 def count_exonic_genomic_reads_for_reference(
