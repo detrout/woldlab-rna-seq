@@ -4,8 +4,8 @@ log=samtools-index-$(Process).log
 output=samtools-index-$(Process).out
 error=samtools-index-$(Process).out
 
-GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
+GENOME_NAME=$(GENOME_NAME)
+IN=$(ANALYSIS_NAME)-$(GENOME_NAME)_genome.bam
 
 request_cpus=1
 request_memory=4G

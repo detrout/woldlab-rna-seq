@@ -4,10 +4,7 @@ output=$(CURDIR)/rrna-premap.out
 error=$(CURDIR)/rrna-premap.out
 
 GENOME_ROOT=$$($(genome_root):/woldlab/castor/home/diane/proj/genome)
-GENOME=$(genome)
-ANNOTATION=$(annotation)
-SEX=$(sex)
-GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
+GENOME_NAME=$(GENOME_NAME)
 
 executable=$(rrna_premap_sh)
 transfer_executable=false
@@ -18,5 +15,5 @@ THREADS=4
 request_cpus=8
 request_memory=16G
 
-arguments="$(GENOME_ROOT) $(GENOME) $(THREADS) $(READ_1) $(CURDIR)/$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_rrna.counts"
+arguments="$(GENOME_ROOT) $(GENOME) $(THREADS) $(READ_1) $(CURDIR)/$(ANALYSIS_NAME)-$(GENOME_NAME)_rrna.counts"
 queue

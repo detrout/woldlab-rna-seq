@@ -135,9 +135,7 @@ def generate_star_rsem_analysis(args, libraries, read_1_fastqs, read_2_fastqs):
         analysis.georgi_dir = args.georgi_dir
         analysis.ucsc_tools_dir = args.ucsc_tools_dir
 
-        analysis.genome = libraries.loc[library_id, 'genome']
-        analysis.annotation = libraries.loc[library_id, 'annotation']
-        analysis.sex = libraries.loc[library_id, 'sex']
+        analysis.genome_name = libraries.loc[library_id, 'genome_name']
         analysis.job_id = library_id
         analysis.analysis_dir = Path(libraries.loc[library_id, 'analysis_dir'])
         analysis.analysis_name = libraries.loc[library_id, 'analysis_name']

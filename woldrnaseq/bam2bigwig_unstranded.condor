@@ -9,13 +9,10 @@ error=$(curdir)/bam2bigwig-$(Process).out
 CURDIR=$(curdir)
 ANALYSIS_NAME=$$($(analysis_name):Analysis)
 
-GENOME=$$($(genome):mm10)
-ANNOTATION=$$($(annotation):M4)
-SEX=$$($(sex):male)
-GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
-OUT_ALL=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_all.bw
-OUT_UNIQ=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_uniq.bw
+GENOME_NAME=$(GENOME_NAME)
+IN=$(ANALYSIS_NAME)-$(GENOME_NAME)_genome.bam
+OUT_ALL=$(ANALYSIS_NAME)-$(GENOME_NAME)_all.bw
+OUT_UNIQ=$(ANALYSIS_NAME)-$(GENOME_NAME)_uniq.bw
 
 request_cpus=1
 request_memory=4G

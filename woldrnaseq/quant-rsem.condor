@@ -6,16 +6,13 @@ environment="PATH=/usr/local/bin:/usr/bin:/bin"
 
 ANALYSIS_NAME=$$($(analysis_name):Analysis)
 GENOME_ROOT=$$($(genome_root):~/proj/genome/)
-GENOME=$$($(genome):mm10)
-ANNOTATION=$$($(annotation):M4)
-SEX=$$($(sex):male)
-GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-GENOME_DIR=$(GENOME_ROOT)$(GENOME_TRIPLET)/rsem
+GENOME_NAME=$(GENOME_NAME)
+GENOME_DIR=$(GENOME_ROOT)/$(GENOME_NAME)/rsem
 PAIRED_END=$(paired_end)
 STRAND_PROBABILITY=$(strand_probability:--forward-prob 0.5)
 # dnanexus pipeline uses "star_anno_bam"
-IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno.bam
-OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno_rsem
+IN=$(ANALYSIS_NAME)-$(GENOME_NAME)_anno.bam
+OUT=$(ANALYSIS_NAME)-$(GENOME_NAME)_anno_rsem
 RND_SEED=--seed 12345
 THREADS=8
 

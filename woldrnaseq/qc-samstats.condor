@@ -6,14 +6,11 @@ error=samstats-$(Process).out
 
 ANALYSIS_NAME=$$($(analysis_name):Analysis)
 GENOME_ROOT=$$($(genome_root):~/proj/genome/)
-GENOME=$$($(genome):mm10)
-ANNOTATION=$$($(annotation):M4)
-SEX=$$($(sex):male)
-GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-GENOME_DIR=$(GENOME_ROOT)$(GENOME_TRIPLET)/
+GENOME_NAME=$(GENOME_NAME)
+GENOME_DIR=$(GENOME_ROOT)$(GENOME_NAME)/
 CHROM_INFO=$(GENOME_DIR)chrNameLength.txt
-IN=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam
-OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.samstats
+IN=$(ANALYSIS_NAME)-$(GENOME_NAME)_genome.bam
+OUT=$(ANALYSIS_NAME)-$(GENOME_NAME)_genome.samstats
 GEORGI_DIR=$$($(georgi_dir):~/proj/GeorgiScripts/)
 SAMSTATS=$(GEORGI_DIR)SAMstats.py
 

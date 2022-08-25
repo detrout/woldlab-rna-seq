@@ -75,15 +75,13 @@ def make_parser():
 
 class AnalysisDAG:
     def __init__(self):
-        self.genome_dir = None
+        self._genome_dir = None
         self.star_dir = None
         self.rsem_dir = None
         self.georgi_dir = None
         self.ucsc_tools_dir = None
         self.job_id = None
-        self.genome = None
-        self.annotation = None
-        self.sex = None
+        self.genome_name = None
         self.analysis_dir = None
         self._analysis_name = None
         self.read_1_fastqs = []
@@ -102,7 +100,7 @@ class AnalysisDAG:
     @property
     def star_index_size(self):
         genome_dir = Path(self.genome_dir)
-        sa_name = genome_dir / self.genome_triplet / "SA"
+        sa_name = genome_dir / self.genome_name / "SA"
         filesize = os.stat(sa_name)[stat.ST_SIZE]
         return filesize
 
@@ -111,8 +109,33 @@ class AnalysisDAG:
         return self.fastq_size * 3 + self.star_index_size
 
     @property
+    def genome_dir(self):
+        return self._genome_dir
+
+    @genome_dir.setter
+    def genome_dir(self, value):
+        if value.endswith(os.sep):
+            self._genome_dir = value[:-len(os.sep)]
+        else:
+            self._genome_dir = value
+
+    @property
     def genome_triplet(self):
-        return "-".join((self.genome, self.annotation, self.sex))
+        return self.genome_name
+        raise DeprecationWarning("Removing genome_triplet soon")
+
+    @property
+    def gtf(self):
+        """Guess at GTF name"""
+
+        current_genome_dir = Path(self.genome_dir) / self.genome_name
+        gffs = list(current_genome_dir.glob("gencode*-tRNAs-ERCC.gff"))
+        if len(gffs) > 1:
+            raise RuntimeError("Too many GTF/GFF files match pattern: {}".format(" ".join(gffs)))
+        elif len(gffs) == 0:
+            raise RuntimeError("No GTF/GFF matches pattern in {}".format(self.genome_dir))
+        else:
+            return gffs[0]
 
     def is_valid(self):
         for key in self.__dict__:
@@ -185,11 +208,10 @@ class AnalysisDAG:
             georgi_dir=self.georgi_dir,
             ucsc_tools_dir=self.ucsc_tools_dir,
             job_id=self.job_id,
-            genome=self.genome,
-            annotation=self.annotation,
-            sex=self.sex,
+            genome_name=self.genome_name,
             analysis_dir=self.analysis_dir,
             analysis_name=self.analysis_name,
+            gtf=self.gtf,
             read_1_fastqs=",".join(self.read_1_fastqs),
             read_2_fastqs=",".join(self.read_2_fastqs),
             star_request_memory_megabytes=int(self.star_memory_size / (2 ** 20)),

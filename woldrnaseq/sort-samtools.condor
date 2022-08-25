@@ -6,8 +6,8 @@ error=sort-samtools-$(Process).out
 environment="PATH=/usr/bin:/bin"
 
 IN=$$($(in):Aligned.toTranscriptome.out.bam)
-GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-OUT=$(ANALYSIS_NAME)-$(GENOME_TRIPLET)_anno.bam
+GENOME_NAME=$(GENOME_NAME)
+OUT=$(ANALYSIS_NAME)-$(GENOME_NAME)_anno.bam
 
 THREADS=8
 MEMORY=40G

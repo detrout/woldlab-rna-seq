@@ -28,9 +28,7 @@ class TestModel(TestCase):
 
     def test_verify_library_columns_missing_required(self):
         df = pandas.DataFrame({'library_id': ['1'],
-                               'genome': ['mm10'],
-                               'sex': ['male'],
-                               'annotation': ['M4'],
+                               'genome_name': ["mm10-M4-male"],
                                'analysis_dir': ['1/']})
         df.set_index('library_id', inplace=True)
 
@@ -38,9 +36,7 @@ class TestModel(TestCase):
 
     def test_verify_library_columns_optional_present(self):
         df = pandas.DataFrame({'library_id': ['1'],
-                               'genome': ['mm10'],
-                               'sex': ['male'],
-                               'annotation': ['M4'],
+                               'genome_name': ['mm10-M4-male'],
                                'analysis_dir': ['1/'],
                                'stranded': ['forward'],
                                'read_1': ['R1.fastq.gz'],
@@ -51,9 +47,7 @@ class TestModel(TestCase):
 
     def test_verify_library_columns_misspelled_optional(self):
         df = pandas.DataFrame({'library_id': ['1'],
-                               'genome': ['mm10'],
-                               'sex': ['male'],
-                               'annotation': ['M4'],
+                               'genome_name': ['mm10-M4-male'],
                                'analysis_dir': ['1/'],
                                'read_1': ['R1.fastq.gz'],
                                'read2': ['R2.fastq.gz']})
@@ -69,6 +63,15 @@ class TestModel(TestCase):
     def test_invalid_library(self):
         tsvname = resource_filename(__name__, 'library-invalid.tsv')
         self.assertRaises(ValueError, models.load_library_tables, [tsvname])
+
+    def test_adding_gene_name(self):
+        mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
+        mm10 = models.load_library_tables([mm10tsv])
+
+        self.assertTrue("genome_name" in mm10.columns)
+        for i, row in mm10.iterrows():
+            genome_name = models.genome_name_from_library(row)
+            self.assertEqual(row.genome_name, genome_name)
 
     def test_load_library(self):
         mm10tsv = resource_filename(__name__, 'library-mm10-se.tsv')
@@ -374,11 +377,19 @@ class TestModel(TestCase):
         self.assertEqual(models.genome_name_from_library(mm10.loc['12304']), 'mm10-M4-female')
         self.assertEqual(models.genome_name_from_library(mm10.loc['12309']), 'mm10-M4-male')
 
-    def test_genome_name_from_library_dict(self):
+    def test_genome_name_from_library_dict_triple(self):
         d = {
             'genome': 'mm10',
             'annotation': 'M21_minimal',
             'sex': 'male',
+        }
+
+        self.assertEqual(models.genome_name_from_library(d), 'mm10-M21_minimal-male')
+        self.assertRaises(ValueError, models.genome_name_from_library, 10)
+
+    def test_genome_name_from_library_dict_genome_name(self):
+        d = {
+            "genome_name": "mm10-M21_minimal-male",
         }
 
         self.assertEqual(models.genome_name_from_library(d), 'mm10-M21_minimal-male')

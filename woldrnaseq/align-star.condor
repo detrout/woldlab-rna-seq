@@ -5,11 +5,8 @@ error=$(CURDIR)/align-star-$(Process).out
 
 STAR_DIR=$(star_dir)
 GENOME_ROOT=$$($(genome_root):/woldlab/castor/home/diane/proj/genome)
-GENOME=$$($(genome):mm10)
-ANNOTATION=$$($(annotation):M4)
-SEX=$$($(sex):male)
-GENOME_TRIPLET=$(GENOME)-$(ANNOTATION)-$(SEX)
-GENOME_DIR=$(GENOME_ROOT)/$(GENOME_TRIPLET)/
+GENOME_NAME=$(GENOME_NAME)
+GENOME_DIR=$(GENOME_ROOT)/$(GENOME_NAME)/
 THREADS=8
 
 READ1=$$(read1)
@@ -64,5 +61,5 @@ arguments="--genomeDir $(GENOME_DIR) \
            $(EXTRA_ARGS) \
 "
 +PostCmd="post_star"
-+PostArguments="$(CURDIR) $(ANALYSIS_NAME)-$(GENOME_TRIPLET)_genome.bam"
++PostArguments="$(CURDIR) $(ANALYSIS_NAME)-$(GENOME_NAME)_genome.bam"
 queue

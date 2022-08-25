@@ -70,19 +70,18 @@ class TestMakeDag(TestCase):
         analysis = make_star_rsem_dag.AnalysisDAG()
 
         read_1 = ['22157_GTCATCGT_L001_R1_001.fastq.gz', '22157_GTCATCGT_L001_R1_002.fastq.gz']
-        analysis.genome_dir = '~/genome_dir'
+        analysis.genome_dir = '~/genome_dir/'
         analysis.star_dir = '/usr/bin'
         analysis.rsem_dir = '/usr/bin'
         analysis.georgi_dir = '~/GeorgiScripts'
         analysis.ucsc_tools_dir = '~/x86_64-304'
-        analysis.genome = 'mm10'
-        analysis.annotation = 'M4'
-        analysis.sex = 'male'
+        analysis.genome_name = 'mm10-M4-male'
         analysis.job_id = '12345'
         analysis.analysis_dir = '/tmp/12345'
         analysis.read_1_fastqs = read_1
 
         self.assertTrue(analysis.is_valid())
+        self.assertEqual(analysis.genome_dir, "~/genome_dir")
         self.assertEqual(analysis.fastq_size, total_size)
 
         dag = str(analysis)

@@ -123,6 +123,12 @@ def load_library_tables(table_filenames, sep='\t', analysis_root=None):
                                 comment='#',
                                 skip_blank_lines=True,
                                 )
+
+        # the triples was silly, lets start moving to just having a
+        # simple genome_name attribute
+        if "genome_name" not in table.columns:
+            table["genome_name"] = table.apply(genome_name_from_library, axis=1)
+
         verify_library_columns(table)
         table.index = [str(x) for x in table.index]
         table.index.name = 'library_id'
@@ -176,9 +182,15 @@ def genome_name_from_library(row):
         Combined genome, annotation, and sex string.
     """
     if isinstance(row, pandas.Series):
-        triple = '-'.join([row.genome, row.annotation, row.sex])
+        if "genome_name" in row:
+            triple = row.genome_name
+        else:
+            triple = '-'.join([row.genome, row.annotation, row.sex])
     elif isinstance(row, dict):
-        triple = '{genome}-{annotation}-{sex}'.format(**row)
+        if "genome_name" in row:
+            triple = row["genome_name"]
+        else:
+            triple = '{genome}-{annotation}-{sex}'.format(**row)
     else:
         raise ValueError('Unrecognized type {}'.format(type(row)))
     return triple
@@ -199,8 +211,8 @@ def verify_library_columns(table):
     ValueError : if a required column is missing
     """
     missing = []
-    required = {'genome', 'sex', 'annotation', 'analysis_dir', 'read_1'}
-    optional = {'read_2', 'reference_prefix', 'stranded'}
+    required = {'genome_name', 'read_1'}
+    optional = {'genome', 'annotation', 'sex', 'analysis_dir', 'read_2', 'reference_prefix', 'stranded'}
     known = required.union(optional)
 
     columns = set(table.columns)

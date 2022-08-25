@@ -32,7 +32,8 @@ VARS ALL_NODES                  pythonpath="{{pythonpath}}"
 # Common to this analysis
 VARS ALL_NODES                  analysis_name="{{analysis_name}}"
 VARS ALL_NODES                  curdir="{{analysis_dir}}"
-VARS ALL_NODES                  genome="{{genome}}" annotation="{{annotation}}" sex="{{sex}}"
+VARS ALL_NODES                  genome_name="{{genome_name}}"
+VARS ALL_NODES                  gtf="{{gtf}}"
 
 
 VARS {{job_id}}_align-star      library_id="{{job_id}}"
