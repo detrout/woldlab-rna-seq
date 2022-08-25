@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import tempfile
+from pathlib import Path
 from pkg_resources import resource_filename
 from woldrnaseq import make_star_rsem_dag
 from woldrnaseq import common
