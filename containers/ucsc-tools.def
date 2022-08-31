@@ -1,0 +1,45 @@
+Bootstrap: scratch
+#From: /woldlab/loxcyc/home/diane/public_html/containers/bullseye-bash.sif
+
+%setup
+        TEMP=$(mktemp -d)
+        echo "Using tempdir ${TEMP}"
+
+        DEPS="libc6 libcrypt1 libgcc-s1 gcc-10-base libc-bin coreutils libacl1 libattr1 libgmp10 libpcre2-8-0 libselinux1 bash libtinfo6 base-files debianutils ncurses-base base-passwd xzdec gzip bzip2 libbz2-1.0 libcurl4 libkrb5-3 libk5crypto3 libkrb5support0 libgssapi-krb5-2 libkeyutils1 libidn2-0  libldap-2.4-2 libnghttp2-14 libssh2-1 libssl1.1 librtmp1 libbrotli1 libpsl5 libunistring2 libgnutls30 libgcrypt20 libhogweed6 libnettle8 libzstd1 libsasl2-2 libtasn1-6 zlib1g libstdc++6 libcom-err2 libgpg-error0 libp11-kit0 libffi7"
+        apt -t bullseye download ${DEPS}
+        for dep in ${DEPS}; do fakeroot dpkg-deb -x ${dep}*.deb ${SINGULARITY_ROOTFS}; done
+        ls ${SINGULARITY_ROOTFS}
+        # Singularities %post scripts need a /bin/sh
+        cd ${SINGULARITY_ROOTFS}/bin ; ln -s bash sh ; cd ${CURDIR}
+
+
+        echo "installing UCSC tools"
+        rsync -aP rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/ ${SINGULARITY_ROOTFS}/bin
+
+        echo "installing STAR static"
+        git clone https://github.com/alexdobin/STAR.git ${TEMP}/STAR
+        CURDIR=$(pwd)
+        cd ${TEMP}/STAR ; git checkout -b b2.7.10a 2.7.10a
+
+        cd ${CURDIR}
+        cp ${TEMP}/STAR/bin/Linux_x86_64_static/STAR ${SINGULARITY_ROOTFS}/bin
+        rm -rf ${TEMP}
+
+%environment
+        export LC_ALL=C.UTF-8
+
+%runscript
+        exec /bin/bash $@
+
+%labels
+        Author Diane Trout <diane@caltech.edu>
+        Version v0.0.1
+
+# needs
+# libkrb5.so.3
+# libz.so.1
+# libcurl.so.4
+# libstdc++.so.6
+# libk5crypto.so.3
+
+
