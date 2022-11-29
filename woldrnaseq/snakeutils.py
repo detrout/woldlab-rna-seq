@@ -68,7 +68,7 @@ def get_genome_cache(config, libraries, analysis_dir):
     library = get_library_by_analysis_dir(libraries, analysis_dir)
     genome_name = genome_name_from_library(library)
     genome_dir = Path(config["genome_dir"]) / genome_name
-    cache_basename = str(genome_name) + ".h5" 
+    cache_basename = str(genome_name) + ".h5"
     cache_filename = genome_dir / cache_basename
     if not cache_filename.exists():
         raise FileNotFoundError("Unable to find cache file, please create with gff2table")
@@ -76,7 +76,7 @@ def get_genome_cache(config, libraries, analysis_dir):
 
 
 def get_rsem_gene_results(config, libraries, experiments, experiment_name=None):
-    """Return the list of rsem result files 
+    """Return the list of rsem result files
     """
     quoted = [sanitize_name(x) for x in experiments.index]
     if experiment_name is not None:
@@ -92,6 +92,7 @@ def get_rsem_gene_results(config, libraries, experiments, experiment_name=None):
         dependencies.extend(library_quantification_target(library))
 
     return dependencies
+
 
 def library_star_log_target(library):
     return [
@@ -109,6 +110,7 @@ def library_bam_target(library):
         genome_bam + ".bai",
         transcript_bam,
     ]
+
 
 def library_quantification_target(library):
     return [
@@ -137,6 +139,7 @@ def library_distribution_target(library):
         "{analysis_dir}/{library_id}-{genome_name}.sam_reads_genes".format(
             **library)
     ]
+
 
 def library_bigwigs_target(library):
     if library.stranded.lower() == "unstranded":
