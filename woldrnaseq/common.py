@@ -118,8 +118,10 @@ def read_defaults():
         'ucsc_tools_dir': None,
     }
     config = configparser.ConfigParser()
-    config.read([os.path.expanduser('~/.htsworkflow.ini'),
-                 '/etc/htsworkflow.ini'])
+    config.read([
+        Path('~/.htsworkflow.ini').expanduser(),
+        Path('/etc/htsworkflow.ini')
+    ])
 
     if config.has_section('analysis'):
         analysis = config['analysis']
