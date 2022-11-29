@@ -109,6 +109,11 @@ class QCReport:
         # cached values
         self._samstats = load_all_samstats(self.libraries)
         self._star_stats = load_all_star_final(self.libraries)
+        # Estend _star_stats with total reads with a mapped location.
+        total_reads_mapped = \
+            self._star_stats[('UNIQUE READS', 'Uniquely mapped reads number')] + \
+            self._star_stats[('MULTI-MAPPING READS', 'Number of reads mapped to multiple loci')]
+        self._star_stats[("", "Total Reads Mapped")] = total_reads_mapped
 
         # working space for generating report
         self._plot_handle = itertools.count()
@@ -248,8 +253,42 @@ class QCReport:
 
     def make_star_stats_html(self, library_ids):
         available_libraries = set(self._star_stats.index).intersection(library_ids)
+        columns = [
+            #('', 'Started job on'),
+            #('', 'Started mapping on'),
+            ('', 'Finished on'),
+            #('', 'Mapping speed, Million of reads per hour'),
+            ('', 'Number of input reads'),
+            ('', 'Total Reads Mapped'),
+            ('', 'Average input read length'),
+            ('UNIQUE READS', 'Uniquely mapped reads number'),
+            ('UNIQUE READS', 'Uniquely mapped reads %'),
+            ('UNIQUE READS', 'Average mapped length'),
+            ('UNIQUE READS', 'Number of splices: Total'),
+            ('UNIQUE READS', 'Number of splices: Annotated (sjdb)'),
+            ('UNIQUE READS', 'Number of splices: GT/AG'),
+            ('UNIQUE READS', 'Number of splices: GC/AG'),
+            ('UNIQUE READS', 'Number of splices: AT/AC'),
+            ('UNIQUE READS', 'Number of splices: Non-canonical'),
+            ('UNIQUE READS', 'Mismatch rate per base, %'),
+            ('UNIQUE READS', 'Deletion rate per base'),
+            ('UNIQUE READS', 'Deletion average length'),
+            ('UNIQUE READS', 'Insertion rate per base'),
+            ('UNIQUE READS', 'Insertion average length'),
+            ('MULTI-MAPPING READS', 'Number of reads mapped to multiple loci'),
+            ('MULTI-MAPPING READS', '% of reads mapped to multiple loci'),
+            ('MULTI-MAPPING READS', 'Number of reads mapped to too many loci'),
+            ('MULTI-MAPPING READS', '% of reads mapped to too many loci'),
+            ('UNMAPPED READS', '% of reads unmapped: too many mismatches'),
+            ('UNMAPPED READS', '% of reads unmapped: too short'),
+            ('UNMAPPED READS', '% of reads unmapped: other'),
+            ('CHIMERIC READS', 'Number of chimeric reads'),
+            ('CHIMERIC READS', '% of chimeric reads'),
+        ]
         if len(available_libraries) > 0:
-            return self._star_stats.loc[available_libraries].to_html()
+            return self._star_stats.loc[available_libraries][columns].to_html(
+                float_format=lambda x: "{:,}".format(x),
+            )
         else:
             return None
 
