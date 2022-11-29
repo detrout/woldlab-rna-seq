@@ -33,6 +33,8 @@ def main(cmdline=None):
     if args.email is None:
         parser.error("Please either set email with --email or EMAIL environment variable")
 
+    if args.short_name is None:
+        args.short_name = args.hub
     if args.long_name is None:
         args.long_name = args.short_name
 
@@ -97,7 +99,7 @@ def make_parser():
     )
     email = os.environ.get('EMAIL', None)
     parser.add_argument('--hub', help='hub name', required=True)
-    parser.add_argument('-n', '--short-name', required=True)
+    parser.add_argument('-n', '--short-name')
     parser.add_argument('--long-name')
     parser.add_argument('--email', default=email)
     parser.add_argument('-w', '--web-root', required=True,
