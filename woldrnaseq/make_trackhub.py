@@ -52,44 +52,84 @@ def main(cmdline=None):
         parser.error('Need experiment information table')
     experiments = load_experiments(experiment_filenames, sep)
 
-    genomes = set(libraries['genome'])
-    if len(genomes) > 1:
-        raise ValueError('We can only generate tracks for one genome')
-    genome = ucsc_genome_conversion(genomes.pop())
+    hub = build_trackhub(experiments, libraries, args)
 
-    hub, genomes_file, _, trackdb = trackhub.default_hub(
-        hub_name=args.hub,
+    if args.dry_run:
+        print(trackhub)
+    else:
+        ucsc_name_map = build_ucsc_name_map_for_libraries(libraries)
+        publish_trackhub(hub, ucsc_name_map, args)
+
+
+def build_trackhub(experiments, libraries, args):
+    ucsc_name_map = build_ucsc_name_map_for_libraries(libraries)
+
+    hub = trackhub.Hub(
+        hub=args.hub,
         short_label=args.short_name,
         long_label=args.long_name,
-        genome=genome,
         email=args.email)
 
+    genome_column = detect_genome_column_name(libraries)
+    genomes = {}
+    genome_files = {}
+    trackdbs = {}
     tracks_added = False
-    if args.bigwig:
-        make_bigwig_trackhub(experiments, libraries, trackdb, args.web_root, args.stranded)
-        tracks_added = True
-    if args.bam:
-        make_bam_trackhub(experiments, libraries, trackdb, args.web_root)
+
+    for genome_name in ucsc_name_map:
+        ucsc_name = ucsc_name_map[genome_name]
+        genomes[ucsc_name] = trackhub.Genome(ucsc_name)
+        genome_files[genome_name] = trackhub.GenomesFile()
+        trackdbs[genome_name] = trackhub.TrackDb()
+
+        hub.add_genomes_file(genome_files[genome_name])
+        genome_files[genome_name].add_genome(genomes[ucsc_name])
+        genomes[ucsc_name].add_trackdb(trackdbs[genome_name])
+
+        current_libraries = libraries[libraries[genome_column] == genome_name]
+        current_experiment_filter = []
+        for replicates in experiments.replicates:
+            current = True
+            for replicate in replicates:
+                if replicate not in current_libraries.index:
+                    current = False
+            current_experiment_filter.append(current)
+        current_experiments = experiments[current_experiment_filter]
+        if args.bigwig:
+            make_bigwig_trackhub(
+                current_experiments,
+                current_libraries,
+                trackdbs[genome_name],
+                args.web_root,
+                args.stranded)
+            tracks_added = True
+
+        if args.bam:
+            make_bam_trackhub(
+                current_experiments,
+                current_libraries,
+                trackdbs[genome_name],
+                args.web_root)
 
     if not tracks_added:
         print("Did you want to add tracks? use --bigwig and/or --bam")
 
-    if not args.dry_run:
-        trackhub.upload.upload_hub(
-            hub=hub,
-            host='localhost',
-            remote_dir=args.output)
-        hub_url = args.web_root + hub.hub + '.hub.txt'
-        print('trackhub: {}'.format(hub_url))
-        print("clickable: http://genome.ucsc.edu/cgi-bin/hgTracks?db={}&hubUrl={}".format(genome, hub_url))
-    else:
-        print(trackdb)
+    return hub
 
-    #print(trackdb)
-    #print(hub)
-    #print(genomes_file)
-    #print(genome)
-    #print('trackhub: ' +  args.web_root + hub.hub + '.hub.txt')
+
+def publish_trackhub(hub, ucsc_name_map, args):
+    trackhub.upload.upload_hub(
+        hub=hub,
+        host='localhost',
+        remote_dir=args.output)
+    hub_url = args.web_root + hub.hub + '.hub.txt'
+
+    print('trackhub: {}'.format(hub_url))
+    clickable = "clickable: "\
+        "http://genome.ucsc.edu/cgi-bin/hgTracks?db={}&hubUrl={}"
+    for genome_name in ucsc_name_map:
+        ucsc_name = ucsc_name_map[genome_name]
+        print(clickable.format(ucsc_name, hub_url))
 
 
 def make_parser():
@@ -302,6 +342,22 @@ def make_bigwig_track_name(library, signal_type, analysis_root):
     logger.warning("Couldn't find track file %s", track_name)
 
 
+def detect_genome_column_name(libraries):
+    for name in ["genome_name", "genome"]:
+        if name in libraries.columns:
+            return name
+
+    raise ValueError("Unrecognized library file, need a genome_name or genome column")
+
+
+def build_ucsc_name_map_for_libraries(libraries):
+    genome_column = detect_genome_column_name(libraries)
+    unique_names = libraries[genome_column].unique()
+    ucsc_name_map = {x: ucsc_genome_conversion(x) for x in unique_names}
+
+    return ucsc_name_map
+
+
 def return_subpath(pathname, analysis_root):
     """Strip off analysis_root from path to file
 
@@ -327,6 +383,8 @@ def ucsc_genome_conversion(genome_name):
     """
     conversions = {
         'GRCh38': 'hg38',
+        'GRCh38-V29-male': 'hg38',
+        'mm10-M21-male': 'mm10',
     }
     if genome_name in conversions:
         return conversions[genome_name]
