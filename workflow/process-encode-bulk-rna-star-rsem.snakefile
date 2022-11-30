@@ -91,16 +91,17 @@ def genome_name_re(libraries):
 wildcard_constraints:
     genome_name = genome_name_re(libraries)
 
-include: "../../woldlab-rna-seq/workflow/rules/bulk-rna-seq-align.smk"
-include: "../../woldlab-rna-seq/workflow/rules/index-bam.smk"
-include: "../../woldlab-rna-seq/workflow/rules/bulk-rna-seq-quantification.smk"
-include: "../../woldlab-rna-seq/workflow/rules/gene-coverage.smk"
-include: "../../woldlab-rna-seq/workflow/rules/qc-samstats.smk"
-include: "../../woldlab-rna-seq/workflow/rules/read-distribution.smk"
-include: "../../woldlab-rna-seq/workflow/rules/bam2bigwig.smk"
-include: "../../woldlab-rna-seq/workflow/rules/makersemcsv.smk"
-include: "../../woldlab-rna-seq/workflow/rules/compute_correlations.smk"
-include: "../../woldlab-rna-seq/workflow/rules/bulk-report.smk"
+
+include: "rules/bulk-rna-seq-align.smk"
+include: "rules/index-bam.smk"
+include: "rules/bulk-rna-seq-quantification.smk"
+include: "rules/gene-coverage.smk"
+include: "rules/qc-samstats.smk"
+include: "rules/read-distribution.smk"
+include: "rules/bam2bigwig.smk"
+include: "rules/makersemcsv.smk"
+include: "rules/compute_correlations.smk"
+include: "rules/bulk-report.smk"
 
 
 rule ALL:
