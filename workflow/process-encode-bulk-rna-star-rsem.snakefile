@@ -53,7 +53,6 @@ if "read_2" in libraries.columns:
     libraries["read_2"] = pandas.Series(dict(find_fastqs(libraries, "read_2")))
 
 
-
 def default_targets():
     targets = []
 
@@ -74,6 +73,7 @@ def default_targets():
 
     return targets
 
+
 def genome_name_re(libraries):
     def escape_re(name):
         name = name.replace("\\", "\\\\")
@@ -88,6 +88,7 @@ def genome_name_re(libraries):
     names = "|".join(names)
     return names
     
+
 wildcard_constraints:
     genome_name = genome_name_re(libraries)
 
