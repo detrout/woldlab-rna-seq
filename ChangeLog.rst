@@ -1,6 +1,17 @@
 Changelog
 =========
 
+Release ?????
+-------------
+
+Shorten the genome name from the genome, annotation, sex triple to
+just a name, that is used as a directory name.
+
+Extend make_trackhub to support multiple genomes in one run.
+
+Add prototype bulk RNA-seq snakemake workflow in
+`workflow/sprocess-encode-bulk-rna-star-rsem.snakefile`
+
 Release 1.2.5
 -------------
 
@@ -24,7 +35,7 @@ Try to catch cases where a file to be uploaded has already been
 uploaded by md5sum. If it has been uploaded provide the uuid and
 accession and skip doing a new upload.
 
-Unfortunately, the pipeline isn't alwyas binary reproducable, so
+Unfortunately, the pipeline isn't always binary reproducable, so
 sometimes there will still be duplication.
 
 Use encoded_client to download the genome_index_url in case it hasn't
