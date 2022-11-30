@@ -12,6 +12,7 @@ Contents:
    installation
    example
    reference
+   singlecell
    commands
    api
    development
