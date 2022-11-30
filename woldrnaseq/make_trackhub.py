@@ -138,10 +138,14 @@ def make_parser():
                     'visualization with the UCSC Genome Browser'
     )
     email = os.environ.get('EMAIL', None)
-    parser.add_argument('--hub', help='hub name', required=True)
-    parser.add_argument('-n', '--short-name')
-    parser.add_argument('--long-name')
-    parser.add_argument('--email', default=email)
+    parser.add_argument('--hub', required=True,
+                        help="Name of hub, used as prefix for filenames")
+    parser.add_argument('-n', '--short-name',
+                        help="Short name for hub, defaults to --hub")
+    parser.add_argument('--long-name', help="long name for hub, defaults to short-name")
+    parser.add_argument('--email', default=email,
+                        help="Specify responsible person for hub, "
+                             "defaults to EMAIL environment variable")
     parser.add_argument('-w', '--web-root', required=True,
                         help='base URL for the track hub. ')
     parser.add_argument('-o', '--output', default='./',
@@ -153,9 +157,12 @@ def make_parser():
     parser.add_argument('--stranded', action='store_true', default='False',
                         help='hack to force generation of stranded tracks')
     parser.add_argument('-s', '--sep', choices=['TAB', ','], default='TAB')
-    parser.add_argument('-l', '--libraries', action='append', default=[])
-    parser.add_argument('-e', '--experiments', action='append', default=[])
-    parser.add_argument('--dry-run', action='store_true', default=False)
+    parser.add_argument('-l', '--libraries', action='append', default=[],
+                        help="list of library metadata tables to generate tracks for")
+    parser.add_argument('-e', '--experiments', action='append', default=[],
+                        help="list of experiment metadata tables to generate tracks for")
+    parser.add_argument('--dry-run', action='store_true', default=False,
+                        help="avoid uploading trackhub files and instead just print them")
     add_version_argument(parser)
     add_debug_arguments(parser)
 
