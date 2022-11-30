@@ -23,26 +23,26 @@ mad_qc
    :prog: madqc
    :nodefault:
 
-.. _commands.make_rsem_csv:
+.. _commands.makersemcsv:
 
-make_rsem_csv
--------------
+makersemcsv
+-----------
 
 .. argparse::
    :module: woldrnaseq.makersemcsv
    :func: make_parser
-   :prog: make_rsem_csv
+   :prog: makersemcsv
    :nodefault:
 
-.. _commands.make_star_csv:
+.. _commands.makestarcsv:
 
-make_star_csv
+makestarcsv
 -------------
 
 .. argparse::
    :module: woldrnaseq.makestarcsv
    :func: make_parser
-   :prog: make_star_csv
+   :prog: makestarcsv
    :nodefault:
 
 .. _commands.qc_report:
