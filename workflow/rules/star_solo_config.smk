@@ -170,5 +170,3 @@ try:
 except ValueError:
     print("Unable to parse '{}'".format(config.get("automatic_submission")))
     automatic_submission = False
-
-
