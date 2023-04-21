@@ -161,7 +161,7 @@ def load_merged_parse_matrix(filename, splitseq_version="v1"):
     return matrix, list(merged_barcodes.keys())
 
 
-def write_merged_splitseq_matrix(matrix_filename, destination):
+def write_merged_splitseq_matrix(matrix_filename, destination, library_id=None):
     matrix_filename = Path(matrix_filename)
     destination = Path(destination)
     if not destination.exists():
@@ -178,8 +178,10 @@ def write_merged_splitseq_matrix(matrix_filename, destination):
 
     with open(destination / "barcodes.tsv", "wt") as outstream:
         for barcode in cells:
-            outstream.write(barcode)
-            outstream.write(os.linesep)
+            if library_id is not None:
+                outstream.write(f"{library_id}-{barcode}\n")
+            else:
+                outstream.write(f"{barcode}\n")
 
     feature_filename = source / "features.tsv"
     shutil.copy(feature_filename, destination / "features.tsv")
