@@ -61,7 +61,7 @@ rule generate_count_qc_metrics:
     singularity:
         config['scanpy_container']
     params:
-        library_accession = config["library_accession"],
+        library_accession = lambda wildcards: getattr(wildcards["library_id"], config["library_accession"]),
     resources:
         mem_mb = config["mem_mb"]
     shell:
