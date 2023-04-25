@@ -1,0 +1,7 @@
+channels:
+  - https://woldlab.caltech.edu/~diane/conda/
+
+dependencies:
+  - star ==2.7.10a
+  - pip:
+      - git+https://github.com/detrout/woldlab-rna-seq.git

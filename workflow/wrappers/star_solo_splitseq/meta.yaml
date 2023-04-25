@@ -1,0 +1,15 @@
+name: "star_solo_splitseq"
+description: "Align and quantify split seq subpools with STAR Solo"
+url: "https://github.com/detrout/woldlab-rna-seq"
+authors:
+  - Diane Trout
+input:
+  - paired end illumina fastqs generated with the parse splitseq protocol
+  - a STAR genome index
+  - a list of expected barcodes
+output:
+  - coordinate sorted bam file
+  - assorted log files and mapping statistics
+  - STAR Solo barcode statistics
+  - raw sparse count matrix
+  - splice junction count matrix
