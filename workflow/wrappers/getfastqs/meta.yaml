@@ -1,0 +1,9 @@
+name: "getfastqs"
+description: "Retrieve fastqs from ENCODE or SRA repository"
+url: "https://github.com/detrout/woldlab-rna-seq"
+authors:
+  - Diane Trout
+output:
+  - >
+    an accessioned fastq file, the URL is inferred from the accession id
+  
