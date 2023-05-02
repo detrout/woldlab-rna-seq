@@ -7,16 +7,11 @@ from urllib.parse import urlparse
 from encoded_client.encoded import ENCODED
 
 DEFAULT_MEM_MB = 1000
+from woldrnaseq.snakeutils import (
+    compute_inclusion_list_name,
+)
 
 
-def compute_inclusion_list_name(url):
-    """The resulting allow list file need be uncompressed
-    """
-    parts = urlparse(url)
-    filename = Path(parts.path).name
-    for extension in (".tar.gz", ".gz"):
-        if filename.endswith(extension):
-            return filename[:-len(extension)]
 
 
 rule download_inclusion_list:

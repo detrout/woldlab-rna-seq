@@ -1,11 +1,22 @@
 """Functions that should be shared between multiple snakemake rules
 """
 from pathlib import Path
+from urllib.parse import urlparse
 
 from .models import (
     genome_name_from_library,
     sanitize_name
 )
+
+
+def compute_inclusion_list_name(url):
+    """Compute the likely inclusion list short name
+    """
+    parts = urlparse(url)
+    filename = Path(parts.path).name
+    for extension in (".tar.gz", ".gz"):
+        if filename.endswith(extension):
+            return filename[:-len(extension)]
 
 
 def get_library_by_analysis_dir(libraries, analysis_dir):
