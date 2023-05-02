@@ -1,0 +1,10 @@
+name: "prepare_encode_subpool_metadata"
+description: "Prepare metadata needed to submit subpool results files to the ENCODE portal"
+url: "https://github.com/detrout/woldlab-rna-seq"
+authors:
+  - Diane Trout
+input:
+  - raw Unique, EM and Splice Junction sparse matrix archive
+  - optional filtered Unique and EM sparse matrix archives
+output:
+  - tsv file
