@@ -13,7 +13,6 @@ from woldrnaseq.snakeutils import (
 DEFAULT_MEM_MB = 1000
 
 
-
 rule download_inclusion_list:
     output:
         allow_file = directory(temp(compute_inclusion_list_name(config['inclusion_list_url'])))
