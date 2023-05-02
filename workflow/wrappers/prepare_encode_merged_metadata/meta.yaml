@@ -1,0 +1,9 @@
+name: "prepare_encode_merged_metadata"
+description: "Prepare metadata needed to submit merged results to the ENCODE portal"
+url: "https://github.com/detrout/woldlab-rna-seq"
+authors:
+  - Diane Trout
+input:
+  - a sparse matrix archive
+output:
+  - tsv file

@@ -1,0 +1,6 @@
+#channels:
+#  - conda-forge
+dependencies:
+  - pip
+  - pip:
+      - git+https://github.com/detrout/encoded_client.git
