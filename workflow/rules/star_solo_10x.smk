@@ -23,7 +23,7 @@ rule download_inclusion_list:
     resources:
         mem_mb = DEFAULT_MEM_MB,
     run:
-        server = ENCODED(get_submit_host())
+        server = ENCODED(get_submit_host(config))
         with server.get_response(params.inclusion_list_url, stream=True) as response:
             with open(output.allow_file, "wb") as outstream:
                 if (params.inclusion_list_url.endswith('.gz') or

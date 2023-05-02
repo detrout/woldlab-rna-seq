@@ -76,9 +76,9 @@ rule post_count_matrix_qc:
         pct_mt_plot = "pct_count_mt.{gene_model}_{multiread}_{matrix}.png",
         genes_by_count_plot = "n_genes_by_counts.{gene_model}_{multiread}_{matrix}.png",
         counts_violin_plot = "qc_metric_violin.{gene_model}_{multiread}_{matrix}.png",
-        metadata_posted = "posted.{}.csv".format(get_submit_host()),
+        metadata_posted = "posted.{}.csv".format(get_submit_host(config)),
     output:
-        "pct_count_mt.{{gene_model}}_{{multiread}}_{{matrix}}.png.{}.qc-upload".format(get_submit_host())
+        "pct_count_mt.{{gene_model}}_{{multiread}}_{{matrix}}.png.{}.qc-upload".format(get_submit_host(config))
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB
@@ -88,7 +88,7 @@ rule post_count_matrix_qc:
         logger.setLevel(logging.INFO)
         logger.addHandler(logging.FileHandler(log[0]))
         logger.addHandler(logging.StreamHandler(sys.stderr))
-        host = get_submit_host()
+        host = get_submit_host(config)
         server = ENCODED(host)
         uploaded = pandas.read_csv(input.metadata_posted)
         file_qced = "{}_EM_{}.tar.gz".format(get_gene_model(), wildcards.matrix)

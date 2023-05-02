@@ -93,17 +93,17 @@ def list_encode_splitseq_targets():
         "qc_metric_violin.{}_EM_raw.png".format(get_gene_model()),
         "pct_count_mt.{}_EM_raw.png".format(get_gene_model()),
         "n_genes_by_counts.{}_EM_raw.png".format(get_gene_model()),
-        "metadata.{}.csv".format(get_submit_host()),
+        "metadata.{}.csv".format(get_submit_host(config)),
     ]
     if automatic_submission:
         default.extend([
-            "posted.{}.csv".format(get_submit_host()),
-            "Log.final.out.{}.qc-upload".format(get_submit_host()),
+            "posted.{}.csv".format(get_submit_host(config)),
+            "Log.final.out.{}.qc-upload".format(get_submit_host(config)),
             SOLO_ROOT / get_gene_model() / "Summary.csv.{}.qc-upload".format(
-                get_submit_host()
+                get_submit_host(config)
             ),
             "pct_count_mt.{}_EM_raw.png.{}.qc-upload".format(
-                get_gene_model(), get_submit_host()
+                get_gene_model(), get_submit_host(config)
             ),
         ])
     return default

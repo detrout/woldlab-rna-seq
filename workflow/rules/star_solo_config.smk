@@ -66,8 +66,8 @@ def get_gene_model():
     return "GeneFull_Ex50pAS" if config['include_intron'] else "Gene"
 
 
-def get_submit_host():
-    default_host = "test.encodedcc.org" #"www.encodeproject.org"
+def get_submit_host(config):
+    default_host = "test.encodedcc.org"   #"www.encodeproject.org"
     return config.get("encode_portal_host", default_host)
 
 
@@ -110,7 +110,7 @@ def update_genome_annotation_info(config):
     else:
         raise ValueError("genome_accession or genome_index_url are required parameters")
 
-    server = ENCODED(get_submit_host())
+    server = ENCODED(get_submit_host(config))
     metadata = get_dcc_accession(server, genome_accession)
     if metadata is not None:
         config.setdefault("assembly", metadata["assembly"])
@@ -131,7 +131,7 @@ def update_exclusion_info(config):
             compute_dcc_file_accession_from_url(config["inclusion_list_url"]))
     elif "inclusion_accession" in config:
         accession = config["inclusion_accession"]
-        server = ENCODED(get_submit_host())
+        server = ENCODED(get_submit_host(config))
         metadata = get_dcc_accession(server, accession)
         if metadata is not None:
             config.setdefault(

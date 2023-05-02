@@ -52,9 +52,9 @@ def prepare_star_qc_metric(config, metric_of, filename):
 rule post_star_qc:
     input:
         log_final = "Log.final.out",
-        metadata_posted = "posted.{}.csv".format(get_submit_host()),
+        metadata_posted = "posted.{}.csv".format(get_submit_host(config)),
     output:
-        "Log.final.out.{}.qc-upload".format(get_submit_host())
+        "Log.final.out.{}.qc-upload".format(get_submit_host(config))
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB
@@ -64,7 +64,7 @@ rule post_star_qc:
         logger.setLevel(logging.INFO)
         logger.addHandler(logging.FileHandler(log[0]))
         logger.addHandler(logging.StreamHandler(sys.stderr))
-        host = get_submit_host()
+        host = get_submit_host(config)
         server = ENCODED(host)
         uploaded = pandas.read_csv(input.metadata_posted)
         accession = uploaded[uploaded["file_format"] == "bam"]["accession"].to_list()

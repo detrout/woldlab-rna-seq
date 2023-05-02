@@ -26,7 +26,7 @@ rule prepare_star_solo_10x_submission_metadata:
         sj_unique_raw = "SJ_Unique_raw.tar.gz",
         sj_unique_raw_md5 = "SJ_Unique_raw.tar.gz.md5",
     output:
-        "metadata.{}.csv".format(get_submit_host())
+        "metadata.{}.csv".format(get_submit_host(config))
     threads: 1
     resources:
         mem_mb = 100
@@ -61,13 +61,13 @@ rule submit_processed_data:
         sj_unique_raw = "SJ_Unique_raw.tar.gz",
         metadata = rules.prepare_star_solo_10x_submission_metadata.output[0],
     output:
-        bam = "Aligned.sortedByCoord.out.bam.{}.upload".format(get_submit_host()),
-        gene_unique_filtered = "{}_Unique_filtered.tar.gz.{}.upload".format(get_gene_model(), get_submit_host()),
-        gene_multi_filtered = "{}_EM_filtered.tar.gz.{}.upload".format(get_gene_model(), get_submit_host()),
-        gene_unique_raw = "{}_Unique_raw.tar.gz.{}.upload".format(get_gene_model(), get_submit_host()),
-        gene_multi_raw = "{}_EM_raw.tar.gz.{}.upload".format(get_gene_model(), get_submit_host()),
-        sj_unique_raw = "SJ_Unique_raw.tar.gz.{}.upload".format(get_submit_host()),
-        metadata_posted = "posted.{}.csv".format(get_submit_host()),
+        bam = "Aligned.sortedByCoord.out.bam.{}.upload".format(get_submit_host(config)),
+        gene_unique_filtered = "{}_Unique_filtered.tar.gz.{}.upload".format(get_gene_model(), get_submit_host(config)),
+        gene_multi_filtered = "{}_EM_filtered.tar.gz.{}.upload".format(get_gene_model(), get_submit_host(config)),
+        gene_unique_raw = "{}_Unique_raw.tar.gz.{}.upload".format(get_gene_model(), get_submit_host(config)),
+        gene_multi_raw = "{}_EM_raw.tar.gz.{}.upload".format(get_gene_model(), get_submit_host(config)),
+        sj_unique_raw = "SJ_Unique_raw.tar.gz.{}.upload".format(get_submit_host(config)),
+        metadata_posted = "posted.{}.csv".format(get_submit_host(config)),
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB
@@ -77,7 +77,7 @@ rule submit_processed_data:
         logger.setLevel(logging.INFO)
         logger.addHandler(logging.FileHandler(log[0]))
         logger.addHandler(logging.StreamHandler(sys.stderr))
-        host = get_submit_host()
+        host = get_submit_host(config)
         server = ENCODED(host)
         metadata = pandas.read_csv(
             input.metadata,

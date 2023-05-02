@@ -77,9 +77,9 @@ rule post_star_solo_qc:
     input:
         gene_summary = get_summary_csv_path(),
         umi_plot = UMI_PER_CELL_PLOT_NAME,
-        metadata_posted = "posted.{}.csv".format(get_submit_host()),
+        metadata_posted = "posted.{}.csv".format(get_submit_host(config)),
     output:
-        "{}.{}.qc-upload".format(get_summary_csv_path(), get_submit_host())
+        "{}.{}.qc-upload".format(get_summary_csv_path(), get_submit_host(config))
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB
@@ -89,7 +89,7 @@ rule post_star_solo_qc:
         logger.setLevel(logging.INFO)
         logger.addHandler(logging.FileHandler(log[0]))
         logger.addHandler(logging.StreamHandler(sys.stderr))
-        host = get_submit_host()
+        host = get_submit_host(config)
         server = ENCODED(host)
         uploaded = pandas.read_csv(input.metadata_posted)
         accession = uploaded[uploaded["file_format"] == "bam"]["accession"].to_list()

@@ -30,7 +30,7 @@ rule genome:
         if not Path(Path(genome_dir).parts[0]).exists():
             os.mkdir(genome_dir.parts[0])
         if "genome_index_url" in config:
-            server = ENCODED(get_submit_host())
+            server = ENCODED(get_submit_host(config))
             with server.get_response(config["genome_index_url"], stream=True) as instream:
                 tar = tarfile.open(fileobj=instream.raw, mode="r:*")
                 # this is a vulnerability, only use trusted tar files
