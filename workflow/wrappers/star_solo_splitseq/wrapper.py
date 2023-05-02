@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import shutil
 
@@ -9,13 +8,14 @@ from woldrnaseq.splitseq_merger import write_merged_splitseq_matrix
 
 def make_comment_file(library_id, genome_dir, cofile):
     genome_dir = Path(genome_dir)
-    with open(cofile, 'wt') as outstream:
+    with open(cofile, "wt") as outstream:
         if library_id is not None:
-            outstream.write('@CO\tLIBID:{}\n'.format(library_id))
-        for comment_file in genome_dir.glob('*_bamCommentLines.txt'):
-            with open(comment_file, 'rt') as instream:
+            outstream.write("@CO\tLIBID:{}\n".format(library_id))
+        for comment_file in genome_dir.glob("*_bamCommentLines.txt"):
+            with open(comment_file, "rt") as instream:
                 for line in instream:
                     outstream.write(line)
+
 
 genome_index = snakemake.input["genome_index"]
 sequence_reads = snakemake.input["sequence_reads"]
@@ -40,7 +40,7 @@ else:
 stranded = snakemake.params.stranded
 gene_model = snakemake.params.gene_model
 library_id = snakemake.params.library_id
-    
+
 aligned_bam = Path(snakemake.output.get("aligned_bam"))
 output_dir = aligned_bam.parent
 cofile = output_dir / "COfile.txt"
@@ -66,7 +66,8 @@ else:
 
 log = snakemake.log_fmt_shell(stdout=True, stderr=True)
 
-shell("STAR --genomeDir {genome_index} \
+shell(
+    "STAR --genomeDir {genome_index} \
            --readFilesIn {sequence_reads} {barcode_reads} {read_files_command} \
            --runThreadN {snakemake.threads} \
            --genomeLoad NoSharedMemory \
@@ -102,7 +103,8 @@ shell("STAR --genomeDir {genome_index} \
            --soloMultiMappers Unique EM \
            {bam_sort_limit} \
            --outTmpDir {star_tmp} \
-           --outFileNamePrefix {output_dir}/")
+           --outFileNamePrefix {output_dir}/"
+)
 
 if star_tmp.exists():
     shutil.rmtree(star_tmp)
@@ -111,32 +113,40 @@ if filtered_dir.exists():
     shutil.rmtree(filtered_dir)
 
 if raw_2bc_dir.exists():
-    print("This shouldn't happen", list(solo_dir.glob("*")))
+    print(
+        "This shouldn't happen. Intermediate raw barcode directory exists",
+        list(solo_dir.glob("*")),
+    )
     shutil.rmtree(raw_2bc_dir)
 
+if sj_2bc_raw_dir.exists():
+    print(
+        "This shouldn't happen. intermediate SJ 2 barcode directory exists",
+        list(solo_dir.glob("*")),
+    )
+    shutil.rmtree(sj_2bc_raw_dir)
+
+# Merge gene count barcodes
 raw_dir.rename(raw_2bc_dir)
 
-sj_raw_dir.rename(sj_2bc_raw_dir)
-
-print(os.listdir(solo_dir / "SJ"))
-# merge barcodes
 raw_2bc_unique_matrix = raw_2bc_dir / "matrix.mtx"
-print("raw_2bc_unique_matrix", raw_2bc_unique_matrix)
 raw_2bc_em_matrix = raw_2bc_dir / "UniqueAndMult-EM.mtx"
-print("raw_2bc_em_matrix", raw_2bc_em_matrix)
 
 raw_unique_matrix = raw_dir / "matrix.mtx"
-print("raw_unique_matrix", raw_unique_matrix)
 raw_em_matrix = raw_dir / "UniqueAndMult-EM.mtx"
 
 write_merged_splitseq_matrix(raw_2bc_unique_matrix, raw_dir, library_id=library_id)
 write_merged_splitseq_matrix(raw_2bc_em_matrix, raw_dir, library_id=library_id)
-shutil.rmtree(raw_2bc_dir)
 
+# Merge the SJ barcodes
+sj_raw_dir.rename(sj_2bc_raw_dir)
 sj_2bc_matrix = sj_2bc_raw_dir / "matrix.mtx"
-print("sj_2bc_matrix", sj_2bc_matrix)
-sj_matrix = sj_raw_dir / "matrix.mtx"
-print("sj_matrix", sj_matrix)
+sj_raw_matrix = sj_raw_dir / "matrix.mtx"
+write_merged_splitseq_matrix(sj_2bc_matrix, sj_raw_dir, library_id=library_id)
 
-write_merged_splitseq_matrix(sj_2bc_matrix, sj_matrix.parent, library_id=library_id)
+assert raw_unique_matrix.exists(), "{} does not exist".format(raw_unique_matrix)
+assert raw_em_matrix.exists(), "{} does not exist".format(raw_em_matrix)
+assert sj_raw_matrix.exists(), "{} does not exist".format(sj_raw_matrix)
+
+shutil.rmtree(raw_2bc_dir)
 shutil.rmtree(sj_2bc_raw_dir)
