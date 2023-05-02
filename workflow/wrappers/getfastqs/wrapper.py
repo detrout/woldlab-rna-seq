@@ -10,7 +10,7 @@ DEFAULT_MEM_MB = 1000
 
 def get_encode_fastq(config, target):
     from encoded_client.encoded import ENCODED
-    filename_re = re.compile("(?P<accession>ENCFF[0-9A-Z]+)_(?P<read>[RI][1-3])\\.fastq\\.(?P<archive>gz|bz2|xz)")
+    filename_re = re.compile("(?P<accession>(ENC|TST)FF[0-9A-Z]+)_(?P<read>[RI][1-3])\\.fastq\\.(?P<archive>gz|bz2|xz)")
     host = config.get("encode_portal_host", "www.encodeproject.org")
     server = ENCODED(host)
     match = filename_re.match(target.name)
