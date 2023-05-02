@@ -1,0 +1,11 @@
+name: "single_cell_mex_qc_plots"
+description: "Generate single cell qc plots for sparse gene/gene-like counts"
+url: "https://github.com/detrout/woldlab-rna-seq"
+authors:
+  - Diane Trout
+input:
+  - a sparse matrix archive
+output:
+  - violin plot
+  - mitochondria scatter plot
+  - gene by count scatter plot
