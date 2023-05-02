@@ -1,0 +1,36 @@
+from pathlib import Path
+
+SOLO_ROOT = Path("Solo.out")
+
+rule star_solo_split:
+    input:
+        sequence_reads = "TSTLB285238/TSTLB285238_R2.fastq.gz",
+        barcode_reads = "TSTLB285238/TSTLB285238_R1.fastq.gz",
+        genome_index = str(Path("~/proj/genome/mm10-M21-male-2.7.9a").expanduser()),
+        #genome_index = "mm10-M21-male",
+        inclusion_list = "parse-split-v1",
+    params:
+        stranded="Forward",
+        gene_model="Gene",
+        library_id="TSTLB285283",
+    output:
+        aligned_bam = "Aligned.sortedByCoord.out.bam",
+        log_final = "Log.final.out",
+        log_progress = "Log.progress.out",
+        log_out = "Log.out",
+        splice_junctions = "SJ.out.tab",
+        barcode_stats = SOLO_ROOT / "Barcodes.stats",
+        features_stats = SOLO_ROOT / "Gene" / "Features.stats",
+        umis = SOLO_ROOT / "Gene" / "UMIperCellSorted.txt",
+        gene_summary = SOLO_ROOT / "Gene" / "Summary.csv",
+        raw_barcodes = SOLO_ROOT / "Gene" / "raw" / "barcodes.tsv",
+        raw_features = SOLO_ROOT / "Gene" / "raw" / "features.tsv",
+        raw_unique_matrix = SOLO_ROOT / "Gene" / "raw" / "matrix.mtx",
+        raw_em_matrix = SOLO_ROOT / "Gene" / "raw" / "UniqueAndMult-EM.mtx",
+        sj_feature_stats = SOLO_ROOT / "SJ" / "Features.stats",
+        sj_summary = SOLO_ROOT / "SJ" / "Summary.csv",
+        sj_barcodes = SOLO_ROOT / "SJ" / "raw" / "barcodes.tsv",
+        sj_features = SOLO_ROOT / "SJ" / "raw" / "features.tsv",
+        sj_matrix = SOLO_ROOT / "SJ" / "raw" / "matrix.mtx",
+    wrapper:
+        "https://github.com/detrout/woldlab-rna-seq/raw/main/workflow/wrappers/star_solo_splitseq/"

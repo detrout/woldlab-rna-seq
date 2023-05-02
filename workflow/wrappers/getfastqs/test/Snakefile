@@ -1,0 +1,9 @@
+rule get_encode_fastq:
+    output:
+        "ENCLB925PUE/ENCFF844SEA_R1.fastq.gz",
+        "ENCLB925PUE/ENCFF802QMI_R2.fastq.gz",
+    resources:
+        mem_mb = 1000
+    threads: 1
+    wrapper:
+        "https://github.com/detrout/woldlab-rna-seq/raw/main/workflow/wrappers/getfastqs/"
