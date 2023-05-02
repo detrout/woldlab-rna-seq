@@ -6,11 +6,11 @@ import tarfile
 from urllib.parse import urlparse
 from encoded_client.encoded import ENCODED
 
-DEFAULT_MEM_MB = 1000
 from woldrnaseq.snakeutils import (
     compute_inclusion_list_name,
 )
 
+DEFAULT_MEM_MB = 1000
 
 
 
