@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+dependencies:
+  - dask==2023.1.1
+  - anndata
+  - seaborn
+  - pip:
+      - git+https://github.com/detrout/mex_gene_archive.git
+      - git+https://github.com/detrout/woldlab-rna-seq.git

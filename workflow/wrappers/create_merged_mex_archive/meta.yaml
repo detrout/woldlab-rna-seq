@@ -1,0 +1,11 @@
+name: "create_merged_mex_archives"
+description: "Create a merged mex count archive file"
+url: "https://github.com/detrout/woldlab-rna-seq"
+authors:
+  - Diane Trout
+input:
+  - list of subpool matrix files
+output:
+  - a merged matrix file
+  - a tsv file containing subpool spearman correlations
+  - a plot of spearm correlations between subpools
