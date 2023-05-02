@@ -15,7 +15,8 @@ def get_encode_fastq(config, target):
     server = ENCODED(host)
     match = filename_re.match(target.name)
     if match is None:
-        raise ValueError("Unrecognized filename expecting {accession}_{read}.fastq.(gz|bz2|xz)")
+        raise ValueError(
+            "Unrecognized filename expecting {{accession}}_{{read}}.fastq.(gz|bz2|xz). Got {}".format(target))
     accession = match.group("accession")
     archive = match.group("archive")
     path = "/files/{accession}/@@download/{accession}.fastq.{archive}".format(
