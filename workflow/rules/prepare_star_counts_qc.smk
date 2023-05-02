@@ -37,7 +37,7 @@ def prepare_sc_count_matrix_qc_metric(config, metric_of, pct_mt_plot, gene_by_co
 rule generate_umi:
     input:
         #rules.star_solo_10x.output.umis
-        SOLO_ROOT / get_gene_model() / "UMIperCellSorted.txt",
+        SOLO_ROOT / get_gene_model(config) / "UMIperCellSorted.txt",
     output:
         UMI_PER_CELL_PLOT_NAME
     resources:
@@ -91,7 +91,7 @@ rule post_count_matrix_qc:
         host = get_submit_host(config)
         server = ENCODED(host)
         uploaded = pandas.read_csv(input.metadata_posted)
-        file_qced = "{}_EM_{}.tar.gz".format(get_gene_model(), wildcards.matrix)
+        file_qced = "{}_EM_{}.tar.gz".format(get_gene_model(config), wildcards.matrix)
         logger.info("Using {} as QC file".format(file_qced))
         output_type = filename_to_output_type[file_qced]
         accession = uploaded[uploaded["output_type"] == output_type]["accession"].to_list()

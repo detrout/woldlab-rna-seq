@@ -86,24 +86,24 @@ def list_encode_splitseq_targets():
     default = [
         "Log.final.out",
         "Aligned.sortedByCoord.out.bam",
-        "{}_Unique_raw.tar.gz".format(get_gene_model()),
-        "{}_EM_raw.tar.gz".format(get_gene_model()),
+        "{}_Unique_raw.tar.gz".format(get_gene_model(config)),
+        "{}_EM_raw.tar.gz".format(get_gene_model(config)),
         "SJ_Unique_raw.tar.gz",
         "umi_per_cell.png",
-        "qc_metric_violin.{}_EM_raw.png".format(get_gene_model()),
-        "pct_count_mt.{}_EM_raw.png".format(get_gene_model()),
-        "n_genes_by_counts.{}_EM_raw.png".format(get_gene_model()),
+        "qc_metric_violin.{}_EM_raw.png".format(get_gene_model(config)),
+        "pct_count_mt.{}_EM_raw.png".format(get_gene_model(config)),
+        "n_genes_by_counts.{}_EM_raw.png".format(get_gene_model(config)),
         "metadata.{}.csv".format(get_submit_host(config)),
     ]
     if automatic_submission:
         default.extend([
             "posted.{}.csv".format(get_submit_host(config)),
             "Log.final.out.{}.qc-upload".format(get_submit_host(config)),
-            SOLO_ROOT / get_gene_model() / "Summary.csv.{}.qc-upload".format(
+            SOLO_ROOT / get_gene_model(config) / "Summary.csv.{}.qc-upload".format(
                 get_submit_host(config)
             ),
             "pct_count_mt.{}_EM_raw.png.{}.qc-upload".format(
-                get_gene_model(), get_submit_host(config)
+                get_gene_model(config), get_submit_host(config)
             ),
         ])
     return default

@@ -300,17 +300,17 @@ def archive_star(solo_root, quantification="GeneFull", multiread="Unique", matri
 
 ###
 # Main rules
-def get_gene_model():
+def get_gene_model(config):
     return "GeneFull_Ex50pAS" if config['include_intron'] else "Gene"
 
 
 rule ALL:
     input:
         "Log.final.out",
-        "{}_Unique_filtered.tar.gz".format(get_gene_model()),
-        "{}_EM_filtered.tar.gz".format(get_gene_model()),
-        "{}_Unique_raw.tar.gz".format(get_gene_model()),
-        "{}_EM_raw.tar.gz".format(get_gene_model()),
+        "{}_Unique_filtered.tar.gz".format(get_gene_model(config)),
+        "{}_EM_filtered.tar.gz".format(get_gene_model(config)),
+        "{}_Unique_raw.tar.gz".format(get_gene_model(config)),
+        "{}_EM_raw.tar.gz".format(get_gene_model(config)),
         "SJ_Unique_raw.tar.gz",
 
 
@@ -377,7 +377,7 @@ rule star_solo_10x:
         allow_list = config['allow_file'],
     params:
         stranded = config['stranded'],
-        gene_model = get_gene_model(),
+        gene_model = get_gene_model(config),
         sequence_reads = ",".join(generate_read_argument(config, "read2")),
         barcode_reads = ",".join(generate_read_argument(config, "read1")),
         umi_length = int(config["umi_length"]),
@@ -395,15 +395,15 @@ rule star_solo_10x:
         log_progress = "Log.progress.out",
         splice_junctions = "SJ.out.tab",
         barcode_stats = SOLO_ROOT / "Barcodes.stats",
-        features_stats = SOLO_ROOT / get_gene_model() / "Features.stats",
-        umis = SOLO_ROOT / get_gene_model() / "UMIperCellSorted.txt",
-        filtered_barcodes = SOLO_ROOT / get_gene_model() / "filtered" / "barcodes.tsv",
-        filtered_features = SOLO_ROOT / get_gene_model() / "filtered" / "features.tsv",
-        filtered_uniq_matrix = SOLO_ROOT / get_gene_model() / "filtered" / "matrix.mtx",
-        raw_barcodes = SOLO_ROOT / get_gene_model() / "raw" / "barcodes.tsv",
-        raw_features = SOLO_ROOT / get_gene_model() / "raw" / "features.tsv",
-        raw_unique_matrix = SOLO_ROOT / get_gene_model() / "raw" / "matrix.mtx",
-        raw_em_matrix = SOLO_ROOT / get_gene_model() / "raw" / "UniqueAndMult-EM.mtx",
+        features_stats = SOLO_ROOT / get_gene_model(config) / "Features.stats",
+        umis = SOLO_ROOT / get_gene_model(config) / "UMIperCellSorted.txt",
+        filtered_barcodes = SOLO_ROOT / get_gene_model(config) / "filtered" / "barcodes.tsv",
+        filtered_features = SOLO_ROOT / get_gene_model(config) / "filtered" / "features.tsv",
+        filtered_uniq_matrix = SOLO_ROOT / get_gene_model(config) / "filtered" / "matrix.mtx",
+        raw_barcodes = SOLO_ROOT / get_gene_model(config) / "raw" / "barcodes.tsv",
+        raw_features = SOLO_ROOT / get_gene_model(config) / "raw" / "features.tsv",
+        raw_unique_matrix = SOLO_ROOT / get_gene_model(config) / "raw" / "matrix.mtx",
+        raw_em_matrix = SOLO_ROOT / get_gene_model(config) / "raw" / "UniqueAndMult-EM.mtx",
         sj_barcodes = SOLO_ROOT / "SJ" / "raw" / "barcodes.tsv",
         sj_features = SOLO_ROOT / "SJ" / "raw" / "features.tsv",
         sj_matrix = SOLO_ROOT / "SJ" / "raw" / "matrix.mtx",
@@ -452,11 +452,11 @@ rule star_solo_10x:
 
 rule filter_em_matrix:
     input:
-        filtered_barcode_tsv = SOLO_ROOT / get_gene_model() / "filtered" / "barcodes.tsv",
-        raw_barcode_tsv = SOLO_ROOT / get_gene_model() / "raw" / "barcodes.tsv",
-        raw_em_matrix_mtx = SOLO_ROOT / get_gene_model() / "raw" / "UniqueAndMult-EM.mtx",
+        filtered_barcode_tsv = SOLO_ROOT / get_gene_model(config) / "filtered" / "barcodes.tsv",
+        raw_barcode_tsv = SOLO_ROOT / get_gene_model(config) / "raw" / "barcodes.tsv",
+        raw_em_matrix_mtx = SOLO_ROOT / get_gene_model(config) / "raw" / "UniqueAndMult-EM.mtx",
     output:
-        filtered_em_mtx = SOLO_ROOT / get_gene_model() / "filtered" / "UniqueAndMult-EM.mtx",
+        filtered_em_mtx = SOLO_ROOT / get_gene_model(config) / "filtered" / "UniqueAndMult-EM.mtx",
     threads: 1
     resources:
         mem_mb = DEFAULT_MEM_MB

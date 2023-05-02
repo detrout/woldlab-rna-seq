@@ -62,7 +62,7 @@ SOLO_ROOT = Path("Solo.out")
 UMI_PER_CELL_PLOT_NAME = "umi_per_cell.png"
 
 
-def get_gene_model():
+def get_gene_model(config):
     return "GeneFull_Ex50pAS" if config['include_intron'] else "Gene"
 
 

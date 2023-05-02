@@ -62,7 +62,7 @@ rule star_solo_splitseq:
         cofile = "COfile.txt",
     params:
         stranded = config['stranded'],
-        gene_model = get_gene_model(),
+        gene_model = get_gene_model(config),
         sequence_reads = ",".join(generate_star_read_argument(config, "read2")),
         barcode_reads = ",".join(generate_star_read_argument(config, "read1")),
         star_tmp = temp(directory("_STARtmp")),
@@ -79,13 +79,13 @@ rule star_solo_splitseq:
         log_out = "Log.out",
         splice_junctions = "SJ.out.tab",
         barcode_stats = SOLO_ROOT / "Barcodes.stats",
-        features_stats = SOLO_ROOT / get_gene_model() / "Features.stats",
-        umis = SOLO_ROOT / get_gene_model() / "UMIperCellSorted.txt",
-        gene_summary = SOLO_ROOT / get_gene_model() / "Summary.csv",
-        raw_barcodes = temp(SOLO_ROOT / get_gene_model() / "raw_2bc" / "barcodes.tsv"),
-        raw_features = temp(SOLO_ROOT / get_gene_model() / "raw_2bc" / "features.tsv"),
-        raw_unique_matrix = temp(SOLO_ROOT / get_gene_model() / "raw_2bc" / "matrix.mtx"),
-        raw_em_matrix = temp(SOLO_ROOT / get_gene_model() / "raw_2bc" / "UniqueAndMult-EM.mtx"),
+        features_stats = SOLO_ROOT / get_gene_model(config) / "Features.stats",
+        umis = SOLO_ROOT / get_gene_model(config) / "UMIperCellSorted.txt",
+        gene_summary = SOLO_ROOT / get_gene_model(config) / "Summary.csv",
+        raw_barcodes = temp(SOLO_ROOT / get_gene_model(config) / "raw_2bc" / "barcodes.tsv"),
+        raw_features = temp(SOLO_ROOT / get_gene_model(config) / "raw_2bc" / "features.tsv"),
+        raw_unique_matrix = temp(SOLO_ROOT / get_gene_model(config) / "raw_2bc" / "matrix.mtx"),
+        raw_em_matrix = temp(SOLO_ROOT / get_gene_model(config) / "raw_2bc" / "UniqueAndMult-EM.mtx"),
         sj_feature_stats = SOLO_ROOT / "SJ" / "Features.stats",
         sj_summary = SOLO_ROOT / "SJ" / "Summary.csv",
         sj_barcodes = temp(SOLO_ROOT / "SJ" / "raw_2bc" / "barcodes.tsv"),
@@ -142,15 +142,15 @@ rule star_solo_splitseq:
 
 rule merge_raw_cells:
     input:
-        raw_barcodes = SOLO_ROOT / get_gene_model() / "raw_2bc" / "barcodes.tsv",
-        raw_features = SOLO_ROOT / get_gene_model() / "raw_2bc" / "features.tsv",
-        raw_unique_matrix = SOLO_ROOT / get_gene_model() / "raw_2bc" / "matrix.mtx",
-        raw_em_matrix = SOLO_ROOT / get_gene_model() / "raw_2bc" / "UniqueAndMult-EM.mtx",
+        raw_barcodes = SOLO_ROOT / get_gene_model(config) / "raw_2bc" / "barcodes.tsv",
+        raw_features = SOLO_ROOT / get_gene_model(config) / "raw_2bc" / "features.tsv",
+        raw_unique_matrix = SOLO_ROOT / get_gene_model(config) / "raw_2bc" / "matrix.mtx",
+        raw_em_matrix = SOLO_ROOT / get_gene_model(config) / "raw_2bc" / "UniqueAndMult-EM.mtx",
     output:
-        raw_barcodes = temp(SOLO_ROOT / get_gene_model() / "raw" / "barcodes.tsv"),
-        raw_features = temp(SOLO_ROOT / get_gene_model() / "raw" / "features.tsv"),
-        raw_unique_matrix = temp(SOLO_ROOT / get_gene_model() / "raw" / "matrix.mtx"),
-        raw_em_matrix = temp(SOLO_ROOT / get_gene_model() / "raw" / "UniqueAndMult-EM.mtx"),
+        raw_barcodes = temp(SOLO_ROOT / get_gene_model(config) / "raw" / "barcodes.tsv"),
+        raw_features = temp(SOLO_ROOT / get_gene_model(config) / "raw" / "features.tsv"),
+        raw_unique_matrix = temp(SOLO_ROOT / get_gene_model(config) / "raw" / "matrix.mtx"),
+        raw_em_matrix = temp(SOLO_ROOT / get_gene_model(config) / "raw" / "UniqueAndMult-EM.mtx"),
     resources:
         mem_mb = 8192
     threads: 1
@@ -181,13 +181,13 @@ rule merge_sj_cells:
 
 rule filter_merged_unique_cells:
     input:
-        raw_barcodes = SOLO_ROOT / get_gene_model() / "raw" / "barcodes.tsv",
-        raw_features = SOLO_ROOT / get_gene_model() / "raw" / "features.tsv",
-        raw_unique_matrix = SOLO_ROOT / get_gene_model() / "raw" / "matrix.mtx",
+        raw_barcodes = SOLO_ROOT / get_gene_model(config) / "raw" / "barcodes.tsv",
+        raw_features = SOLO_ROOT / get_gene_model(config) / "raw" / "features.tsv",
+        raw_unique_matrix = SOLO_ROOT / get_gene_model(config) / "raw" / "matrix.mtx",
     output:
-        filtered_barcodes = temp(SOLO_ROOT / get_gene_model() / "filtered" / "barcodes.tsv"),
-        filtered_features = temp(SOLO_ROOT / get_gene_model() / "filtered" / "features.tsv"),
-        filtered_unique_matrix = temp(SOLO_ROOT / get_gene_model() / "filtered" / "matrix.mtx"),
+        filtered_barcodes = temp(SOLO_ROOT / get_gene_model(config) / "filtered" / "barcodes.tsv"),
+        filtered_features = temp(SOLO_ROOT / get_gene_model(config) / "filtered" / "features.tsv"),
+        filtered_unique_matrix = temp(SOLO_ROOT / get_gene_model(config) / "filtered" / "matrix.mtx"),
     params:
         input_directory = lambda wildcards, input: Path(input.raw_unique_matrix).parent,
         output_directory = lambda wildcards, output: Path(output.filtered_unique_matrix).parent,

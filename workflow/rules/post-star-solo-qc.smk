@@ -70,7 +70,7 @@ def prepare_star_solo_qc(config, metric_of, filename, umi_plot):
 
 
 def get_summary_csv_path():
-    return str(SOLO_ROOT / get_gene_model() / "Summary.csv")
+    return str(SOLO_ROOT / get_gene_model(config) / "Summary.csv")
 
 
 rule post_star_solo_qc:
