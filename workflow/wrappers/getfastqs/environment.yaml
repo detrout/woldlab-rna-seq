@@ -1,3 +1,0 @@
-dependencies:
-  - pip:
-      - encoded_client==0.2.0
