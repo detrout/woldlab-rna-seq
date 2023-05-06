@@ -1,16 +1,35 @@
 Changelog
 =========
 
-Release ?????
+Release 1.3.0
 -------------
 
-Shorten the genome name from the genome, annotation, sex triple to
-just a name, that is used as a directory name.
+Add snakemake processing pipelines for handling single
+cell RNA seq experiments for the ENCODE project.
+
+There's two classes of workflow one for 10x style experiments, two for
+handling parse biosystem splitseq experiments.
+
+The 10x pipeline is in `workflow/process-encode-10x.snakefile`
+
+A splitseq pipeline designed to work on a single subpool at a time is in
+`workflow/process-encode-splitseq.snakefile`
+
+And a splitseq pipeline designed to handle multiple subpools and then
+produced a merged quantification matrix is in
+`workflow/process-encode-split-subpool.snakefile`
+
+The first two pipelines use singularity for their reproducibility, but
+the later one uses conda.
+
+Internally the genome triple columns in the metadata table have been
+replaced with a genome_name parameter which is just a name used
+searched
 
 Extend make_trackhub to support multiple genomes in one run.
 
-Add prototype bulk RNA-seq snakemake workflow in
-`workflow/sprocess-encode-bulk-rna-star-rsem.snakefile`
+There is also an untested prototype bulk RNA-seq snakemake workflow in
+`workflow/process-encode-bulk-rna-star-rsem.snakefile`
 
 Release 1.2.5
 -------------
