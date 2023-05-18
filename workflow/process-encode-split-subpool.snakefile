@@ -104,7 +104,10 @@ config.setdefault(
     "quantification_step_run",
     "barbara-wold:starsolo-split-quantification-step-run",
 )
-
+config.setdefault(
+    "merge_quantification_matrix_step_run",
+    "barbara-wold:starsolo_merging_step_v0_run"
+)
 
 
 def get_gene_model(config):
