@@ -346,6 +346,8 @@ rule generate_pool_single_cell_mex_qc_plots:
         pct_mt = "{library_id}/pct_count_mt.{gene_model}_{multiread}_{matrix}.png",
         genes_by_count = "{library_id}/n_genes_by_counts.{gene_model}_{multiread}_{matrix}.png",
     threads: 1
+    resources:
+        mem_mb = 1000
     wrapper:
         "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/single_cell_mex_qc_plots"
 
@@ -377,7 +379,7 @@ rule prepare_encode_subpool_metadata:
                allow_missing=True)
     threads: 1
     resources:
-        mem_mb = 100
+        mem_mb = 1000
     wrapper:
         "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/prepare_encode_subpool_metadata"
 
@@ -414,7 +416,7 @@ rule submit_star_solo_subpool_data:
     log: "{library_id}/submit_star_solo_subpool_data.log"
     threads: 1
     resources:
-        mem_mb = 100
+        mem_mb = 1000
     wrapper:
         "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/post_encode_star_solo_files"
         
@@ -518,7 +520,7 @@ rule prepare_encode_merged_splitseq_metadata:
                host=get_submit_host(config))
     threads: 1
     resources:
-        mem_mb = 100
+        mem_mb = 1000
     wrapper:
         "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/prepare_encode_merged_splitseq_metadata"
 
@@ -542,6 +544,6 @@ rule submit_star_solo_merged_data:
     log: "submit_star_solo_merged_data.log"
     threads: 1
     resources:
-        mem_mb = 100
+        mem_mb = 1000
     wrapper:
         "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/post_encode_star_solo_files"
