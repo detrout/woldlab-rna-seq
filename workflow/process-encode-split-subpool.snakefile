@@ -215,6 +215,7 @@ rule download_inclusion_list:
         inclusion_list_url = config['inclusion_list_url']
     resources:
         mem_mb = DEFAULT_MEM_MB,
+    threads: 1
     run:
         server = ENCODED("www.encodeproject.org")
         with server.get_response(params.inclusion_list_url, stream=True) as response:
@@ -344,6 +345,7 @@ rule generate_pool_single_cell_mex_qc_plots:
         qc_violin = "{library_id}/qc_metric_violin.{gene_model}_{multiread}_{matrix}.png",
         pct_mt = "{library_id}/pct_count_mt.{gene_model}_{multiread}_{matrix}.png",
         genes_by_count = "{library_id}/n_genes_by_counts.{gene_model}_{multiread}_{matrix}.png",
+    threads: 1
     wrapper:
         "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/single_cell_mex_qc_plots"
 
