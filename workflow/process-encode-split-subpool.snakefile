@@ -205,7 +205,7 @@ rule get_fastq:
         mem_mb = 1000
     threads: 1
     wrapper:
-        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/getfastqs"
+        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.3/getfastqs"
 
 
 rule download_inclusion_list:
@@ -292,7 +292,7 @@ rule star_solo_splitpool:
         sj_features = temp("{library_id}/Solo.out/SJ/raw/features.tsv"),
         sj_matrix = temp("{library_id}/Solo.out/SJ/raw/matrix.mtx"),
     wrapper:
-        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/star_solo_splitseq"
+        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.3/star_solo_splitseq"
 
 
 rule to_archive:
@@ -349,7 +349,7 @@ rule generate_pool_single_cell_mex_qc_plots:
     resources:
         mem_mb = 1000
     wrapper:
-        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/single_cell_mex_qc_plots"
+        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.3/single_cell_mex_qc_plots"
 
 include:
     "rules/create_md5s.smk"
@@ -381,7 +381,7 @@ rule prepare_encode_subpool_metadata:
     resources:
         mem_mb = 1000
     wrapper:
-        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/prepare_encode_subpool_metadata"
+        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.3/prepare_encode_subpool_metadata"
 
 rule submit_star_solo_subpool_data:
     input:
@@ -418,7 +418,7 @@ rule submit_star_solo_subpool_data:
     resources:
         mem_mb = 1000
     wrapper:
-        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/post_encode_star_solo_files"
+        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.3/post_encode_star_solo_files"
         
 
 rule post_star_qc:
@@ -438,7 +438,7 @@ rule post_star_qc:
         mem_mb = DEFAULT_MEM_MB
     log: "{library_id}/post_star_qc.log"
     wrapper:
-        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/post_encode_star_qc_metrics"
+        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.3/post_encode_star_qc_metrics"
 
 
 rule post_star_solo_qc_metrics:
@@ -462,7 +462,7 @@ rule post_star_solo_qc_metrics:
         mem_mb = DEFAULT_MEM_MB
     log: "{library_id}/post_star_solo_qc.log"
     wrapper:
-        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/post_encode_star_solo_qc_metrics"
+        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.3/post_encode_star_solo_qc_metrics"
 
 
 rule post_single_cell_mex_qc_plots:
@@ -485,7 +485,7 @@ rule post_single_cell_mex_qc_plots:
         mem_mb = DEFAULT_MEM_MB
     log: "{library_id}/post_count_matrix_qc_{gene_model}_{multiread}_{matrix}.log"
     wrapper:
-        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/post_encode_star_solo_gene_count_plots"
+        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.3/post_encode_star_solo_gene_count_plots"
         
 
 rule generate_merged_mex_archives:
@@ -503,7 +503,7 @@ rule generate_merged_mex_archives:
     resources:
         mem_mb = 8196
     wrapper:
-        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/create_merged_mex_archive"
+        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.3/create_merged_mex_archive"
 
 rule prepare_encode_merged_splitseq_metadata:
     input:
@@ -522,7 +522,7 @@ rule prepare_encode_merged_splitseq_metadata:
     resources:
         mem_mb = 1000
     wrapper:
-        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/prepare_encode_merged_splitseq_metadata"
+        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.3/prepare_encode_merged_splitseq_metadata"
 
 
         
@@ -546,4 +546,4 @@ rule submit_star_solo_merged_data:
     resources:
         mem_mb = 1000
     wrapper:
-        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.2/post_encode_star_solo_files"
+        "https://raw.githubusercontent.com/detrout/woldrnaseq-wrappers/0.0.3/post_encode_star_solo_files"
