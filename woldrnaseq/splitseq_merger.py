@@ -357,7 +357,7 @@ def load_merged_parse_matrix(filename, splitseq_version="v1"):
     return matrix, list(merged_barcodes.keys())
 
 
-def write_merged_splitseq_matrix(matrix_filename, destination, library_id=None):
+def write_merged_splitseq_matrix(matrix_filename, destination, library_id=None, splitseq_version="v1"):
     matrix_filename = Path(matrix_filename)
     destination = Path(destination)
     if not destination.exists():
@@ -370,7 +370,7 @@ def write_merged_splitseq_matrix(matrix_filename, destination, library_id=None):
     if not source.is_dir():
         IOError("Source {} needs to be a directory".format(source))
 
-    matrix, cells = load_merged_parse_matrix(matrix_filename)
+    matrix, cells = load_merged_parse_matrix(matrix_filename, splitseq_version=splitseq_version)
 
     with open(destination / "barcodes.tsv", "wt") as outstream:
         for barcode in cells:
