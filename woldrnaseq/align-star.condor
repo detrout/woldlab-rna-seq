@@ -6,7 +6,7 @@ output=$(CURDIR)/align-star-$(Process).out
 error=$(CURDIR)/align-star-$(Process).out
 
 STAR_DIR=$(star_dir)
-GENOME_ROOT=$($(genome_root:/woldlab/castor/home/diane/proj/genome)
+GENOME_ROOT=$(genome_root:/woldlab/castor/home/diane/proj/genome)
 GENOME_NAME=$(GENOME_NAME)
 GENOME_DIR=$(GENOME_ROOT)/$(GENOME_NAME)/
 THREADS=8
