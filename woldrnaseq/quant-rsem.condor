@@ -4,8 +4,8 @@ output=rsem-$(Process).out
 error=rsem-$(Process).out
 environment="PATH=/usr/local/bin:/usr/bin:/bin"
 
-ANALYSIS_NAME=$$($(analysis_name):Analysis)
-GENOME_ROOT=$$($(genome_root):~/proj/genome/)
+ANALYSIS_NAME=$(analysis_name:Analysis)
+GENOME_ROOT=$(genome_root:~/proj/genome/)
 GENOME_NAME=$(GENOME_NAME)
 GENOME_DIR=$(GENOME_ROOT)/$(GENOME_NAME)/rsem
 PAIRED_END=$(paired_end)

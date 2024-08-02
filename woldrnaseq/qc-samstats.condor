@@ -4,14 +4,14 @@ log=samstats-$(Process).log
 output=samstats-$(Process).out
 error=samstats-$(Process).out
 
-ANALYSIS_NAME=$$($(analysis_name):Analysis)
-GENOME_ROOT=$$($(genome_root):~/proj/genome/)
+ANALYSIS_NAME=$(analysis_name:Analysis)
+GENOME_ROOT=$(genome_root:~/proj/genome/)
 GENOME_NAME=$(GENOME_NAME)
 GENOME_DIR=$(GENOME_ROOT)/$(GENOME_NAME)/
 CHROM_INFO=$(GENOME_DIR)chrNameLength.txt
 IN=$(ANALYSIS_NAME)-$(GENOME_NAME)_genome.bam
 OUT=$(ANALYSIS_NAME)-$(GENOME_NAME)_genome.samstats
-GEORGI_DIR=$$($(georgi_dir):~/proj/GeorgiScripts/)
+GEORGI_DIR=$(georgi_dir:~/proj/GeorgiScripts/)
 SAMSTATS=$(GEORGI_DIR)SAMstats.py
 
 request_cpus=1

@@ -1,7 +1,7 @@
 universe=vanilla
 
-#ANALYSIS_NAME=$$($(analysis_name):Analysis)
-#GENOME_ROOT=$$($(genome_root):~/proj/genome/)
+#ANALYSIS_NAME=$(analysis_name:Analysis)
+#GENOME_ROOT=$(genome_root:~/proj/genome/)
 #GENOME_NAME=$(GENOME_NAME)
 #GENOME_DIR=$(GENOME_ROOT)$(GENOME_NAME)/
 #IN=$(ANALYSIS_NAME)-$(GENOME_NAME)_genome.bam

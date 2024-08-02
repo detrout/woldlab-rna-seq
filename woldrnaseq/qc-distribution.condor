@@ -4,10 +4,10 @@ log=distribution-$(Process).log
 output=distribution-$(Process).out
 error=distribution-$(Process).out
 
-ANALYSIS_NAME=$$($(analysis_name):Analysis)
-GEORGI_DIR=$$($(georgi_dir):~/proj/GeorgiScripts)
+ANALYSIS_NAME=$(analysis_name:Analysis)
+GEORGI_DIR=$(georgi_dir:~/proj/GeorgiScripts)
 DISTRIBUTION=$(GEORGI_DIR)/SAM_reads_in_genes3_BAM.py
-GENOME_ROOT=$$($(genome_root):~/proj/genome/)
+GENOME_ROOT=$(genome_root:~/proj/genome/)
 GENOME_NAME=$(GENOME_NAME)
 GENOME_DIR=$(GENOME_ROOT)/$(GENOME_NAME)/
 GTF=$(gtf)

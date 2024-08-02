@@ -1,17 +1,18 @@
 universe=vanilla
+CURDIR=$(curdir)
+
 log=$(CURDIR)/align-star-$(Process).log
 output=$(CURDIR)/align-star-$(Process).out
 error=$(CURDIR)/align-star-$(Process).out
 
 STAR_DIR=$(star_dir)
-GENOME_ROOT=$$($(genome_root):/woldlab/castor/home/diane/proj/genome)
+GENOME_ROOT=$($(genome_root:/woldlab/castor/home/diane/proj/genome)
 GENOME_NAME=$(GENOME_NAME)
 GENOME_DIR=$(GENOME_ROOT)/$(GENOME_NAME)/
 THREADS=8
 
-READ1=$$(read1)
-READ2=$$(read2:)
-CURDIR=$$(curdir)
+READ1=$(read1)
+READ2=$(read2:)
 
 if defined READ2
   EXTRA_ARGS=

@@ -7,7 +7,7 @@ output=$(curdir)/bam2bigwig-$(Process).out
 error=$(curdir)/bam2bigwig-$(Process).out
 
 CURDIR=$(curdir)
-ANALYSIS_NAME=$$($(analysis_name):Analysis)
+ANALYSIS_NAME=$(analysis_name:Analysis)
 
 GENOME_NAME=$(GENOME_NAME)
 IN=$(ANALYSIS_NAME)-$(GENOME_NAME)_genome.bam

@@ -5,7 +5,7 @@ output=sort-samtools-$(Process).out
 error=sort-samtools-$(Process).out
 environment="PATH=/usr/bin:/bin"
 
-IN=$$($(in):Aligned.toTranscriptome.out.bam)
+IN=$(in:Aligned.toTranscriptome.out.bam)
 GENOME_NAME=$(GENOME_NAME)
 OUT=$(ANALYSIS_NAME)-$(GENOME_NAME)_anno.bam
 
